@@ -118,6 +118,100 @@ repeat: 5
 
 > **Hinweis**: Funktioniert perfekt mit [EVCC Scheduler Integration](https://github.com/diestrohs/ha-evcc-scheduler)
 
+## Card_Mod Anpassungen
+
+Die Card ist vollständig mit [card_mod](https://github.com/thomasloven/lovelace-card-mod) kompatibel. Sie können damit benutzerdefinierte Layouts und Designs erstellen.
+
+### Standard-Layout (ohne card_mod)
+
+Ohne card_mod wird die Card wie eine standard HA datetime Card dargestellt:
+- Icon links
+- Name in der Mitte
+- Einfaches Zeit-Button (hh:mm) rechts
+- Minimalistisches Design
+
+### Custom Layout mit Spinner-Anzeige
+
+Mit card_mod können Sie ein Spinner-Grid-Layout erstellen:
+
+```yaml
+type: custom:time-spinner-card
+entity: input_datetime.wakeup_time
+name: Weckzeit
+card_mod:
+  style:
+    .entity-row: |
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+    .name: |
+      font-weight: 500;
+    .time-btn: |
+      width: 120px;
+      border: 2px solid var(--primary-color);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(68, 115, 158, 0.1), transparent);
+      font-weight: bold;
+      font-size: 16px;
+```
+
+### Farben und Styling
+
+```yaml
+type: custom:time-spinner-card
+entity: input_datetime.appointment_time
+name: Termine
+icon_color: "#FF6B6B"
+card_mod:
+  style:
+    .time-btn: |
+      width: 90px;
+      background: rgba(255, 107, 107, 0.1);
+      border: 2px solid #FF6B6B;
+      color: #FF6B6B;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    .time-btn:hover: |
+      background: rgba(255, 107, 107, 0.2);
+      transform: scale(1.05);
+```
+
+### Flex-Layout mit zusätzlichen Elementen
+
+```yaml
+type: custom:time-spinner-card
+entity: time.start_time
+name: Startzeit
+card_mod:
+  style:
+    .entity-row: |
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: var(--primary-background-color);
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-color);
+    .name: |
+      font-size: 16px;
+      font-weight: 600;
+      flex: 1;
+    .time-btn: |
+      width: 100px;
+      height: 40px;
+      border-radius: 6px;
+      border: 2px solid var(--primary-color);
+      background: transparent;
+      font-weight: bold;
+      transition: all 0.3s;
+    .time-btn:hover: |
+      background: var(--primary-color);
+      color: var(--primary-background-color);
+```
+
 ## Kompatibilität
 
 - **Home Assistant**: 2024.1 oder höher
@@ -125,6 +219,7 @@ repeat: 5
 - **Entities**: 
   - `input_datetime.*` (verwendet `input_datetime.set_datetime`)
   - `time.*` (verwendet `time.set_value` - kompatibel mit EVCC Scheduler und anderen Integrationen)
+- **card_mod**: Optional für custom Styling
 
 ## Technische Details
 

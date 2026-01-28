@@ -34,8 +34,19 @@ class TimeSpinnerCard extends LitElement {
       .entity-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; }
       ha-icon { margin-right: 16px; font-size: 24px; }
       .name { flex: 1; font-size: var(--paper-font-body1_-_font-size); font-weight: var(--paper-font-body1_-_font-weight); line-height: var(--paper-font-body1_-_line-height); color: var(--primary-text-color); }
-      .time-btn { width: 70px; height: 35px; border: none; border-radius: 12px; background: var(--secondary-background-color); color: var(--primary-text-color); font-size: 14px; cursor: pointer; }
-      .time-btn:hover, .time-btn:active, .time-btn:focus { background: var(--secondary-background-color); outline: none; }
+      .time-btn { 
+        width: 70px; 
+        height: 35px; 
+        border: 1px solid var(--divider-color);
+        border-radius: 4px; 
+        background: transparent;
+        color: var(--primary-text-color); 
+        font-size: 14px; 
+        cursor: pointer;
+        font-family: monospace;
+      }
+      .time-btn:hover { background: var(--secondary-background-color); }
+      .time-btn:active, .time-btn:focus { outline: 2px solid var(--primary-color); outline-offset: -1px; }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; }
       .overlay-content { background: var(--card-background-color); padding: 16px; border-radius: 12px; }
       .wrapper { display: flex; justify-content: center; align-items: center; height: 240px; position: relative; overflow: hidden; }
@@ -46,8 +57,8 @@ class TimeSpinnerCard extends LitElement {
       .colon { font-size: 32px; padding: 0 8px; }
       .indicator { position: absolute; top: 50%; left: 0; right: 0; height: 48px; margin-top: -24px; border-top: 2px solid var(--primary-color); border-bottom: 2px solid var(--primary-color); pointer-events: none; }
       .buttons { display: flex; justify-content: flex-end; margin-top: 10px; }
-      .buttons button { margin-left: 8px; height: 35px; padding: 6px 14px; border-radius: 6px; border: none; background: var(--secondary-background-color); color: var(--primary-text-color); cursor: pointer; font-size: 16px; }
-      .buttons button:hover, .buttons button:active, .buttons button:focus { background: var(--secondary-background-color); outline: none; }
+      .buttons button { margin-left: 8px; height: 35px; padding: 6px 14px; border-radius: 6px; border: none; background: var(--primary-color); color: var(--primary-background-color); cursor: pointer; font-size: 16px; font-weight: 500; }
+      .buttons button:hover { background: var(--primary-color); opacity: 0.8; }
     `;
   }
 
