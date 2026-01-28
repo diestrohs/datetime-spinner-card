@@ -1,34 +1,73 @@
-import { LitElement, html, css } from "https://unpkg.com/lit@3?module";
+import { LitElement, html, css, CSSResultGroup, TemplateResult, PropertyValues } from "https://unpkg.com/lit@3?module";
+import { property, customElement, query } from "https://unpkg.com/lit@3/decorators.js?module";
 
-class TimeSpinnerCard extends LitElement {
+// Type definitions for Home Assistant
+interface HassEntity {
+  entity_id: string;
+  state: string;
+  attributes: Record<string, any> & {
+    icon?: string;
+    friendly_name?: string;
+  };
+  last_changed: string;
+  last_updated: string;
+}
 
-  static get properties() {
-    return {
-      hass: { type: Object },
-      config: { type: Object },
-      overlayOpen: { type: Boolean },
-      selectedHour: { type: Number },
-      selectedMinute: { type: Number }
+interface HassStates {
+  [entity_id: string]: HassEntity;
+}
+
+interface HassServices {
+  [domain: string]: {
+    [service: string]: {
+      description?: string;
+      fields?: Record<string, any>;
     };
-  }
+  };
+}
 
-  constructor() {
-    super();
-    this.itemHeight = 48;
-    this.visibleItems = 5;
-    this.overlayOpen = false;
-    this.selectedHour = 0;
-    this.selectedMinute = 0;
-    this.config = {};
-    this.hass = null;
-  }
+interface Hass {
+  states: HassStates;
+  services: HassServices;
+  callService: (domain: string, service: string, serviceData?: Record<string, any>) => Promise<void>;
+  language: string;
+  locale: any;
+}
 
-  get repeat() {
+// Card configuration interface
+interface TimeSpinnerCardConfig {
+  type: string;
+  entity: string;
+  name?: string;
+  icon?: string;
+  icon_color?: string;
+  minute_step?: number;
+  repeat?: number;
+}
+
+// Extended HTMLElement for wheel containers
+interface WheelElement extends HTMLElement {
+  items?: HTMLElement[];
+}
+
+@customElement("time-spinner-card")
+class TimeSpinnerCard extends LitElement {
+  
+  @property({ type: Object }) hass?: Hass;
+  @property({ type: Object }) config: TimeSpinnerCardConfig = { type: "custom:time-spinner-card", entity: "" };
+  @property({ type: Boolean }) overlayOpen: boolean = false;
+  @property({ type: Number }) selectedHour: number = 0;
+  @property({ type: Number }) selectedMinute: number = 0;
+
+  private itemHeight: number = 48;
+  private visibleItems: number = 5;
+
+  get repeat(): number {
     const repeat = this.config.repeat || 3;
     return repeat >= 1 && repeat <= 10 ? repeat : 3;
   }
 
-  static get styles() {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card { border: none; box-shadow: none; }
       .entity-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; }
@@ -51,18 +90,19 @@ class TimeSpinnerCard extends LitElement {
     `;
   }
 
-  setConfig(config) {
+  setConfig(config: TimeSpinnerCardConfig): void {
     if (!config?.entity) throw new Error("Entity fehlt");
     this.config = { ...config };
   }
 
-  get minuteStep() {
+  get minuteStep(): number {
     const step = this.config.minute_step || 5;
     return [1, 5, 10, 15, 30].includes(step) ? step : 5;
   }
 
-  render() {
-    const icon = this.config.icon || "mdi:clock";
+  render(): TemplateResult {
+    const entityIcon = this.hass?.states[this.config.entity]?.attributes?.icon;
+    const icon = this.config.icon || entityIcon || "mdi:clock";
     const iconColor = this.config.icon_color || "var(--primary-text-color)";
     const name = this.config.name || "Terminzeit";
     const timeDisplay = this._getTimeDisplay();
@@ -79,16 +119,16 @@ class TimeSpinnerCard extends LitElement {
     `;
   }
 
-  _getTimeDisplay() {
+  private _getTimeDisplay(): string {
     if (!this.hass || !this.config.entity) return "--:--";
     const state = this.hass.states[this.config.entity]?.state;
     return state ? state.slice(0, 5) : "--:--";
   }
 
-  _renderOverlay() {
+  private _renderOverlay(): TemplateResult {
     return html`
       <div class="overlay" @click="${this._handleOverlayClick}">
-        <div class="overlay-content" @click="${e => e.stopPropagation()}">
+        <div class="overlay-content" @click="${(e: Event) => e.stopPropagation()}">
           <div class="wrapper">
             <div class="wheel" id="hours-wheel"></div>
             <div class="colon">:</div>
@@ -104,7 +144,7 @@ class TimeSpinnerCard extends LitElement {
     `;
   }
 
-  updated(changedProperties) {
+  updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     
     if (changedProperties.has('overlayOpen') && this.overlayOpen) {
@@ -112,27 +152,27 @@ class TimeSpinnerCard extends LitElement {
     }
   }
 
-  _handleOpenOverlay() {
+  private _handleOpenOverlay(): void {
     if (this.overlayOpen) return;
     this.overlayOpen = true;
   }
 
-  _handleOverlayClick() {
+  private _handleOverlayClick(): void {
     this._closeOverlay(false);
   }
 
-  _initializeOverlay() {
+  private _initializeOverlay(): void {
     requestAnimationFrame(() => {
-      const hoursEl = this.shadowRoot.getElementById("hours-wheel");
-      const minutesEl = this.shadowRoot.getElementById("minutes-wheel");
+      const hoursEl = this.shadowRoot?.getElementById("hours-wheel") as WheelElement | null;
+      const minutesEl = this.shadowRoot?.getElementById("minutes-wheel") as WheelElement | null;
 
       if (!hoursEl || !minutesEl) return;
 
       const step = this.minuteStep;
       const minuteCount = 60 / step;
 
-      this.buildWheel(hoursEl, 24, v => this.selectedHour = v, false);
-      this.buildWheel(minutesEl, minuteCount, v => this.selectedMinute = v * step, true);
+      this.buildWheel(hoursEl, 24, (v: number) => this.selectedHour = v, false);
+      this.buildWheel(minutesEl, minuteCount, (v: number) => this.selectedMinute = v * step, true);
 
       const [h, m] = (this.hass?.states[this.config.entity]?.state || "00:00").split(":");
 
@@ -144,12 +184,12 @@ class TimeSpinnerCard extends LitElement {
     });
   }
 
-  _closeOverlay(save) {
+  private _closeOverlay(save: boolean): void {
     if (save) this._save();
     this.overlayOpen = false;
   }
 
-  buildWheel(container, count, onChange, isMinutes = false) {
+  private buildWheel(container: WheelElement, count: number, onChange: (value: number) => void, isMinutes: boolean = false): void {
     container.innerHTML = "";
     const pad = Math.floor(this.visibleItems / 2);
     container.items = [];
@@ -166,7 +206,7 @@ class TimeSpinnerCard extends LitElement {
         const d = document.createElement("div");
         d.className = "item";
         const displayValue = isMinutes ? i * step : i;
-        d.textContent = String(displayValue).padStart(2,"0");
+        d.textContent = String(displayValue).padStart(2, "0");
         list.append(d);
         container.items.push(d);
       }
@@ -178,34 +218,36 @@ class TimeSpinnerCard extends LitElement {
 
     container.append(list);
 
-    let t;
+    let t: number | undefined;
     container.addEventListener("scroll", () => {
       clearTimeout(t);
-      t = setTimeout(() => this.snap(container, count, onChange), 80);
+      t = window.setTimeout(() => this.snap(container, count, onChange), 80);
     });
   }
 
-  snap(container, count, onChange) {
+  private snap(container: WheelElement, count: number, onChange: (value: number) => void): void {
     const idx = Math.round(container.scrollTop / this.itemHeight);
     container.scrollTo({ top: idx * this.itemHeight, behavior: "smooth" });
 
     const logical = ((idx % count) + count) % count;
     onChange(logical);
 
-    container.items.forEach((e, i) =>
+    container.items?.forEach((e, i) =>
       e.classList.toggle("active", i === idx)
     );
   }
 
-  setInitial(container, count, idx) {
+  private setInitial(container: WheelElement, count: number, idx: number): void {
     requestAnimationFrame(() => {
       const mid = Math.floor(this.repeat / 2) * count;
       container.scrollTop = (mid + idx) * this.itemHeight;
     });
   }
 
-  _save() {
-    const timeString = `${String(this.selectedHour).padStart(2,"0")}:${String(this.selectedMinute).padStart(2,"0")}:00`;
+  private _save(): void {
+    if (!this.hass) return;
+    
+    const timeString = `${String(this.selectedHour).padStart(2, "0")}:${String(this.selectedMinute).padStart(2, "0")}:00`;
     const entityId = this.config.entity;
     
     // Detect entity type and use appropriate service
@@ -224,13 +266,15 @@ class TimeSpinnerCard extends LitElement {
     }
   }
 
-  getCardSize() { return 1; }
+  getCardSize(): number { 
+    return 1; 
+  }
 
-  static getConfigElement() {
+  static getConfigElement(): HTMLElement {
     return document.createElement("time-spinner-card-editor");
   }
 
-  static getStubConfig() {
+  static getStubConfig(): TimeSpinnerCardConfig {
     return {
       type: "custom:time-spinner-card",
       entity: "",
@@ -243,19 +287,14 @@ class TimeSpinnerCard extends LitElement {
   }
 }
 
-customElements.define("time-spinner-card", TimeSpinnerCard);
-
 // Visual Editor Component
+@customElement("time-spinner-card-editor")
 class TimeSpinnerCardEditor extends LitElement {
   
-  static get properties() {
-    return {
-      hass: { type: Object },
-      config: { type: Object }
-    };
-  }
+  @property({ type: Object }) hass?: Hass;
+  @property({ type: Object }) config?: TimeSpinnerCardConfig;
 
-  static get styles() {
+  static get styles(): CSSResultGroup {
     return css`
       .card-config {
         display: flex;
@@ -280,11 +319,11 @@ class TimeSpinnerCardEditor extends LitElement {
     `;
   }
 
-  setConfig(config) {
+  setConfig(config: TimeSpinnerCardConfig): void {
     this.config = config;
   }
 
-  render() {
+  render(): TemplateResult {
     if (!this.hass || !this.config) {
       return html``;
     }
@@ -354,45 +393,45 @@ class TimeSpinnerCardEditor extends LitElement {
     `;
   }
 
-  _entityChanged(ev) {
+  private _entityChanged(ev: CustomEvent): void {
     if (!this.config || !this.hass) return;
     const newConfig = { ...this.config, entity: ev.detail.value };
     this._fireConfigChanged(newConfig);
   }
 
-  _nameChanged(ev) {
+  private _nameChanged(ev: Event): void {
     if (!this.config || !this.hass) return;
-    const newConfig = { ...this.config, name: ev.target.value };
+    const newConfig = { ...this.config, name: (ev.target as HTMLInputElement).value };
     this._fireConfigChanged(newConfig);
   }
 
-  _iconChanged(ev) {
+  private _iconChanged(ev: CustomEvent): void {
     if (!this.config || !this.hass) return;
     const newConfig = { ...this.config, icon: ev.detail.value };
     this._fireConfigChanged(newConfig);
   }
 
-  _iconColorChanged(ev) {
+  private _iconColorChanged(ev: Event): void {
     if (!this.config || !this.hass) return;
-    const newConfig = { ...this.config, icon_color: ev.target.value };
+    const newConfig = { ...this.config, icon_color: (ev.target as HTMLInputElement).value };
     this._fireConfigChanged(newConfig);
   }
 
-  _minuteStepChanged(ev) {
+  private _minuteStepChanged(ev: Event): void {
     if (!this.config || !this.hass) return;
-    const value = parseInt(ev.target.value) || 5;
+    const value = parseInt((ev.target as HTMLInputElement).value) || 5;
     const newConfig = { ...this.config, minute_step: value };
     this._fireConfigChanged(newConfig);
   }
 
-  _repeatChanged(ev) {
+  private _repeatChanged(ev: Event): void {
     if (!this.config || !this.hass) return;
-    const value = parseInt(ev.target.value) || 3;
+    const value = parseInt((ev.target as HTMLInputElement).value) || 3;
     const newConfig = { ...this.config, repeat: value };
     this._fireConfigChanged(newConfig);
   }
 
-  _fireConfigChanged(newConfig) {
+  private _fireConfigChanged(newConfig: TimeSpinnerCardConfig): void {
     const event = new CustomEvent("config-changed", {
       detail: { config: newConfig },
       bubbles: true,
@@ -402,4 +441,9 @@ class TimeSpinnerCardEditor extends LitElement {
   }
 }
 
-customElements.define("time-spinner-card-editor", TimeSpinnerCardEditor);
+declare global {
+  interface HTMLElementTagNameMap {
+    "time-spinner-card": TimeSpinnerCard;
+    "time-spinner-card-editor": TimeSpinnerCardEditor;
+  }
+}

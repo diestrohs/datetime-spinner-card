@@ -5,6 +5,23 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.0.2] - 2026-01-29
+
+### Hinzugefügt
+- 🔍 Automatische Icon-Übernahme von der Entity (falls kein Icon konfiguriert)
+- 📘 TypeScript-Variante mit vollständiger Type Safety
+- 🎯 Vollständige Type Definitions für Home Assistant Interfaces
+- 🏷️ Decorators für Properties und Custom Elements
+- 🛡️ Verbesserte Null Safety durch TypeScript
+
+### Geändert
+- 🔄 Migration von JavaScript zu TypeScript
+- 📦 HACS Konfiguration aktualisiert (verwendet jetzt .ts Datei)
+- 📝 Dokumentation aktualisiert (Icon-Übernahme Feature)
+
+### Entfernt
+- ❌ JavaScript-Variante entfernt (durch TypeScript ersetzt)
+
 ## [0.0.1] - 2026-01-28
 
 ### Hinzugefügt

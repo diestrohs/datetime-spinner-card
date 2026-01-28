@@ -6,6 +6,7 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur Ze
 
 - ✨ Intuitive Spinner-Bedienung mit flüssigem Scroll-Verhalten
 - 🎨 Vollständig anpassbar (Icon, Farbe, Name)
+- 🔍 Automatische Icon-Übernahme von der Entity
 - ⚙️ Flexible Minuten-Schrittweite (1, 5, 10, 15, 30)
 - 🖼️ Visual Editor für einfache Konfiguration
 - 🕐 Unterstützt `input_datetime.*` und `time.*` Entities
