@@ -31,22 +31,26 @@ class TimeSpinnerCard extends LitElement {
   static get styles() {
     return css`
       ha-card { border: none; box-shadow: none; }
-      .entity-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; }
-      ha-icon { margin-right: 16px; font-size: 24px; }
-      .name { flex: 1; font-size: var(--paper-font-body1_-_font-size); font-weight: var(--paper-font-body1_-_font-weight); line-height: var(--paper-font-body1_-_line-height); color: var(--primary-text-color); }
+      .entity-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; gap: 16px; }
+      ha-icon { margin-right: 0; font-size: 24px; color: var(--paper-item-icon-color, #44739e); flex-shrink: 0; }
+      .name { flex: 1; font-size: 16px; font-weight: 400; color: var(--primary-text-color); }
       .time-btn { 
-        width: 70px; 
-        height: 35px; 
+        padding: 8px 16px;
+        min-width: 80px;
         border: 1px solid var(--divider-color);
         border-radius: 4px; 
         background: transparent;
         color: var(--primary-text-color); 
-        font-size: 14px; 
+        font-size: 16px;
+        font-weight: 400;
         cursor: pointer;
         font-family: monospace;
+        text-align: right;
+        letter-spacing: 0.5px;
       }
-      .time-btn:hover { background: var(--secondary-background-color); }
-      .time-btn:active, .time-btn:focus { outline: 2px solid var(--primary-color); outline-offset: -1px; }
+      .time-btn:hover { background: rgba(var(--rgb-primary-color), 0.04); }
+      .time-btn:focus { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+      .time-btn:active { background: rgba(var(--rgb-primary-color), 0.08); }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; }
       .overlay-content { background: var(--card-background-color); padding: 16px; border-radius: 12px; }
       .wrapper { display: flex; justify-content: center; align-items: center; height: 240px; position: relative; overflow: hidden; }
