@@ -2,7 +2,7 @@
 
 Eine moderne Home Assistant Lovelace Card mit Spinner-Interface zur Zeitauswahl für `input_datetime` und `time` Entities.
 
-## Version 0.0.2
+## Version 0.0.3
 
 ### Features
 

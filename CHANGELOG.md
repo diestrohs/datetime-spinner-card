@@ -5,7 +5,18 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
-## [0.0.2] - 2026-01-29
+## [0.0.3] - 2026-01-29
+
+### Behoben
+- 🐛 **KRITISCH**: TypeScript-Datei kann nicht im Browser ausgeführt werden
+- ✅ Zurück zu JavaScript-Datei mit Icon-Übernahme Feature
+- 📦 HACS Konfiguration korrigiert (verwendet wieder .js Datei)
+- ❌ TypeScript-Variante entfernt (Browser können TS nicht direkt ausführen)
+
+### Beibehalten
+- 🔍 Automatische Icon-Übernahme von der Entity (funktioniert jetzt korrekt)
+
+## [0.0.2] - 2026-01-29 (DEFEKT - nicht verwenden)
 
 ### Hinzugefügt
 - 🔍 Automatische Icon-Übernahme von der Entity (falls kein Icon konfiguriert)

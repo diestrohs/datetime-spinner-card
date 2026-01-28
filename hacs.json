@@ -1,7 +1,7 @@
 {
   "name": "Time Spinner Card",
   "content_in_root": true,
-  "filename": "time-spinner-card.ts",
+  "filename": "time-spinner-card.js",
   "render_readme": true,
   "homeassistant": "2024.1.0",
   "zip_release": false,
