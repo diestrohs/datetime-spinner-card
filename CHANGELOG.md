@@ -7,31 +7,20 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [0.0.3] - 2026-01-29
 
-### Behoben
-- 🐛 **KRITISCH**: TypeScript-Datei kann nicht im Browser ausgeführt werden
-- ✅ Zurück zu JavaScript-Datei mit Icon-Übernahme Feature
-- 📦 HACS Konfiguration korrigiert (verwendet wieder .js Datei)
-- ❌ TypeScript-Variante entfernt (Browser können TS nicht direkt ausführen)
-
-### Beibehalten
-- 🔍 Automatische Icon-Übernahme von der Entity (funktioniert jetzt korrekt)
-
-## [0.0.2] - 2026-01-29 (DEFEKT - nicht verwenden)
-
 ### Hinzugefügt
-- 🔍 Automatische Icon-Übernahme von der Entity (falls kein Icon konfiguriert)
-- 📘 TypeScript-Variante mit vollständiger Type Safety
-- 🎯 Vollständige Type Definitions für Home Assistant Interfaces
-- 🏷️ Decorators für Properties und Custom Elements
-- 🛡️ Verbesserte Null Safety durch TypeScript
+- 🔍 **Automatische Icon-Übernahme von der Entity** - Wenn kein Icon konfiguriert ist, wird automatisch das Icon der Entity verwendet
 
-### Geändert
-- 🔄 Migration von JavaScript zu TypeScript
-- 📦 HACS Konfiguration aktualisiert (verwendet jetzt .ts Datei)
-- 📝 Dokumentation aktualisiert (Icon-Übernahme Feature)
+### Technische Details
+- Basiert auf der stabilen v0.0.1 Version
+- Nur minimale Änderung: Eine Zeile Code für Icon-Übernahme
+- Korrekte UTF-8 Kodierung ohne BOM
+- Keine anderen Änderungen an der Funktionalität
 
-### Entfernt
-- ❌ JavaScript-Variante entfernt (durch TypeScript ersetzt)
+## [0.0.2] - 2026-01-29 ⚠️ DEFEKT - NICHT VERWENDEN
+
+**WARNUNG**: Diese Version ist defekt und funktioniert nicht!
+- TypeScript-Dateien können nicht direkt im Browser ausgeführt werden
+- Bitte verwenden Sie v0.0.1 oder v0.0.3
 
 ## [0.0.1] - 2026-01-28
 
