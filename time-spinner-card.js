@@ -97,6 +97,8 @@ class TimeSpinnerCard extends LitElement {
       .buttons { display: flex; justify-content: space-between; margin-top: 10px; }
       .buttons button { height: 35px; padding: 6px 14px; border-radius: 6px; border: none; background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.05)); color: var(--primary-text-color); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
       .buttons button:hover, .buttons button:active, .buttons button:focus { background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.08)); outline: none; }
+      .buttons button:last-child { background: rgba(var(--rgb-primary-color), 0.12); color: var(--primary-color); font-weight: 500; }
+      .buttons button:last-child:hover { background: rgba(var(--rgb-primary-color), 0.18); }
     `;
   }
 
