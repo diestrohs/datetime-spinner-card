@@ -61,9 +61,10 @@ class TimeSpinnerCard extends LitElement {
       .time-btn { 
         padding: 6px 12px;
         min-width: fit-content;
-        border: 1px solid var(--divider-color);
-        border-radius: 4px; 
-        background: transparent;
+        border: none;
+        border-bottom: 2px solid var(--divider-color);
+        border-radius: 0;
+        background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.05));
         color: var(--primary-text-color); 
         font-size: 16px;
         font-weight: 400;
@@ -72,10 +73,18 @@ class TimeSpinnerCard extends LitElement {
         text-align: right;
         letter-spacing: 1px;
         flex-shrink: 0;
+        transition: border-color 0.2s;
       }
-      .time-btn:hover { background: rgba(var(--rgb-primary-color), 0.04); }
-      .time-btn:focus { outline: 2px solid var(--primary-color); outline-offset: 2px; }
-      .time-btn:active { background: rgba(var(--rgb-primary-color), 0.08); }
+      .time-btn:hover { 
+        background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.08));
+      }
+      .time-btn:focus { 
+        outline: none;
+        border-bottom-color: var(--primary-color);
+      }
+      .time-btn:active { 
+        border-bottom-color: var(--primary-color);
+      }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; }
       .overlay-content { background: var(--card-background-color); padding: 16px; border-radius: 12px; }
       .wrapper { display: flex; justify-content: center; align-items: center; height: 240px; position: relative; overflow: hidden; }
