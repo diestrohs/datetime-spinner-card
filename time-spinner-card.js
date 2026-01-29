@@ -78,7 +78,7 @@ class TimeSpinnerCard extends LitElement {
       .time-btn:hover { 
         background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.08));
       }
-      .time-btn:focus { 
+      .time-btn:focus-visible { 
         outline: none;
         border-bottom-color: var(--primary-color);
       }
