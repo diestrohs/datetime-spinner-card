@@ -5,6 +5,25 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.0.4] - 2026-01-29
+
+### Geändert
+- 🎨 **Native HA Input-Field Design** - Eingabefeld folgt nun dem Standard Home Assistant Datetime-Card Design
+  - Transparenter Hintergrund mit subtiler Fill-Color
+  - Nur unterer Border (2px) statt Rundung
+  - Border wechselt zu Primärfarbe bei Interaktion
+  - Monospace-Schrift für bessere Zeit-Lesbarkeit
+- 🎯 **OK-Button Hervorhebung** - OK-Button mit Primärfarbe und transparentem Hintergrund (wie HA Dropdowns)
+- 📐 **Optimiertes Layout** - Abstände und Größen identisch zur HA datetime Card
+- 🔘 **Button-Ausrichtung** - "Abbrechen" linksbündig, "OK" rechtsbündig im Spinner
+
+### Technische Details
+- Eingabefeld: `border-bottom: 2px solid var(--divider-color)`
+- Hover/Active: Border wechselt zu `var(--primary-color)`
+- Layout: `min-height: 56px`, `padding: 8px 16px`, `gap: 8px`
+- OK-Button: `background: rgba(var(--rgb-primary-color), 0.12)`
+- Vollständige card_mod Kompatibilität für Custom-Styling
+
 ## [0.0.3] - 2026-01-29
 
 ### Hinzugefügt
@@ -20,7 +39,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 **WARNUNG**: Diese Version ist defekt und funktioniert nicht!
 - TypeScript-Dateien können nicht direkt im Browser ausgeführt werden
-- Bitte verwenden Sie v0.0.1 oder v0.0.3
+- Bitte verwenden Sie v0.0.1 oder v0.0.3+
 
 ## [0.0.1] - 2026-01-28
 

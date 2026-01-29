@@ -2,12 +2,12 @@
 
 Eine moderne Home Assistant Lovelace Card mit Spinner-Interface zur Zeitauswahl für `input_datetime` und `time` Entities.
 
-## Version 0.0.3
+## Version 0.0.4
 
 ### Features
 
-✨ **Intuitive Spinner-Bedienung** - iOS-Style Time Picker mit flüssigem Scroll-Verhalten  
-🎨 **Vollständig anpassbar** - Icon, Farbe, Name und mehr konfigurierbar  
+✨ **Native HA Design** - Identisches Aussehen zur Standard Home Assistant datetime Card  
+🎨 **Vollständig anpassbar** - Icon, Farbe, Name und mehr konfigurierbar (mit card_mod)  
 🔍 **Automatische Icon-Übernahme** - Übernimmt standardmäßig das Icon der Entity  
 ⚙️ **Flexible Minuten-Schrittweite** - 1, 5, 10, 15 oder 30 Minuten  
 🔄 **Konfigurierbare Wiederholungen** - Anpassbare Anzahl der Spinner-Wiederholungen  
