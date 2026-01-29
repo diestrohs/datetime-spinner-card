@@ -162,9 +162,7 @@ class TimeSpinnerCard extends LitElement {
     }
   }
 
-  _handleOpenOverlay(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  _handleOpenOverlay() {
     if (this.overlayOpen) return;
     this.overlayOpen = true;
   }
