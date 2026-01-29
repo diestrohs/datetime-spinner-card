@@ -82,10 +82,7 @@ class TimeSpinnerCard extends LitElement {
         outline: none;
         border-bottom-color: var(--primary-color);
       }
-      .time-btn:active { 
-        border-bottom-color: var(--primary-color);
-      }
-      .time-btn.active {
+      .time-btn:active, .time-btn.active { 
         border-bottom-color: var(--primary-color);
       }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; }
