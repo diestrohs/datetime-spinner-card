@@ -82,7 +82,7 @@ class TimeSpinnerCard extends LitElement {
         outline: none;
         border-bottom-color: var(--primary-color);
       }
-      .time-btn:active, .time-btn.active { 
+      .time-btn:active { 
         border-bottom-color: var(--primary-color);
       }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; }
@@ -124,7 +124,7 @@ class TimeSpinnerCard extends LitElement {
         <div class="entity-row">
           <ha-icon icon="${icon}" style="color:${iconColor}"></ha-icon>
           <div class="name">${name}</div>
-          <button class="time-btn ${this.overlayOpen ? 'active' : ''}" @click="${this._handleOpenOverlay}">${timeDisplay}</button>
+          <button class="time-btn" @click="${this._handleOpenOverlay}">${timeDisplay}</button>
         </div>
       </ha-card>
       ${this.overlayOpen ? this._renderOverlay() : ''}
