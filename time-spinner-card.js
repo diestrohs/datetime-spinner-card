@@ -30,13 +30,37 @@ class TimeSpinnerCard extends LitElement {
 
   static get styles() {
     return css`
-      ha-card { border: none; box-shadow: none; }
-      .entity-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; gap: 16px; }
-      ha-icon { margin-right: 0; font-size: 24px; color: var(--paper-item-icon-color, #44739e); flex-shrink: 0; }
-      .name { flex: 1; font-size: 16px; font-weight: 400; color: var(--primary-text-color); }
+      ha-card { 
+        border: none; 
+        box-shadow: none; 
+      }
+      .entity-row { 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        padding: 8px 16px; 
+        gap: 8px;
+        min-height: 56px;
+      }
+      ha-icon { 
+        margin-right: 0; 
+        font-size: 24px; 
+        color: var(--paper-item-icon-color, #44739e); 
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .name { 
+        flex: 1; 
+        font-size: 16px; 
+        font-weight: 400; 
+        color: var(--primary-text-color);
+        padding: 0 8px;
+      }
       .time-btn { 
-        padding: 8px 16px;
-        min-width: 80px;
+        padding: 6px 12px;
+        min-width: fit-content;
         border: 1px solid var(--divider-color);
         border-radius: 4px; 
         background: transparent;
@@ -46,7 +70,8 @@ class TimeSpinnerCard extends LitElement {
         cursor: pointer;
         font-family: monospace;
         text-align: right;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
+        flex-shrink: 0;
       }
       .time-btn:hover { background: rgba(var(--rgb-primary-color), 0.04); }
       .time-btn:focus { outline: 2px solid var(--primary-color); outline-offset: 2px; }
