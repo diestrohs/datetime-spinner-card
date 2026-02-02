@@ -5,6 +5,17 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.0.6] - 2026-02-02
+
+### Geändert
+- **Feinabstimmung der Abstände für perfekte Ausrichtung**
+  - Icon-Name Abstand optimiert: `margin-left: 4px` (statt 8px) für engeren Abstand
+  - Vertikales Entity-Row Padding hinzugefügt: `padding: 4px 16px` für korrekte Card-Höhe
+  - Finale visuelle Anpassung für 100%ige Übereinstimmung mit HA input_datetime
+
+### Dokumentation
+- CHANGELOG, README und info.md mit allen v0.0.5 Verbesserungen aktualisiert
+
 ## [0.0.5] - 2026-02-02
 
 ### Geändert
