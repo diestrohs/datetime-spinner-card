@@ -34,12 +34,12 @@ class TimeSpinnerCard extends LitElement {
         border: none; 
         box-shadow: none; 
       }
-      /* Entity Row - Basierend auf hui-generic-entity-row */
+      /* Entity Row - Basierend auf hui-generic-entity-row .row */
       .entity-row { 
         display: flex; 
         align-items: center; 
         flex-direction: row;
-        padding: 0 16px;
+        width: 100%;
         min-height: 56px;
         box-sizing: border-box;
       }
