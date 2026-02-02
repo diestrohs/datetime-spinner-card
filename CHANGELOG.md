@@ -8,28 +8,36 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ## [0.0.5] - 2026-02-02
 
 ### Geändert
-- **Exakte Styles von Home Assistant Frontend input_datetime Entity Row übernommen**
-  - Verwendet Material Design CSS Custom Properties (`--mdc-text-field-*`)
-  - Kopiert hui-generic-entity-row Struktur und Spacing
-  - Implementiert ha-date-input/ha-time-input Styling für authentisches Aussehen
-  - Nutzt `--state-icon-color` für Icons (entspricht HA's state-badge)
-  - Korrekte Padding, Margins und Flex-Properties aus HA Komponenten
+- **Pixel-perfekte Ausrichtung mit Home Assistant input_datetime Entity Row**
+  - Exakte Material Design Text Field Implementierung mit allen MDC CSS Custom Properties
+  - Kopiert hui-generic-entity-row Struktur, Spacing und Flex-Layout
+  - Implementiert ha-date-input/ha-time-input Styling 1:1
+  - Nutzt `--state-icon-color` für Icons (state-badge Standard)
+  - Korrekte Icon-Abmessungen: `flex: 0 0 40px` mit `padding: 8px`
+  - Name/Info Spacing: `margin-left: 4px`, `padding-right: 16px`
+  - Eingabefeld Spacing: `margin-left: 16px` für optimalen Abstand
+  - Eingabefeld Höhe: `min-height: 56px` mit `padding: 24px 12px 12px`
+  - "hh:mm" Label perfekt positioniert: `top: 8px` für idealen Abstand zur Uhrzeit
+  - Entity-Row: `padding: 4px 16px` für korrekte vertikale Card-Höhe
   - Border-radius 4px 4px 0 0 für Material Text Field Erscheinung
-  - Roboto Font Family statt Monospace
-  - Zentrierte Zeit-Anzeige
-  - Korrekte Hover und Focus States mit MDC-Variablen
-  - Border: 1px solid mit `--mdc-text-field-idle-line-color`
-  - Background: `--mdc-text-field-fill-color` (whitesmoke Fallback)
-  - Hover: `--mdc-text-field-hover-line-color` und hover-fill-color
-  - Focus/Active: 2px solid `--mdc-theme-primary`
+  - Roboto Font Family für Label, primäre Textfarbe für Uhrzeit-Anzeige
+  - Zentrierte Zeit-Anzeige mit korrekten vertikalen Abständen
+  - Hover und Focus States mit MDC-Variablen:
+    - Border: 1px solid `--mdc-text-field-idle-line-color`
+    - Background: `--mdc-text-field-fill-color` (whitesmoke Fallback)
+    - Hover: `--mdc-text-field-hover-line-color` und hover-fill-color
+    - Focus/Active: 2px solid `--mdc-theme-primary`
 
 ### Technische Details
-- Home Assistant Frontend Repository analysiert (home-assistant/frontend)
-- Styles extrahiert aus:
-  - `hui-generic-entity-row` (Entity Row Layout)
-  - `hui-input-datetime-entity-row` (Datetime Entity Row)
-  - Material Design Text Field Komponenten
-- Ergebnis: Pixel-perfekte Übereinstimmung mit nativen HA Datetime Cards
+- 20+ iterative Styling-Verfeinerungen für pixelgenaue Übereinstimmung
+- Home Assistant Frontend Repository detailliert analysiert (home-assistant/frontend)
+- Styles extrahiert und adaptiert aus:
+  - `hui-generic-entity-row` (Entity Row Layout und Flex-Properties)
+  - `state-badge` (Icon Dimensionen und Spacing)
+  - `state-info` (Name/Info Margins und Text-Styles)
+  - `ha-time-input` / `ha-base-time-input` (Eingabefeld Höhe und Padding)
+  - Material Design Text Field Komponenten (MDC Variables)
+- Ergebnis: Vollständig identisches Aussehen mit nativen HA Datetime Cards
 
 ## [0.0.4] - 2026-01-29
 

@@ -4,10 +4,12 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur Ze
 
 ## Features
 
-- ✨ Intuitive Spinner-Bedienung mit flüssigem Scroll-Verhalten
+- ✨ Pixel-perfektes HA Design mit nativer input_datetime Entity Row Optik
+- 🎯 Material Design Text Field Implementierung (MDC Variables)
 - 🎨 Vollständig anpassbar (Icon, Farbe, Name)
 - 🔍 Automatische Icon-Übernahme von der Entity
 - ⚙️ Flexible Minuten-Schrittweite (1, 5, 10, 15, 30)
+- 🔄 Konfigurierbare Spinner-Wiederholungen (1-10)
 - 🖼️ Visual Editor für einfache Konfiguration
 - 🕐 Unterstützt `input_datetime.*` und `time.*` Entities
 - 🚗 Kompatibel mit EVCC Scheduler Integration

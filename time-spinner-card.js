@@ -39,7 +39,7 @@ class TimeSpinnerCard extends LitElement {
         display: flex; 
         align-items: center; 
         flex-direction: row;
-        padding: 0 16px;
+        padding: 4px 16px;
         min-height: 56px;
         box-sizing: border-box;
       }
@@ -51,8 +51,8 @@ class TimeSpinnerCard extends LitElement {
       }
       /* Name/Info - hui-generic-entity-row .info */
       .name {
-        margin-left: 8px;
-        margin-inline-start: 8px;
+        margin-left: 4px;
+        margin-inline-start: 4px;
         margin-inline-end: initial;
         padding-right: 16px;
         padding-inline-end: 16px;

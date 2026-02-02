@@ -2,11 +2,12 @@
 
 Eine moderne Home Assistant Lovelace Card mit Spinner-Interface zur Zeitauswahl für `input_datetime` und `time` Entities.
 
-## Version 0.0.4
+## Version 0.0.5
 
 ### Features
 
-✨ **Native HA Design** - Identisches Aussehen zur Standard Home Assistant datetime Card  
+✨ **Pixel-perfektes HA Design** - Vollständig identisches Aussehen zur nativen input_datetime Entity Row  
+🎯 **Material Design** - Exakte MDC Text Field Implementierung mit allen HA Theme-Variablen  
 🎨 **Vollständig anpassbar** - Icon, Farbe, Name und mehr konfigurierbar (mit card_mod)  
 🔍 **Automatische Icon-Übernahme** - Übernimmt standardmäßig das Icon der Entity  
 ⚙️ **Flexible Minuten-Schrittweite** - 1, 5, 10, 15 oder 30 Minuten  
