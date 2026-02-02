@@ -51,8 +51,8 @@ class TimeSpinnerCard extends LitElement {
       }
       /* Name/Info - hui-generic-entity-row .info */
       .name {
-        margin-left: 16px;
-        margin-inline-start: 16px;
+        margin-left: 8px;
+        margin-inline-start: 8px;
         margin-inline-end: initial;
         padding-right: 8px;
         padding-inline-end: 8px;
