@@ -39,7 +39,7 @@ class TimeSpinnerCard extends LitElement {
         display: flex; 
         align-items: center; 
         flex-direction: row;
-        width: 100%;
+        padding: 0 16px;
         min-height: 56px;
         box-sizing: border-box;
       }
