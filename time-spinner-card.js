@@ -34,56 +34,65 @@ class TimeSpinnerCard extends LitElement {
         border: none; 
         box-shadow: none; 
       }
+      /* Entity Row - Basierend auf hui-generic-entity-row */
       .entity-row { 
         display: flex; 
         align-items: center; 
-        justify-content: space-between; 
-        padding: 8px 16px; 
-        gap: 8px;
+        flex-direction: row;
+        padding: 0 16px;
         min-height: 56px;
+        box-sizing: border-box;
       }
+      /* Icon/Badge - state-badge Standard ist 40px flex-basis */
       ha-icon { 
-        margin-right: 0; 
-        font-size: 24px; 
-        color: var(--paper-item-icon-color, #44739e); 
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        flex: 0 0 40px;
+        color: var(--state-icon-color, var(--paper-item-icon-color, #44739e));
       }
-      .name { 
-        flex: 1; 
-        font-size: 16px; 
-        font-weight: 400; 
-        color: var(--primary-text-color);
-        padding: 0 8px;
+      /* Name/Info - hui-generic-entity-row .info */
+      .name {
+        padding-left: 16px;
+        padding-right: 8px;
+        padding-inline-start: 16px;
+        padding-inline-end: 8px;
+        flex: 1 1 30%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
-      .time-btn { 
-        padding: 6px 12px;
-        min-width: fit-content;
+      /* Time Button - Basierend auf ha-date-input/ha-time-input in hui-input-datetime-entity-row */
+      .time-btn {
+        margin-left: 4px;
+        margin-inline-start: 4px;
+        margin-inline-end: initial;
+        direction: var(--direction);
+        padding: 8px 12px 4px;
+        min-width: 80px;
         border: none;
-        border-bottom: 2px solid var(--divider-color);
-        border-radius: 0;
-        background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.05));
-        color: var(--primary-text-color); 
+        border-bottom: 1px solid var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+        border-radius: 4px 4px 0 0;
+        background: var(--mdc-text-field-fill-color, whitesmoke);
+        color: var(--primary-text-color);
         font-size: 16px;
         font-weight: 400;
         cursor: pointer;
-        font-family: monospace;
-        text-align: right;
-        letter-spacing: 1px;
+        font-family: Roboto, sans-serif;
+        text-align: center;
         flex-shrink: 0;
-        transition: border-color 0.2s;
+        transition: border-color 0.2s, background-color 0.2s;
+        box-sizing: border-box;
       }
-      .time-btn:hover { 
-        background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.08));
+      .time-btn:hover {
+        background: var(--mdc-text-field-hover-fill-color, var(--mdc-text-field-fill-color, whitesmoke));
+        border-bottom-color: var(--mdc-text-field-hover-line-color, rgba(0, 0, 0, 0.87));
       }
-      .time-btn:focus-visible { 
+      .time-btn:focus-visible {
         outline: none;
-        border-bottom-color: var(--primary-color);
+        border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
+        padding-bottom: 3px;
       }
-      .time-btn:active { 
-        border-bottom-color: var(--primary-color);
+      .time-btn:active {
+        border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
+        padding-bottom: 3px;
       }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; }
       .overlay-content { background: var(--card-background-color); padding: 16px; border-radius: 12px; }
