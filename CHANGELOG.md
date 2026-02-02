@@ -13,6 +13,9 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
   - Vertikales Entity-Row Padding hinzugefügt: `padding: 4px 16px` für korrekte Card-Höhe
   - Finale visuelle Anpassung für 100%ige Übereinstimmung mit HA input_datetime
 
+### Behoben
+- Verhindere vertikale Verschiebung der Zeit bei Eingabe-Focus/Active (padding-bottom Anpassung)
+
 ### Dokumentation
 - CHANGELOG, README und info.md mit allen v0.0.5 Verbesserungen aktualisiert
 
