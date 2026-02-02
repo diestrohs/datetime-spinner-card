@@ -66,7 +66,7 @@ class TimeSpinnerCard extends LitElement {
         margin-inline-end: initial;
         direction: var(--direction);
         padding: 16px 12px 8px;
-        min-width: 135px;
+        min-width: 90px;
         border: none;
         border-bottom: 1px solid var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
         border-radius: 4px 4px 0 0;
@@ -86,7 +86,8 @@ class TimeSpinnerCard extends LitElement {
         content: 'hh:mm';
         position: absolute;
         top: 4px;
-        left: 12px;
+        left: 50%;
+        transform: translateX(-50%);
         font-size: 12px;
         color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
         font-family: Roboto, sans-serif;
