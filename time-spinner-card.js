@@ -57,6 +57,7 @@ class TimeSpinnerCard extends LitElement {
         padding-right: 8px;
         padding-inline-end: 8px;
         flex: 1 1 30%;
+        color: var(--primary-text-color);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -75,9 +76,7 @@ class TimeSpinnerCard extends LitElement {
         background: var(--mdc-text-field-fill-color, whitesmoke);
         color: var(--primary-text-color);
         font-size: 16px;
-        font-weight: 400;
         cursor: pointer;
-        font-family: Roboto, sans-serif;
         text-align: center;
         flex-shrink: 0;
         transition: border-color 0.2s, background-color 0.2s;
