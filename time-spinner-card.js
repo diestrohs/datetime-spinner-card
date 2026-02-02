@@ -61,8 +61,8 @@ class TimeSpinnerCard extends LitElement {
       }
       /* Time Button - Basierend auf ha-date-input/ha-time-input in hui-input-datetime-entity-row */
       .time-btn {
-        margin-left: 4px;
-        margin-inline-start: 4px;
+        margin-left: 8px;
+        margin-inline-start: 8px;
         margin-inline-end: initial;
         direction: var(--direction);
         padding: 20px 12px 4px;
