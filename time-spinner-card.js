@@ -68,7 +68,7 @@ class TimeSpinnerCard extends LitElement {
         margin-inline-start: 16px;
         margin-inline-end: initial;
         direction: var(--direction);
-        padding: 20px 12px 16px;
+        padding: 24px 12px 12px;
         min-width: 90px;
         min-height: 56px;
         border: none;
