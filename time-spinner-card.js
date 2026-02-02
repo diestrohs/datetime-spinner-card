@@ -87,7 +87,7 @@ class TimeSpinnerCard extends LitElement {
       .time-btn::before {
         content: 'hh:mm';
         position: absolute;
-        top: 4px;
+        top: 6px;
         left: 50%;
         transform: translateX(-50%);
         font-size: 12px;
