@@ -5,6 +5,32 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.0.5] - 2026-02-02
+
+### Geändert
+- **Exakte Styles von Home Assistant Frontend input_datetime Entity Row übernommen**
+  - Verwendet Material Design CSS Custom Properties (`--mdc-text-field-*`)
+  - Kopiert hui-generic-entity-row Struktur und Spacing
+  - Implementiert ha-date-input/ha-time-input Styling für authentisches Aussehen
+  - Nutzt `--state-icon-color` für Icons (entspricht HA's state-badge)
+  - Korrekte Padding, Margins und Flex-Properties aus HA Komponenten
+  - Border-radius 4px 4px 0 0 für Material Text Field Erscheinung
+  - Roboto Font Family statt Monospace
+  - Zentrierte Zeit-Anzeige
+  - Korrekte Hover und Focus States mit MDC-Variablen
+  - Border: 1px solid mit `--mdc-text-field-idle-line-color`
+  - Background: `--mdc-text-field-fill-color` (whitesmoke Fallback)
+  - Hover: `--mdc-text-field-hover-line-color` und hover-fill-color
+  - Focus/Active: 2px solid `--mdc-theme-primary`
+
+### Technische Details
+- Home Assistant Frontend Repository analysiert (home-assistant/frontend)
+- Styles extrahiert aus:
+  - `hui-generic-entity-row` (Entity Row Layout)
+  - `hui-input-datetime-entity-row` (Datetime Entity Row)
+  - Material Design Text Field Komponenten
+- Ergebnis: Pixel-perfekte Übereinstimmung mit nativen HA Datetime Cards
+
 ## [0.0.4] - 2026-01-29
 
 ### Geändert
