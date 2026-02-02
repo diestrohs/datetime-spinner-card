@@ -46,13 +46,15 @@ class TimeSpinnerCard extends LitElement {
       /* Icon/Badge - state-badge Standard ist 40px flex-basis */
       ha-icon { 
         flex: 0 0 40px;
+        padding: 8px;
         color: var(--state-icon-color, var(--paper-item-icon-color, #44739e));
       }
       /* Name/Info - hui-generic-entity-row .info */
       .name {
-        padding-left: 16px;
+        margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
         padding-right: 8px;
-        padding-inline-start: 16px;
         padding-inline-end: 8px;
         flex: 1 1 30%;
         white-space: nowrap;
