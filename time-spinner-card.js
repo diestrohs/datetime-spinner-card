@@ -54,8 +54,8 @@ class TimeSpinnerCard extends LitElement {
         margin-left: 8px;
         margin-inline-start: 8px;
         margin-inline-end: initial;
-        padding-right: 8px;
-        padding-inline-end: 8px;
+        padding-right: 16px;
+        padding-inline-end: 16px;
         flex: 1 1 30%;
         color: var(--primary-text-color);
         white-space: nowrap;
