@@ -103,11 +103,11 @@ class TimeSpinnerCard extends LitElement {
       .time-btn:focus-visible {
         outline: none;
         border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
-        padding-bottom: 3px;
+        padding-bottom: 11px;
       }
       .time-btn:active {
         border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
-        padding-bottom: 3px;
+        padding-bottom: 11px;
       }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; }
       .overlay-content { background: var(--card-background-color); padding: 16px; border-radius: 12px; }
