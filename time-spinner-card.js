@@ -65,7 +65,7 @@ class TimeSpinnerCard extends LitElement {
         margin-inline-start: 4px;
         margin-inline-end: initial;
         direction: var(--direction);
-        padding: 16px 12px 8px;
+        padding: 20px 12px 4px;
         min-width: 90px;
         border: none;
         border-bottom: 1px solid var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
@@ -85,7 +85,7 @@ class TimeSpinnerCard extends LitElement {
       .time-btn::before {
         content: 'hh:mm';
         position: absolute;
-        top: 4px;
+        top: 8px;
         left: 50%;
         transform: translateX(-50%);
         font-size: 12px;
