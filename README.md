@@ -4,6 +4,12 @@ Eine moderne Home Assistant Lovelace Card mit Spinner-Interface zur Zeitauswahl 
 
 ## Version 0.0.6
 
+### Screenshots
+
+| Card Ansicht | Date Spinner | Time Spinner | Date + Time Spinner |
+|---|---|---|---|
+| ![Card](docs/assets/screenshot_card.png) | ![Date](docs/assets/screenshot_date.png) | ![Time](docs/assets/screenshot_time.png) | ![DateTime](docs/assets/screenshot_datetime.png) |
+
 ### Features
 
 ✨ **Pixel-perfektes HA Design** - Vollständig identisches Aussehen zur nativen input_datetime Entity Row  
