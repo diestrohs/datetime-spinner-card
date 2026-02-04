@@ -246,7 +246,10 @@ class TimeSpinnerCard extends LitElement {
 
   _getLocale() {
     // Get locale from Home Assistant settings
-    return this.hass?.locale || { language: 'en' };
+    if (this.hass && this.hass.locale) {
+      return this.hass.locale;
+    }
+    return { language: 'en', date_format: 'YYYY-MM-DD' };
   }
 
   _getTimeZone() {
@@ -368,7 +371,12 @@ class TimeSpinnerCard extends LitElement {
   _formatDateString(year, month, day) {
     // Get the date format from HA locale or use default
     const locale = this._getLocale();
-    const dateFormat = locale.date_format || 'YYYY-MM-DD';
+    let dateFormat = 'YYYY-MM-DD';
+    
+    // Try to get date_format from locale, with fallback
+    if (locale && locale.date_format) {
+      dateFormat = locale.date_format;
+    }
     
     // Use a placeholder approach to avoid replacement interference
     return dateFormat
