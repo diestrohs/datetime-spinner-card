@@ -12,7 +12,8 @@ class TimeSpinnerCard extends LitElement {
       selectedMinute: { type: Number },
       selectedYear: { type: Number },
       selectedMonth: { type: Number },
-      selectedDay: { type: Number }
+      selectedDay: { type: Number },
+      selectedPeriod: { type: String }
     };
   }
 
@@ -27,6 +28,7 @@ class TimeSpinnerCard extends LitElement {
     this.selectedYear = 2025;
     this.selectedMonth = 1;
     this.selectedDay = 1;
+    this.selectedPeriod = 'AM';
     this.config = {};
     this.hass = null;
   }
@@ -256,6 +258,27 @@ class TimeSpinnerCard extends LitElement {
     return this.hass?.config?.time_zone || 'UTC';
   }
 
+  _is12HourFormat() {
+    // Get time format from Home Assistant user settings
+    const locale = this._getLocale();
+    const timeFormat = locale.time_format;
+    
+    // Check if 12-hour format is set
+    if (timeFormat === '12') return true;
+    if (timeFormat === '24') return false;
+    
+    // For 'language' or 'system', detect from locale
+    if (timeFormat === 'language' || timeFormat === 'system') {
+      const formatter = new Intl.DateTimeFormat(locale.language, {
+        hour: 'numeric'
+      });
+      const parts = formatter.formatToParts(new Date(2024, 0, 1, 13));
+      return parts.some(p => p.type === 'dayPeriod');
+    }
+    
+    return false;
+  }
+
   _formatDateByLocale() {
     // This method is used for formatting selectedYear/Month/Day in the overlay
     const dateObj = new Date(this.selectedYear, this.selectedMonth - 1, this.selectedDay);
@@ -350,7 +373,18 @@ class TimeSpinnerCard extends LitElement {
       if (match) timeState = match[1];
     }
 
-    return timeState ? timeState.slice(0, 5) : "--:--";
+    if (!timeState) return "--:--";
+
+    // Format time according to 12/24 hour setting
+    const time = timeState.slice(0, 5);
+    if (this._is12HourFormat()) {
+      const [hours, minutes] = time.split(':').map(Number);
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+      return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+    }
+    
+    return time;
   }
 
   _formatDateFromState(dateState) {
@@ -504,6 +538,9 @@ class TimeSpinnerCard extends LitElement {
               <div class="wheel" id="hours-wheel"></div>
               <div class="colon">:</div>
               <div class="wheel" id="minutes-wheel"></div>
+              ${this._is12HourFormat() ? html`
+                <div class="wheel" id="period-wheel" style="width: 60px;"></div>
+              ` : ''}
             ` : ''}
             <div class="indicator"></div>
           </div>
@@ -544,6 +581,7 @@ class TimeSpinnerCard extends LitElement {
       const daysEl = showDates ? this.shadowRoot.getElementById("days-wheel") : null;
       const hoursEl = showTimes ? this.shadowRoot.getElementById("hours-wheel") : null;
       const minutesEl = showTimes ? this.shadowRoot.getElementById("minutes-wheel") : null;
+      const periodEl = (showTimes && this._is12HourFormat()) ? this.shadowRoot.getElementById("period-wheel") : null;
 
       // Store wheel references for snap function
       this._yearsEl = yearsEl;
@@ -599,8 +637,16 @@ class TimeSpinnerCard extends LitElement {
         const timeRegex = /^(\d{2}):(\d{2})/;
         const timeMatches = timeState.match(timeRegex);
         if (timeMatches) {
-          this.selectedHour = parseInt(timeMatches[1], 10);
+          const hour24 = parseInt(timeMatches[1], 10);
           this.selectedMinute = parseInt(timeMatches[2], 10);
+          
+          if (this._is12HourFormat()) {
+            // Convert 24-hour to 12-hour format
+            this.selectedPeriod = hour24 >= 12 ? 'PM' : 'AM';
+            this.selectedHour = hour24 === 0 ? 12 : hour24 > 12 ? hour24 - 12 : hour24;
+          } else {
+            this.selectedHour = hour24;
+          }
         }
       }
       
@@ -635,12 +681,31 @@ class TimeSpinnerCard extends LitElement {
       }
       
       if (showTimes) {
-        this.buildWheel(hoursEl, 24, v => this.selectedHour = v, false);
-        this.buildWheel(minutesEl, minuteCount, v => this.selectedMinute = v * step, true);
-        
-        // Set initial positions
-        this.setInitial(hoursEl, 24, this.selectedHour);
-        this.setInitial(minutesEl, minuteCount, Math.round(this.selectedMinute / step));
+        if (this._is12HourFormat()) {
+          // 12-hour format: 1-12
+          this.buildWheel(hoursEl, 12, v => this.selectedHour = v + 1, false, 1);
+          this.buildWheel(minutesEl, minuteCount, v => this.selectedMinute = v * step, true);
+          
+          // Build AM/PM wheel
+          if (periodEl) {
+            this.buildPeriodWheel(periodEl);
+          }
+          
+          // Set initial positions
+          this.setInitial(hoursEl, 12, this.selectedHour - 1);
+          this.setInitial(minutesEl, minuteCount, Math.round(this.selectedMinute / step));
+          if (periodEl) {
+            this.setInitial(periodEl, 2, this.selectedPeriod === 'AM' ? 0 : 1);
+          }
+        } else {
+          // 24-hour format: 0-23
+          this.buildWheel(hoursEl, 24, v => this.selectedHour = v, false);
+          this.buildWheel(minutesEl, minuteCount, v => this.selectedMinute = v * step, true);
+          
+          // Set initial positions
+          this.setInitial(hoursEl, 24, this.selectedHour);
+          this.setInitial(minutesEl, minuteCount, Math.round(this.selectedMinute / step));
+        }
       }
     });
   }
@@ -698,6 +763,46 @@ class TimeSpinnerCard extends LitElement {
     if (save) this._save();
     this.overlayOpen = false;
     this.overlayType = null;
+  }
+
+  buildPeriodWheel(container) {
+    container.innerHTML = "";
+    const pad = Math.floor(this.visibleItems / 2);
+    container.items = [];
+
+    const list = document.createElement("div");
+    list.append(Object.assign(document.createElement("div"), {
+      style: `height:${pad * this.itemHeight}px`
+    }));
+
+    const periods = ['AM', 'PM'];
+    for (let i = 0; i < 2; i++) {
+      const d = document.createElement("div");
+      d.className = "item";
+      d.textContent = periods[i];
+      list.append(d);
+      container.items.push(d);
+    }
+
+    list.append(Object.assign(document.createElement("div"), {
+      style: `height:${pad * this.itemHeight}px`
+    }));
+
+    container.append(list);
+
+    let t;
+    container.addEventListener("scroll", () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        const idx = Math.round(container.scrollTop / this.itemHeight);
+        container.scrollTo({ top: idx * this.itemHeight, behavior: "smooth" });
+        const logical = idx % 2;
+        this.selectedPeriod = periods[logical];
+        container.items.forEach((e, i) =>
+          e.classList.toggle("active", i === idx)
+        );
+      }, 80);
+    });
   }
 
   buildWheel(container, count, onChange, isMinutes = false, startValue = 0) {
@@ -786,8 +891,17 @@ class TimeSpinnerCard extends LitElement {
     const year = Number.isInteger(this.selectedYear) ? this.selectedYear : 2025;
     const month = Number.isInteger(this.selectedMonth) ? this.selectedMonth : 1;
     const day = Number.isInteger(this.selectedDay) ? this.selectedDay : 1;
-    const hour = Number.isInteger(this.selectedHour) ? this.selectedHour : 0;
     const minute = Number.isInteger(this.selectedMinute) ? this.selectedMinute : 0;
+    
+    // Convert 12-hour format to 24-hour format if needed
+    let hour = Number.isInteger(this.selectedHour) ? this.selectedHour : 0;
+    if (this._is12HourFormat()) {
+      if (this.selectedPeriod === 'PM' && hour !== 12) {
+        hour = hour + 12;
+      } else if (this.selectedPeriod === 'AM' && hour === 12) {
+        hour = 0;
+      }
+    }
     
     // Validate ranges
     if (month < 1 || month > 12 || day < 1 || day > 31 || hour < 0 || hour > 23 || minute < 0 || minute > 59) {

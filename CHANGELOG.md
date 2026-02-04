@@ -5,6 +5,22 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.1.0] - 2026-02-05
+
+### Hinzugefügt
+- **12-Stunden-Zeit-Format mit AM/PM-Unterstützung**
+  - Automatische Format-Erkennung aus Home Assistant Benutzereinstellungen
+  - Lokalisierte Zeit-Anzeige (z.B. "10:00 AM" oder "22:30")
+  - Separates AM/PM-Selektions-Rad im Overlay
+  - Dynamische Stunden-Bereich (1-12 für 12h, 0-23 für 24h)
+  - Automatische Konvertierung zwischen 12h und 24h Format beim Speichern
+  - Unterstützung für HA-Einstellungen: '12', '24', 'language', 'system'
+
+### Verbesserungen
+- AM/PM-Rad begrenzt auf nur 2 Werte ohne Wiederholungen (kompakt)
+- Zeit-Label bleibt konstant 'hh:mm' unabhängig vom Format
+- Nahtlose Integration mit HA Locale-Einstellungen
+
 ## [0.0.10] - 2026-02-05
 
 ### Verbesserungen
