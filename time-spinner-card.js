@@ -373,8 +373,8 @@ class TimeSpinnerCard extends LitElement {
     const locale = this._getLocale();
     let dateFormat = 'YYYY-MM-DD';
     
-    // Try to get date_format from locale, with fallback
-    if (locale && locale.date_format) {
+    // Try to get date_format from locale, with robust checking
+    if (locale && typeof locale.date_format === 'string' && locale.date_format.length > 0) {
       dateFormat = locale.date_format;
     }
     
