@@ -5,6 +5,20 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.0.9] - 2026-02-04
+
+### Hinzugefügt
+- **Vollständige Mehrsprachigkeit für Buttons**
+  - "Save"/"Speichern"-Button lokalisiert für alle 17 Sprachen
+  - "Cancel"/"Abbrechen"-Button lokalisiert für alle 17 Sprachen
+  - Deutsch: "Speichern" statt "OK"
+  - Englisch: "Save" statt "OK"
+  - Weitere Sprachen mit nativen Übersetzungen (Französisch, Spanisch, Italienisch, etc.)
+
+### Verbesserungen
+- Button-Abstand erhöht auf 4px (verhindert visuelles Zusammenstoßen)
+- Bessere Lesbarkeit der Buttons im Time-Only Spinner
+
 ## [0.0.8] - 2026-02-04
 
 ### Hinzugefügt
