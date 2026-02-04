@@ -333,16 +333,51 @@ class TimeSpinnerCard extends LitElement {
     const hasTimes = this._hasTimes();
 
     if (hasDates && hasTimes) {
-      const date = dateState ? dateState.slice(0, 10) : "--------";
+      // Format date based on locale
+      let formattedDate = "--------";
+      if (dateState) {
+        const parts = dateState.split('-');
+        if (parts.length === 3) {
+          const year = parts[0];
+          const month = parts[1];
+          const day = parts[2];
+          formattedDate = this._formatDateString(year, month, day);
+        }
+      }
       const time = timeState ? timeState.slice(0, 5) : "--:--";
-      return `${date} ${time}`;
+      return `${formattedDate} ${time}`;
     } else if (hasDates) {
-      return dateState ? dateState.slice(0, 10) : "--------";
+      let formattedDate = "--------";
+      if (dateState) {
+        const parts = dateState.split('-');
+        if (parts.length === 3) {
+          const year = parts[0];
+          const month = parts[1];
+          const day = parts[2];
+          formattedDate = this._formatDateString(year, month, day);
+        }
+      }
+      return formattedDate;
     } else if (hasTimes) {
       return timeState ? timeState.slice(0, 5) : "--:--";
     }
 
     return "-------- --:--";
+  }
+
+  _formatDateString(year, month, day) {
+    // Get the date format from HA locale or use default
+    const locale = this._getLocale();
+    const dateFormat = locale.date_format || 'YYYY-MM-DD';
+    
+    // Use a placeholder approach to avoid replacement interference
+    return dateFormat
+      .replace(/YYYY/g, year)
+      .replace(/yyyy/g, year)
+      .replace(/MM/g, month)
+      .replace(/mm/g, month)
+      .replace(/DD/g, day)
+      .replace(/dd/g, day);
   }
 
   _renderOverlay() {
