@@ -7,6 +7,7 @@ class TimeSpinnerCard extends LitElement {
       hass: { type: Object },
       config: { type: Object },
       overlayOpen: { type: Boolean },
+      overlayType: { type: String },
       selectedHour: { type: Number },
       selectedMinute: { type: Number },
       selectedYear: { type: Number },
@@ -20,6 +21,7 @@ class TimeSpinnerCard extends LitElement {
     this.itemHeight = 48;
     this.visibleItems = 5;
     this.overlayOpen = false;
+    this.overlayType = null;
     this.selectedHour = 0;
     this.selectedMinute = 0;
     this.selectedYear = 2025;
@@ -263,35 +265,58 @@ class TimeSpinnerCard extends LitElement {
     const name = this.config.name || "Terminzeit";
     const hasDates = this._hasDates();
     const hasTimes = this._hasTimes();
-    const timeDisplay = this._getTimeDisplay();
-    const formatLabel = this._getFormatLabel(hasDates, hasTimes);
 
     return html`
       <ha-card>
         <div class="entity-row">
           <ha-icon icon="${icon}" style="color:${iconColor}"></ha-icon>
           <div class="name">${name}</div>
-          <button class="time-btn" @click="${this._handleOpenOverlay}">
-            <span class="time-btn-label">${formatLabel}</span>
-            ${timeDisplay}
-          </button>
+          ${this._renderButtons(hasDates, hasTimes)}
         </div>
       </ha-card>
       ${this.overlayOpen ? this._renderOverlay() : ''}
     `;
   }
 
-  _getTimeDisplay() {
-    if (!this.hass) {
-      const hasDates = this._hasDates();
-      const hasTimes = this._hasTimes();
-      if (hasDates && !hasTimes) return "--------";
-      if (!hasDates && hasTimes) return "--:--";
-      return "-------- --:--";
+  _renderButtons(hasDates, hasTimes) {
+    const dateDisplay = this._getDateDisplay();
+    const timeDisplay = this._getTimeDisplay();
+    const dateFormatLabel = this._getDateFormatLabel();
+    const timeFormatLabel = 'hh:mm';
+
+    if (hasDates && hasTimes) {
+      return html`
+        <button class="time-btn" @click="${() => this._handleOpenOverlay('date')}">
+          <span class="time-btn-label">${dateFormatLabel}</span>
+          ${dateDisplay}
+        </button>
+        <button class="time-btn" @click="${() => this._handleOpenOverlay('time')}">
+          <span class="time-btn-label">${timeFormatLabel}</span>
+          ${timeDisplay}
+        </button>
+      `;
+    } else if (hasDates) {
+      return html`
+        <button class="time-btn" @click="${() => this._handleOpenOverlay('date')}">
+          <span class="time-btn-label">${dateFormatLabel}</span>
+          ${dateDisplay}
+        </button>
+      `;
+    } else if (hasTimes) {
+      return html`
+        <button class="time-btn" @click="${() => this._handleOpenOverlay('time')}">
+          <span class="time-btn-label">${timeFormatLabel}</span>
+          ${timeDisplay}
+        </button>
+      `;
     }
+    return '';
+  }
+
+  _getDateDisplay() {
+    if (!this.hass) return "--------";
 
     let dateState = null;
-    let timeState = null;
 
     // Get date from dedicated entity or main entity
     if (this.config.date_entity) {
@@ -303,6 +328,14 @@ class TimeSpinnerCard extends LitElement {
       if (match) dateState = match[1];
     }
 
+    return dateState ? this._formatDateFromState(dateState) : "--------";
+  }
+
+  _getTimeDisplay() {
+    if (!this.hass) return "--:--";
+
+    let timeState = null;
+
     // Get time from dedicated entity or main entity
     if (this.config.time_entity) {
       timeState = this.hass.states[this.config.time_entity]?.state;
@@ -313,21 +346,7 @@ class TimeSpinnerCard extends LitElement {
       if (match) timeState = match[1];
     }
 
-    const hasDates = this._hasDates();
-    const hasTimes = this._hasTimes();
-
-    if (hasDates && hasTimes) {
-      // Format date using user's locale format
-      const formattedDate = dateState ? this._formatDateFromState(dateState) : "--------";
-      const time = timeState ? timeState.slice(0, 5) : "--:--";
-      return `${formattedDate} ${time}`;
-    } else if (hasDates) {
-      return dateState ? this._formatDateFromState(dateState) : "--------";
-    } else if (hasTimes) {
-      return timeState ? timeState.slice(0, 5) : "--:--";
-    }
-
-    return "-------- --:--";
+    return timeState ? timeState.slice(0, 5) : "--:--";
   }
 
   _formatDateFromState(dateState) {
@@ -369,6 +388,25 @@ class TimeSpinnerCard extends LitElement {
       default:
         // Use Intl.DateTimeFormat with proper locale
         return formatter.format(dateObj);
+    }
+  }
+
+  _getDateFormatLabel() {
+    const locale = this._getLocale();
+    const dateFormat = locale.date_format;
+    
+    switch (dateFormat) {
+      case 'DMY':
+        return 'dd.mm.yyyy';
+      case 'MDY':
+        return 'mm/dd/yyyy';
+      case 'YMD':
+        return 'yyyy-mm-dd';
+      case 'language':
+      case 'system':
+      default:
+        // Use locale-specific format hint
+        return this._getLocaleDateFormatHint(locale.language);
     }
   }
 
@@ -438,27 +476,27 @@ class TimeSpinnerCard extends LitElement {
   }
 
   _renderOverlay() {
-    const hasDates = this._hasDates();
-    const hasTimes = this._hasTimes();
     const locale = this._getLocale();
     
     // Translate button labels based on HA language
     const cancelLabel = this._getLocalizedString('cancel', locale.language);
     const okLabel = this._getLocalizedString('ok', locale.language);
     
+    const showDates = this.overlayType === 'date';
+    const showTimes = this.overlayType === 'time';
+    
     return html`
       <div class="overlay" @click="${this._handleOverlayClick}">
         <div class="overlay-content" @click="${e => e.stopPropagation()}">
           <div class="wrapper">
-            ${hasDates ? html`
+            ${showDates ? html`
               <div class="wheel" id="years-wheel"></div>
               <div class="colon">-</div>
               <div class="wheel" id="months-wheel"></div>
               <div class="colon">-</div>
               <div class="wheel" id="days-wheel"></div>
             ` : ''}
-            ${hasDates && hasTimes ? html`<div class="colon" style="padding: 0 12px;"></div>` : ''}
-            ${hasTimes ? html`
+            ${showTimes ? html`
               <div class="wheel" id="hours-wheel"></div>
               <div class="colon">:</div>
               <div class="wheel" id="minutes-wheel"></div>
@@ -482,8 +520,9 @@ class TimeSpinnerCard extends LitElement {
     }
   }
 
-  _handleOpenOverlay() {
+  _handleOpenOverlay(type) {
     if (this.overlayOpen) return;
+    this.overlayType = type;
     this.overlayOpen = true;
   }
 
@@ -493,14 +532,14 @@ class TimeSpinnerCard extends LitElement {
 
   _initializeOverlay() {
     requestAnimationFrame(() => {
-      const hasDates = this._hasDates();
-      const hasTimes = this._hasTimes();
+      const showDates = this.overlayType === 'date';
+      const showTimes = this.overlayType === 'time';
       
-      const yearsEl = hasDates ? this.shadowRoot.getElementById("years-wheel") : null;
-      const monthsEl = hasDates ? this.shadowRoot.getElementById("months-wheel") : null;
-      const daysEl = hasDates ? this.shadowRoot.getElementById("days-wheel") : null;
-      const hoursEl = hasTimes ? this.shadowRoot.getElementById("hours-wheel") : null;
-      const minutesEl = hasTimes ? this.shadowRoot.getElementById("minutes-wheel") : null;
+      const yearsEl = showDates ? this.shadowRoot.getElementById("years-wheel") : null;
+      const monthsEl = showDates ? this.shadowRoot.getElementById("months-wheel") : null;
+      const daysEl = showDates ? this.shadowRoot.getElementById("days-wheel") : null;
+      const hoursEl = showTimes ? this.shadowRoot.getElementById("hours-wheel") : null;
+      const minutesEl = showTimes ? this.shadowRoot.getElementById("minutes-wheel") : null;
 
       // Store wheel references for snap function
       this._yearsEl = yearsEl;
@@ -659,6 +698,7 @@ class TimeSpinnerCard extends LitElement {
   _closeOverlay(save) {
     if (save) this._save();
     this.overlayOpen = false;
+    this.overlayType = null;
   }
 
   buildWheel(container, count, onChange, isMinutes = false, startValue = 0) {
