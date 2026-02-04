@@ -611,7 +611,7 @@ class TimeSpinnerCard extends LitElement {
       };
 
       // Build wheels based on what's supported
-      if (hasDates) {
+      if (showDates) {
         const minYear = this.getMinYear();
         const maxYear = this.getMaxYear();
         const yearCount = maxYear - minYear + 1;
@@ -630,16 +630,11 @@ class TimeSpinnerCard extends LitElement {
         this.setInitial(daysEl, daysInMonth, this.selectedDay - 1);
       }
       
-      if (hasTimes) {
+      if (showTimes) {
         this.buildWheel(hoursEl, 24, v => this.selectedHour = v, false);
         this.buildWheel(minutesEl, minuteCount, v => this.selectedMinute = v * step, true);
         
         // Set initial positions
-        this.setInitial(hoursEl, 24, this.selectedHour);
-        this.setInitial(minutesEl, minuteCount, Math.round(this.selectedMinute / step));
-      }
-      
-      if (hasTimes) {
         this.setInitial(hoursEl, 24, this.selectedHour);
         this.setInitial(minutesEl, minuteCount, Math.round(this.selectedMinute / step));
       }
