@@ -8,7 +8,10 @@ class TimeSpinnerCard extends LitElement {
       config: { type: Object },
       overlayOpen: { type: Boolean },
       selectedHour: { type: Number },
-      selectedMinute: { type: Number }
+      selectedMinute: { type: Number },
+      selectedYear: { type: Number },
+      selectedMonth: { type: Number },
+      selectedDay: { type: Number }
     };
   }
 
@@ -19,6 +22,9 @@ class TimeSpinnerCard extends LitElement {
     this.overlayOpen = false;
     this.selectedHour = 0;
     this.selectedMinute = 0;
+    this.selectedYear = 2025;
+    this.selectedMonth = 1;
+    this.selectedDay = 1;
     this.config = {};
     this.hass = null;
   }
@@ -85,16 +91,23 @@ class TimeSpinnerCard extends LitElement {
         position: relative;
       }
       .time-btn::before {
-        content: 'hh:mm';
+        content: 'yyyy-mm-dd hh:mm';
         position: absolute;
         top: 8px;
         left: 50%;
         transform: translateX(-50%);
         font-size: 12px;
         color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
+        white-space: nowrap;
         font-family: Roboto, sans-serif;
         font-weight: 400;
         pointer-events: none;
+      }
+      .time-btn.date-only::before {
+        content: 'yyyy-mm-dd';
+      }
+      .time-btn.time-only::before {
+        content: 'hh:mm';
       }
       .time-btn:hover {
         background: var(--mdc-text-field-hover-fill-color, var(--mdc-text-field-fill-color, whitesmoke));
@@ -110,24 +123,29 @@ class TimeSpinnerCard extends LitElement {
         padding-bottom: 11px;
       }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-      .overlay-content { background: var(--card-background-color); padding: 16px; border-radius: 12px; }
+      .overlay-content { background: var(--card-background-color); padding: 16px; border-radius: 12px; max-width: min(90vw, 560px); max-height: 90vh; overflow: auto; }
       .wrapper { display: flex; justify-content: center; align-items: center; height: 240px; position: relative; overflow: hidden; }
       .wheel { width: 80px; height: 100%; overflow-y: scroll; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
       .wheel::-webkit-scrollbar { display: none; }
       .item { height: 48px; display: flex; justify-content: center; align-items: center; font-size: 16px; opacity: 0.35; user-select: none; }
       .item.active { opacity: 1; }
-      .colon { font-size: 32px; padding: 0 8px; }
+      .colon { font-size: 16px; padding: 0 8px; }
       .indicator { position: absolute; top: 50%; left: 0; right: 0; height: 48px; margin-top: -24px; border-top: 2px solid var(--primary-color); border-bottom: 2px solid var(--primary-color); pointer-events: none; }
       .buttons { display: flex; justify-content: space-between; margin-top: 10px; }
       .buttons button { height: 35px; padding: 6px 14px; border-radius: 6px; border: none; background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.05)); color: var(--primary-text-color); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
       .buttons button:hover, .buttons button:active, .buttons button:focus { background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.08)); outline: none; }
       .buttons button:last-child { background: rgba(var(--rgb-primary-color), 0.12); color: var(--primary-color); font-weight: 500; }
       .buttons button:last-child:hover { background: rgba(var(--rgb-primary-color), 0.18); }
+      @media (min-width: 768px) {
+        .wrapper.date-time { min-width: 360px; }
+      }
     `;
   }
 
   setConfig(config) {
-    if (!config?.entity) throw new Error("Entity fehlt");
+    if (!config?.entity && !config?.date_entity && !config?.time_entity) {
+      throw new Error("Mindestens eine Entity erforderlich (entity, date_entity oder time_entity)");
+    }
     this.config = { ...config };
   }
 
@@ -136,19 +154,114 @@ class TimeSpinnerCard extends LitElement {
     return [1, 5, 10, 15, 30].includes(step) ? step : 5;
   }
 
+  getMinYear() {
+    // Erst Entity-Attribute prüfen
+    let minYear = null;
+    
+    if (this.config.date_entity && this.hass) {
+      const entity = this.hass.states[this.config.date_entity];
+      minYear = entity?.attributes?.min_year;
+    } else if (this.config.entity && this.hass) {
+      const entity = this.hass.states[this.config.entity];
+      minYear = entity?.attributes?.min_year;
+    }
+    
+    // Dann Config überschreiben lassen
+    if (this.config.min_year) minYear = this.config.min_year;
+    
+    return minYear || 1900;
+  }
+
+  getMaxYear() {
+    // Erst Entity-Attribute prüfen
+    let maxYear = null;
+    
+    if (this.config.date_entity && this.hass) {
+      const entity = this.hass.states[this.config.date_entity];
+      maxYear = entity?.attributes?.max_year;
+    } else if (this.config.entity && this.hass) {
+      const entity = this.hass.states[this.config.entity];
+      maxYear = entity?.attributes?.max_year;
+    }
+    
+    // Dann Config überschreiben lassen
+    if (this.config.max_year) maxYear = this.config.max_year;
+    
+    return maxYear || 2099;
+  }
+
+  _hasDates() {
+    if (!this.hass) return false;
+    
+    // Check if there's a dedicated date_entity
+    if (this.config.date_entity) {
+      const entity = this.hass.states[this.config.date_entity];
+      if (entity) return true;
+    }
+    
+    // Check main entity
+    if (!this.config.entity) return false;
+    const entity = this.hass.states[this.config.entity];
+    const entityType = this.config.entity.split(".")[0];
+    
+    // date entities always have dates
+    if (entityType === "date") return true;
+    
+    // input_datetime can have has_date attribute
+    if (entityType === "input_datetime") {
+      return entity?.attributes?.has_date !== false;
+    }
+    
+    // Check by state format
+    const state = entity?.state || "";
+    return /^\d{4}-\d{2}-\d{2}/.test(state);
+  }
+
+  _hasTimes() {
+    if (!this.hass) return false;
+    
+    // Check if there's a dedicated time_entity
+    if (this.config.time_entity) {
+      const entity = this.hass.states[this.config.time_entity];
+      if (entity) return true;
+    }
+    
+    // Check main entity
+    if (!this.config.entity) return false;
+    const entity = this.hass.states[this.config.entity];
+    const entityType = this.config.entity.split(".")[0];
+    
+    // time entities always have times
+    if (entityType === "time") return true;
+    
+    // input_datetime can have has_time attribute
+    if (entityType === "input_datetime") {
+      return entity?.attributes?.has_time !== false;
+    }
+    
+    // Check by state format
+    const state = entity?.state || "";
+    return /\d{2}:\d{2}:\d{2}$/.test(state);
+  }
+
   render() {
     const entityIcon = this.hass?.states[this.config.entity]?.attributes?.icon;
     const icon = this.config.icon || entityIcon || "mdi:clock";
     const iconColor = this.config.icon_color || "var(--primary-text-color)";
     const name = this.config.name || "Terminzeit";
+    const hasDates = this._hasDates();
+    const hasTimes = this._hasTimes();
     const timeDisplay = this._getTimeDisplay();
+    let btnClass = "time-btn";
+    if (hasDates && !hasTimes) btnClass += " date-only";
+    if (!hasDates && hasTimes) btnClass += " time-only";
 
     return html`
       <ha-card>
         <div class="entity-row">
           <ha-icon icon="${icon}" style="color:${iconColor}"></ha-icon>
           <div class="name">${name}</div>
-          <button class="time-btn" @click="${this._handleOpenOverlay}">${timeDisplay}</button>
+          <button class="${btnClass}" @click="${this._handleOpenOverlay}">${timeDisplay}</button>
         </div>
       </ha-card>
       ${this.overlayOpen ? this._renderOverlay() : ''}
@@ -156,19 +269,74 @@ class TimeSpinnerCard extends LitElement {
   }
 
   _getTimeDisplay() {
-    if (!this.hass || !this.config.entity) return "--:--";
-    const state = this.hass.states[this.config.entity]?.state;
-    return state ? state.slice(0, 5) : "--:--";
+    if (!this.hass) {
+      const hasDates = this._hasDates();
+      const hasTimes = this._hasTimes();
+      if (hasDates && !hasTimes) return "--------";
+      if (!hasDates && hasTimes) return "--:--";
+      return "-------- --:--";
+    }
+
+    let dateState = null;
+    let timeState = null;
+
+    // Get date from dedicated entity or main entity
+    if (this.config.date_entity) {
+      dateState = this.hass.states[this.config.date_entity]?.state;
+    } else if (this.config.entity) {
+      const state = this.hass.states[this.config.entity]?.state || "";
+      const dateTimeRegex = /^(\d{4}-\d{2}-\d{2})/;
+      const match = state.match(dateTimeRegex);
+      if (match) dateState = match[1];
+    }
+
+    // Get time from dedicated entity or main entity
+    if (this.config.time_entity) {
+      timeState = this.hass.states[this.config.time_entity]?.state;
+    } else if (this.config.entity) {
+      const state = this.hass.states[this.config.entity]?.state || "";
+      const timeRegex = /(\d{2}:\d{2})/;
+      const match = state.match(timeRegex);
+      if (match) timeState = match[1];
+    }
+
+    const hasDates = this._hasDates();
+    const hasTimes = this._hasTimes();
+
+    if (hasDates && hasTimes) {
+      const date = dateState ? dateState.slice(0, 10) : "--------";
+      const time = timeState ? timeState.slice(0, 5) : "--:--";
+      return `${date} ${time}`;
+    } else if (hasDates) {
+      return dateState ? dateState.slice(0, 10) : "--------";
+    } else if (hasTimes) {
+      return timeState ? timeState.slice(0, 5) : "--:--";
+    }
+
+    return "-------- --:--";
   }
 
   _renderOverlay() {
+    const hasDates = this._hasDates();
+    const hasTimes = this._hasTimes();
+    
     return html`
       <div class="overlay" @click="${this._handleOverlayClick}">
         <div class="overlay-content" @click="${e => e.stopPropagation()}">
           <div class="wrapper">
-            <div class="wheel" id="hours-wheel"></div>
-            <div class="colon">:</div>
-            <div class="wheel" id="minutes-wheel"></div>
+            ${hasDates ? html`
+              <div class="wheel" id="years-wheel"></div>
+              <div class="colon">-</div>
+              <div class="wheel" id="months-wheel"></div>
+              <div class="colon">-</div>
+              <div class="wheel" id="days-wheel"></div>
+            ` : ''}
+            ${hasDates && hasTimes ? html`<div class="colon" style="padding: 0 12px;"></div>` : ''}
+            ${hasTimes ? html`
+              <div class="wheel" id="hours-wheel"></div>
+              <div class="colon">:</div>
+              <div class="wheel" id="minutes-wheel"></div>
+            ` : ''}
             <div class="indicator"></div>
           </div>
           <div class="buttons">
@@ -199,24 +367,117 @@ class TimeSpinnerCard extends LitElement {
 
   _initializeOverlay() {
     requestAnimationFrame(() => {
-      const hoursEl = this.shadowRoot.getElementById("hours-wheel");
-      const minutesEl = this.shadowRoot.getElementById("minutes-wheel");
+      const hasDates = this._hasDates();
+      const hasTimes = this._hasTimes();
+      
+      const yearsEl = hasDates ? this.shadowRoot.getElementById("years-wheel") : null;
+      const monthsEl = hasDates ? this.shadowRoot.getElementById("months-wheel") : null;
+      const daysEl = hasDates ? this.shadowRoot.getElementById("days-wheel") : null;
+      const hoursEl = hasTimes ? this.shadowRoot.getElementById("hours-wheel") : null;
+      const minutesEl = hasTimes ? this.shadowRoot.getElementById("minutes-wheel") : null;
 
-      if (!hoursEl || !minutesEl) return;
+      // Store wheel references for snap function
+      this._yearsEl = yearsEl;
+      this._monthsEl = monthsEl;
+      this._daysEl = daysEl;
 
       const step = this.minuteStep;
       const minuteCount = 60 / step;
 
-      this.buildWheel(hoursEl, 24, v => this.selectedHour = v, false);
-      this.buildWheel(minutesEl, minuteCount, v => this.selectedMinute = v * step, true);
+      // Get current datetime from entities
+      let dateState = "";
+      let timeState = "";
 
-      const [h, m] = (this.hass?.states[this.config.entity]?.state || "00:00").split(":");
+      if (this.config.date_entity) {
+        dateState = this.hass?.states[this.config.date_entity]?.state || "";
+      } else if (this.config.entity) {
+        const state = this.hass?.states[this.config.entity]?.state || "";
+        const dateMatch = state.match(/^(\d{4}-\d{2}-\d{2})/);
+        if (dateMatch) dateState = dateMatch[1];
+      }
 
-      this.selectedHour = +h;
-      this.selectedMinute = +m;
+      if (this.config.time_entity) {
+        timeState = this.hass?.states[this.config.time_entity]?.state || "";
+      } else if (this.config.entity) {
+        const state = this.hass?.states[this.config.entity]?.state || "";
+        const timeMatch = state.match(/(\d{2}):(\d{2}):\d{2}$/);
+        if (timeMatch) timeState = `${timeMatch[1]}:${timeMatch[2]}:00`;
+      }
 
-      this.setInitial(hoursEl, 24, this.selectedHour);
-      this.setInitial(minutesEl, minuteCount, Math.round(this.selectedMinute / step));
+      // Parse datetime components with better error handling
+      const now = new Date();
+      
+      // Initialize with defaults first
+      this.selectedYear = now.getFullYear();
+      this.selectedMonth = now.getMonth() + 1;
+      this.selectedDay = now.getDate();
+      this.selectedHour = now.getHours();
+      this.selectedMinute = now.getMinutes();
+      
+      // Try to parse date
+      if (dateState) {
+        const dateRegex = /^(\d{4})-(\d{2})-(\d{2})/;
+        const dateMatches = dateState.match(dateRegex);
+        if (dateMatches) {
+          this.selectedYear = parseInt(dateMatches[1], 10);
+          this.selectedMonth = parseInt(dateMatches[2], 10);
+          this.selectedDay = parseInt(dateMatches[3], 10);
+        }
+      }
+      
+      // Try to parse time
+      if (timeState) {
+        const timeRegex = /^(\d{2}):(\d{2})/;
+        const timeMatches = timeState.match(timeRegex);
+        if (timeMatches) {
+          this.selectedHour = parseInt(timeMatches[1], 10);
+          this.selectedMinute = parseInt(timeMatches[2], 10);
+        }
+      }
+      
+      // Get days in selected month
+      const daysInMonth = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
+
+      const updateDaysWheel = () => {
+        const maxDay = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
+        if (this.selectedDay > maxDay) this.selectedDay = maxDay;
+        this.buildWheel(daysEl, maxDay, v => this.selectedDay = v + 1, false, 1);
+        this.setInitial(daysEl, maxDay, this.selectedDay - 1);
+      };
+
+      // Build wheels based on what's supported
+      if (hasDates) {
+        const minYear = this.getMinYear();
+        const maxYear = this.getMaxYear();
+        const yearCount = maxYear - minYear + 1;
+        this.buildWheel(yearsEl, yearCount, v => {
+          this.selectedYear = minYear + v;
+        }, false, minYear);
+        this.buildWheel(monthsEl, 12, v => {
+          this.selectedMonth = v + 1;
+        }, false, 1);
+        this.buildWheel(daysEl, daysInMonth, v => this.selectedDay = v + 1, false, 1);
+      }
+      
+      if (hasTimes) {
+        this.buildWheel(hoursEl, 24, v => this.selectedHour = v, false);
+        this.buildWheel(minutesEl, minuteCount, v => this.selectedMinute = v * step, true);
+      }
+
+      // Set initial positions
+      if (hasDates) {
+        const minYear = this.getMinYear();
+        const maxYear = this.getMaxYear();
+        const yearCount = maxYear - minYear + 1;
+        this.setInitial(yearsEl, yearCount, this.selectedYear - minYear);
+        this.setInitial(monthsEl, 12, this.selectedMonth - 1);
+        this.setInitial(daysEl, daysInMonth, this.selectedDay - 1);
+      }
+      
+      if (hasTimes) {
+        this.setInitial(hoursEl, 24, this.selectedHour);
+        this.setInitial(minutesEl, minuteCount, Math.round(this.selectedMinute / step));
+      }
     });
   }
 
@@ -225,7 +486,7 @@ class TimeSpinnerCard extends LitElement {
     this.overlayOpen = false;
   }
 
-  buildWheel(container, count, onChange, isMinutes = false) {
+  buildWheel(container, count, onChange, isMinutes = false, startValue = 0) {
     container.innerHTML = "";
     const pad = Math.floor(this.visibleItems / 2);
     container.items = [];
@@ -236,13 +497,16 @@ class TimeSpinnerCard extends LitElement {
     }));
 
     const step = isMinutes ? this.minuteStep : 1;
+    // Determine if this is a year wheel (startValue >= 1900)
+    const isYear = startValue >= 1900;
 
     for (let r = 0; r < this.repeat; r++) {
       for (let i = 0; i < count; i++) {
         const d = document.createElement("div");
         d.className = "item";
-        const displayValue = isMinutes ? i * step : i;
-        d.textContent = String(displayValue).padStart(2,"0");
+        const displayValue = isMinutes ? i * step : startValue + i;
+        // Use 4 digits for years, 2 digits for everything else
+        d.textContent = String(displayValue).padStart(isYear ? 4 : 2, "0");
         list.append(d);
         container.items.push(d);
       }
@@ -267,10 +531,26 @@ class TimeSpinnerCard extends LitElement {
 
     const logical = ((idx % count) + count) % count;
     onChange(logical);
-
+    
+    // Always update active highlight for the current wheel
     container.items.forEach((e, i) =>
       e.classList.toggle("active", i === idx)
     );
+    
+    // Update days wheel if year or month wheel was changed
+    if ((container === this._yearsEl || container === this._monthsEl) && this._daysEl) {
+      const maxDay = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
+      if (this.selectedDay > maxDay) this.selectedDay = maxDay;
+      this.buildWheel(this._daysEl, maxDay, v => this.selectedDay = v + 1, false, 1);
+      this.setInitial(this._daysEl, maxDay, this.selectedDay - 1);
+      // Update active highlight for the day wheel after rebuild
+      requestAnimationFrame(() => {
+        const dayIdx = (Math.floor(this.repeat / 2) * maxDay) + (this.selectedDay - 1);
+        this._daysEl.items.forEach((e, i) =>
+          e.classList.toggle("active", i === dayIdx)
+        );
+      });
+    }
   }
 
   setInitial(container, count, idx) {
@@ -281,22 +561,87 @@ class TimeSpinnerCard extends LitElement {
   }
 
   _save() {
-    const timeString = `${String(this.selectedHour).padStart(2,"0")}:${String(this.selectedMinute).padStart(2,"0")}:00`;
-    const entityId = this.config.entity;
+    if (!this.hass) {
+      return;
+    }
     
-    // Detect entity type and use appropriate service
-    if (entityId.startsWith("time.")) {
-      // For time entities, use time.set_value service
-      this.hass.callService("time", "set_value", {
-        entity_id: entityId,
-        time: timeString.slice(0, 5) // HH:MM format for time entities
-      });
-    } else {
-      // For input_datetime entities, use input_datetime.set_datetime service
-      this.hass.callService("input_datetime", "set_datetime", {
-        entity_id: entityId,
-        time: timeString
-      });
+    const hasDates = this._hasDates();
+    const hasTimes = this._hasTimes();
+    
+    // Ensure values are valid numbers
+    const year = Number.isInteger(this.selectedYear) ? this.selectedYear : 2025;
+    const month = Number.isInteger(this.selectedMonth) ? this.selectedMonth : 1;
+    const day = Number.isInteger(this.selectedDay) ? this.selectedDay : 1;
+    const hour = Number.isInteger(this.selectedHour) ? this.selectedHour : 0;
+    const minute = Number.isInteger(this.selectedMinute) ? this.selectedMinute : 0;
+    
+    // Validate ranges
+    if (month < 1 || month > 12 || day < 1 || day > 31 || hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+      return;
+    }
+    
+    // Format datetime components
+    const dateString = `${String(year).padStart(4,"0")}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    const timeString = `${String(hour).padStart(2,"0")}:${String(minute).padStart(2,"0")}:00`;
+
+    // Handle dedicated date entity
+    if (this.config.date_entity) {
+      const entityType = this.config.date_entity.split(".")[0];
+      
+      if (entityType === "date") {
+        this.hass.callService("date", "set_date", {
+          entity_id: this.config.date_entity,
+          date: dateString
+        });
+      } else if (entityType === "input_datetime") {
+        this.hass.callService("input_datetime", "set_datetime", {
+          entity_id: this.config.date_entity,
+          date: dateString,
+          time: "00:00:00"
+        });
+      }
+    }
+
+    // Handle dedicated time entity
+    if (this.config.time_entity) {
+      const entityType = this.config.time_entity.split(".")[0];
+      
+      if (entityType === "time") {
+        this.hass.callService("time", "set_value", {
+          entity_id: this.config.time_entity,
+          time: timeString.slice(0, 5)
+        });
+      } else if (entityType === "input_datetime") {
+        this.hass.callService("input_datetime", "set_datetime", {
+          entity_id: this.config.time_entity,
+          date: dateString,
+          time: timeString.slice(0, 5)
+        });
+      }
+    }
+
+    // Handle main entity (only if no separate entities specified)
+    if (this.config.entity && !this.config.date_entity && !this.config.time_entity) {
+      const entityType = this.config.entity.split(".")[0];
+      
+      if (entityType === "time") {
+        this.hass.callService("time", "set_value", {
+          entity_id: this.config.entity,
+          time: timeString.slice(0, 5)
+        });
+      } else if (entityType === "date") {
+        this.hass.callService("date", "set_date", {
+          entity_id: this.config.entity,
+          date: dateString
+        });
+      } else {
+        // For input_datetime entities, only send relevant fields
+        const payload = { entity_id: this.config.entity };
+        if (hasDates) payload.date = dateString;
+        if (hasTimes) payload.time = timeString.slice(0, 5);
+        
+        this.hass.callService("input_datetime", "set_datetime", payload);
+      }
     }
   }
 
@@ -368,12 +713,34 @@ class TimeSpinnerCardEditor extends LitElement {
     return html`
       <div class="card-config">
         <div class="option">
-          <label>Entity (erforderlich)</label>
+          <label>Entity (optional - für kombinierte Zeit oder einzelne date/time)</label>
           <ha-entity-picker
             .hass=${this.hass}
             .value=${this.config.entity}
-            .includeDomains=${["input_datetime", "time"]}
+            .includeDomains=${["input_datetime", "time", "date"]}
             @value-changed=${this._entityChanged}
+            allow-custom-entity
+          ></ha-entity-picker>
+        </div>
+
+        <div class="option">
+          <label>Date Entity (optional - separate Datum Entity)</label>
+          <ha-entity-picker
+            .hass=${this.hass}
+            .value=${this.config.date_entity || ""}
+            .includeDomains=${["date", "input_datetime"]}
+            @value-changed=${this._dateEntityChanged}
+            allow-custom-entity
+          ></ha-entity-picker>
+        </div>
+
+        <div class="option">
+          <label>Time Entity (optional - separate Zeit Entity)</label>
+          <ha-entity-picker
+            .hass=${this.hass}
+            .value=${this.config.time_entity || ""}
+            .includeDomains=${["time", "input_datetime"]}
+            @value-changed=${this._timeEntityChanged}
             allow-custom-entity
           ></ha-entity-picker>
         </div>
@@ -426,6 +793,28 @@ class TimeSpinnerCardEditor extends LitElement {
             .helper=${"Gültige Werte: 1-10 (Standard: 3)"}
           ></ha-textfield>
         </div>
+
+        <div class="option">
+          <label>Minimales Jahr (optional - wird aus Entity-Attributen überschrieben)</label>
+          <ha-textfield
+            type="number"
+            .value=${this.config.min_year || ""}
+            .placeholder=${"1900"}
+            @input=${this._minYearChanged}
+            .helper=${"Standard: 1900 oder Entity min_year Attribut"}
+          ></ha-textfield>
+        </div>
+
+        <div class="option">
+          <label>Maximales Jahr (optional - wird aus Entity-Attributen überschrieben)</label>
+          <ha-textfield
+            type="number"
+            .value=${this.config.max_year || ""}
+            .placeholder=${"2099"}
+            @input=${this._maxYearChanged}
+            .helper=${"Standard: 2099 oder Entity max_year Attribut"}
+          ></ha-textfield>
+        </div>
       </div>
     `;
   }
@@ -433,6 +822,18 @@ class TimeSpinnerCardEditor extends LitElement {
   _entityChanged(ev) {
     if (!this.config || !this.hass) return;
     const newConfig = { ...this.config, entity: ev.detail.value };
+    this._fireConfigChanged(newConfig);
+  }
+
+  _dateEntityChanged(ev) {
+    if (!this.config || !this.hass) return;
+    const newConfig = { ...this.config, date_entity: ev.detail.value };
+    this._fireConfigChanged(newConfig);
+  }
+
+  _timeEntityChanged(ev) {
+    if (!this.config || !this.hass) return;
+    const newConfig = { ...this.config, time_entity: ev.detail.value };
     this._fireConfigChanged(newConfig);
   }
 
@@ -465,6 +866,30 @@ class TimeSpinnerCardEditor extends LitElement {
     if (!this.config || !this.hass) return;
     const value = parseInt(ev.target.value) || 3;
     const newConfig = { ...this.config, repeat: value };
+    this._fireConfigChanged(newConfig);
+  }
+
+  _minYearChanged(ev) {
+    if (!this.config || !this.hass) return;
+    const value = ev.target.value ? parseInt(ev.target.value) : undefined;
+    const newConfig = { ...this.config };
+    if (value) {
+      newConfig.min_year = value;
+    } else {
+      delete newConfig.min_year;
+    }
+    this._fireConfigChanged(newConfig);
+  }
+
+  _maxYearChanged(ev) {
+    if (!this.config || !this.hass) return;
+    const value = ev.target.value ? parseInt(ev.target.value) : undefined;
+    const newConfig = { ...this.config };
+    if (value) {
+      newConfig.max_year = value;
+    } else {
+      delete newConfig.max_year;
+    }
     this._fireConfigChanged(newConfig);
   }
 
