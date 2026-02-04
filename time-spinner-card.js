@@ -258,24 +258,9 @@ class TimeSpinnerCard extends LitElement {
   }
 
   _formatDateByLocale() {
-    // Get the date format from HA locale or use default
-    // Supported formats: 'YYYY-MM-DD', 'DD.MM.YYYY', 'MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'
-    const locale = this._getLocale();
-    const dateFormat = locale.date_format || 'YYYY-MM-DD';
-    
-    const year = String(this.selectedYear).padStart(4, '0');
-    const month = String(this.selectedMonth).padStart(2, '0');
-    const day = String(this.selectedDay).padStart(2, '0');
-    
-    // Use a placeholder approach to avoid replacement interference
-    // Replace in a specific order to avoid conflicts (longest patterns first)
-    return dateFormat
-      .replace(/YYYY/g, year)
-      .replace(/yyyy/g, year)
-      .replace(/MM/g, month)
-      .replace(/mm/g, month)
-      .replace(/DD/g, day)
-      .replace(/dd/g, day);
+    // This method is used for formatting selectedYear/Month/Day in the overlay
+    const dateObj = new Date(this.selectedYear, this.selectedMonth - 1, this.selectedDay);
+    return this._formatDateByLocale(dateObj);
   }
 
   render() {
@@ -336,31 +321,12 @@ class TimeSpinnerCard extends LitElement {
     const hasTimes = this._hasTimes();
 
     if (hasDates && hasTimes) {
-      // Format date based on locale
-      let formattedDate = "--------";
-      if (dateState) {
-        const parts = dateState.split('-');
-        if (parts.length === 3) {
-          const year = parts[0];
-          const month = parts[1];
-          const day = parts[2];
-          formattedDate = this._formatDateString(year, month, day);
-        }
-      }
+      // Format date using user's locale format
+      const formattedDate = dateState ? this._formatDateFromState(dateState) : "--------";
       const time = timeState ? timeState.slice(0, 5) : "--:--";
       return `${formattedDate} ${time}`;
     } else if (hasDates) {
-      let formattedDate = "--------";
-      if (dateState) {
-        const parts = dateState.split('-');
-        if (parts.length === 3) {
-          const year = parts[0];
-          const month = parts[1];
-          const day = parts[2];
-          formattedDate = this._formatDateString(year, month, day);
-        }
-      }
-      return formattedDate;
+      return dateState ? this._formatDateFromState(dateState) : "--------";
     } else if (hasTimes) {
       return timeState ? timeState.slice(0, 5) : "--:--";
     }
@@ -368,19 +334,46 @@ class TimeSpinnerCard extends LitElement {
     return "-------- --:--";
   }
 
-  _formatDateString(year, month, day) {
-    // Always use default format for now
-    // HA locale.date_format may not be reliably available
-    const dateFormat = 'YYYY-MM-DD';
+  _formatDateFromState(dateState) {
+    // Parse ISO date string (YYYY-MM-DD) and format according to locale
+    try {
+      const date = new Date(dateState + 'T00:00:00');
+      return this._formatDateByLocale(date);
+    } catch (e) {
+      return dateState;
+    }
+  }
+
+  _formatDateByLocale(dateObj) {
+    const locale = this._getLocale();
+    const dateFormat = locale.date_format;
     
-    // Use a placeholder approach to avoid replacement interference
-    return dateFormat
-      .replace(/YYYY/g, year)
-      .replace(/yyyy/g, year)
-      .replace(/MM/g, month)
-      .replace(/mm/g, month)
-      .replace(/DD/g, day)
-      .replace(/dd/g, day);
+    // Format date according to user's locale preference
+    const formatter = new Intl.DateTimeFormat(locale.language, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    
+    const parts = formatter.formatToParts(dateObj);
+    const day = parts.find(p => p.type === 'day')?.value;
+    const month = parts.find(p => p.type === 'month')?.value;
+    const year = parts.find(p => p.type === 'year')?.value;
+    
+    // Apply user's preferred date format
+    switch (dateFormat) {
+      case 'DMY':
+        return `${day}.${month}.${year}`;
+      case 'MDY':
+        return `${month}/${day}/${year}`;
+      case 'YMD':
+        return `${year}-${month}-${day}`;
+      case 'language':
+      case 'system':
+      default:
+        // Use Intl.DateTimeFormat with proper locale
+        return formatter.format(dateObj);
+    }
   }
 
   _renderOverlay() {
