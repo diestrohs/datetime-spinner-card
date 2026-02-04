@@ -8,11 +8,7 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 
 | Card Ansicht | Date Spinner | Time Spinner | Date + Time Spinner |
 |---|---|---|---|
-<<<<<<< HEAD
-| ![Card](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_card.png) | ![Date](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_date.png) | ![Time](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_time.png) | ![DateTime](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_datetime.png) |
-=======
 | ![Card](screenshot_card.png) | ![Date](docs/assets/screenshot_date.png) | ![Time](docs/assets/screenshot_time.png) | ![DateTime](docs/assets/screenshot_datetime.png) |
->>>>>>> 9379157a2d337032ad38d91d7fb95ebb03533fe0
 
 ### Features
 
