@@ -635,21 +635,21 @@ class TimeSpinnerCard extends LitElement {
       ok: {
         en: 'Save',
         de: 'Speichern',
-        fr: 'OK',
-        es: 'OK',
-        it: 'OK',
-        nl: 'OK',
-        pl: 'OK',
-        pt: 'OK',
-        sv: 'OK',
-        hu: 'OK',
-        cs: 'OK',
-        ro: 'OK',
-        ru: 'OK',
-        uk: 'OK',
-        ja: 'OK',
-        zh: 'OK',
-        ko: 'OK'
+        fr: 'Enregistrer',
+        es: 'Guardar',
+        it: 'Salva',
+        nl: 'Opslaan',
+        pl: 'Zapisz',
+        pt: 'Guardar',
+        sv: 'Spara',
+        hu: 'Mentés',
+        cs: 'Uložit',
+        ro: 'Salvează',
+        ru: 'Сохранить',
+        uk: 'Зберегти',
+        ja: '保存',
+        zh: '保存',
+        ko: '저장'
       }
     };
     
