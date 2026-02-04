@@ -354,16 +354,9 @@ class TimeSpinnerCard extends LitElement {
     const cancelLabel = this._getLocalizedString('cancel', locale.language);
     const okLabel = this._getLocalizedString('ok', locale.language);
     
-    // Format the current selection for display
-    const formattedDate = hasDates ? this._formatDateByLocale() : null;
-    const formattedTime = hasTimes ? `${String(this.selectedHour).padStart(2, '0')}:${String(this.selectedMinute).padStart(2, '0')}` : null;
-    
     return html`
       <div class="overlay" @click="${this._handleOverlayClick}">
         <div class="overlay-content" @click="${e => e.stopPropagation()}">
-          <div style="text-align: center; margin-bottom: 12px; font-size: 18px; font-weight: 500; color: var(--primary-text-color);">
-            ${hasDates && hasTimes ? html`${formattedDate} ${formattedTime}` : hasDates ? formattedDate : formattedTime}
-          </div>
           <div class="wrapper">
             ${hasDates ? html`
               <div class="wheel" id="years-wheel"></div>
@@ -394,13 +387,6 @@ class TimeSpinnerCard extends LitElement {
     
     if (changedProperties.has('overlayOpen') && this.overlayOpen) {
       this._initializeOverlay();
-    }
-    
-    // Force re-render when selected values change (for the formatted date display)
-    if (changedProperties.has('selectedYear') || changedProperties.has('selectedMonth') || 
-        changedProperties.has('selectedDay') || changedProperties.has('selectedHour') || 
-        changedProperties.has('selectedMinute')) {
-      this.requestUpdate();
     }
   }
 
