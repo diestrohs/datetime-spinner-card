@@ -2,13 +2,13 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.0.8
+## Version 0.0.9
 
 ### Screenshots
 
 | Card Ansicht | Date Spinner | Time Spinner | Date + Time Spinner |
 |---|---|---|---|
-| ![Card](docs/assets/screenshot_card.png) | ![Date](docs/assets/screenshot_date.png) | ![Time](docs/assets/screenshot_time.png) | ![DateTime](docs/assets/screenshot_datetime.png) |
+| ![Card](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_card.png) | ![Date](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_date.png) | ![Time](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_time.png) | ![DateTime](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_datetime.png) |
 
 ### Features
 
@@ -278,19 +278,41 @@ MIT License
 
 ## Changelog
 
+### Version 0.0.9 (2026-02-04)
+
+**Vollständige Mehrsprachigkeit für Buttons**
+- "Save"/"Speichern"-Button lokalisiert für alle 17 Sprachen
+- "Cancel"/"Abbrechen"-Button lokalisiert für alle 17 Sprachen
+- Deutsch: "Speichern" statt "OK"
+- Englisch: "Save" statt "OK"
+- Button-Abstand erhöht auf 4px (verhindert visuelles Zusammenstoßen)
+
+Weitere Sprachen mit nativen Übersetzungen: Französisch, Spanisch, Italienisch, Niederländisch, Polnisch, Portugiesisch, Schwedisch, Ungarisch, Tschechisch, Rumänisch, Russisch, Ukrainisch, Japanisch, Chinesisch, Koreanisch
+
+### Version 0.0.8 (2026-02-04)
+
+- Code cleanup und Optimierungen
+- Duplicate Methoden entfernt
+- Code quality improvements
+
+### Version 0.0.7 (2026-02-04)
+
+- Vollständige Datums-Auswahl (yyyy-mm-dd)
+- Flexible Entity-Konfiguration
+- Min/Max Jahr-Kontrolle
+- Support für alle Entity-Types
+- Mobile-Responsive Design
+- Performance-Optimierungen
+
 ### Version 0.0.1 (2026-01-28)
 
 🎉 **Erstes Release**
 
-- ✨ Basis-Funktionalität mit Spinner-Interf (1-10)
+- ✨ Basis-Funktionalität mit Spinner-Interface
 - 🖼️ Vollständiger Visual Editor
 - ⚡ Lit-basierte Implementierung mit Shadow DOM
 - 🌙 Theme-Support
 - 🕐 Unterstützung für `input_datetime.*` und `time.*` Entities
-- 🚗 Kompatibel mit EVCC Scheduler Integrationre Spinner-Wiederholungen
-- 🖼️ Vollständiger Visual Editor
-- ⚡ Lit-basierte Implementierung mit Shadow DOM
-- 🌙 Theme-Support
 
 ## Support
 
