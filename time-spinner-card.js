@@ -90,8 +90,7 @@ class TimeSpinnerCard extends LitElement {
         box-sizing: border-box;
         position: relative;
       }
-      .time-btn::before {
-        content: 'yyyy-mm-dd hh:mm';
+      .time-btn-label {
         position: absolute;
         top: 8px;
         left: 50%;
@@ -102,12 +101,6 @@ class TimeSpinnerCard extends LitElement {
         font-family: Roboto, sans-serif;
         font-weight: 400;
         pointer-events: none;
-      }
-      .time-btn.date-only::before {
-        content: 'yyyy-mm-dd';
-      }
-      .time-btn.time-only::before {
-        content: 'hh:mm';
       }
       .time-btn:hover {
         background: var(--mdc-text-field-hover-fill-color, var(--mdc-text-field-fill-color, whitesmoke));
@@ -271,14 +264,17 @@ class TimeSpinnerCard extends LitElement {
     const hasDates = this._hasDates();
     const hasTimes = this._hasTimes();
     const timeDisplay = this._getTimeDisplay();
-    const btnClass = "time-btn" + (hasDates && !hasTimes ? " date-only" : "") + (!hasDates && hasTimes ? " time-only" : "");
+    const formatLabel = this._getFormatLabel(hasDates, hasTimes);
 
     return html`
       <ha-card>
         <div class="entity-row">
           <ha-icon icon="${icon}" style="color:${iconColor}"></ha-icon>
           <div class="name">${name}</div>
-          <button class="${btnClass}" @click="${this._handleOpenOverlay}">${timeDisplay}</button>
+          <button class="time-btn" @click="${this._handleOpenOverlay}">
+            <span class="time-btn-label">${formatLabel}</span>
+            ${timeDisplay}
+          </button>
         </div>
       </ha-card>
       ${this.overlayOpen ? this._renderOverlay() : ''}
@@ -374,6 +370,71 @@ class TimeSpinnerCard extends LitElement {
         // Use Intl.DateTimeFormat with proper locale
         return formatter.format(dateObj);
     }
+  }
+
+  _getFormatLabel(hasDates, hasTimes) {
+    if (!hasDates && !hasTimes) return '';
+    
+    let dateLabel = '';
+    let timeLabel = 'hh:mm';
+    
+    if (hasDates) {
+      const locale = this._getLocale();
+      const dateFormat = locale.date_format;
+      
+      switch (dateFormat) {
+        case 'DMY':
+          dateLabel = 'dd.mm.yyyy';
+          break;
+        case 'MDY':
+          dateLabel = 'mm/dd/yyyy';
+          break;
+        case 'YMD':
+          dateLabel = 'yyyy-mm-dd';
+          break;
+        case 'language':
+        case 'system':
+        default:
+          // Use locale-specific format hint
+          dateLabel = this._getLocaleDateFormatHint(locale.language);
+          break;
+      }
+    }
+    
+    if (hasDates && hasTimes) {
+      return `${dateLabel} ${timeLabel}`;
+    } else if (hasDates) {
+      return dateLabel;
+    } else {
+      return timeLabel;
+    }
+  }
+
+  _getLocaleDateFormatHint(language) {
+    // Return locale-specific date format hints
+    const formats = {
+      'de': 'dd.mm.yyyy',
+      'en': 'mm/dd/yyyy',
+      'en-US': 'mm/dd/yyyy',
+      'en-GB': 'dd/mm/yyyy',
+      'fr': 'dd/mm/yyyy',
+      'es': 'dd/mm/yyyy',
+      'it': 'dd/mm/yyyy',
+      'nl': 'dd-mm-yyyy',
+      'pl': 'dd.mm.yyyy',
+      'pt': 'dd/mm/yyyy',
+      'sv': 'yyyy-mm-dd',
+      'da': 'dd-mm-yyyy',
+      'no': 'dd.mm.yyyy',
+      'fi': 'dd.mm.yyyy',
+      'ja': 'yyyy/mm/dd',
+      'zh': 'yyyy/mm/dd',
+      'ko': 'yyyy.mm.dd',
+      'ru': 'dd.mm.yyyy',
+      'uk': 'dd.mm.yyyy',
+    };
+    
+    return formats[language] || 'yyyy-mm-dd';
   }
 
   _renderOverlay() {
