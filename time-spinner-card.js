@@ -252,9 +252,7 @@ class TimeSpinnerCard extends LitElement {
     const hasDates = this._hasDates();
     const hasTimes = this._hasTimes();
     const timeDisplay = this._getTimeDisplay();
-    let btnClass = "time-btn";
-    if (hasDates && !hasTimes) btnClass += " date-only";
-    if (!hasDates && hasTimes) btnClass += " time-only";
+    const btnClass = "time-btn" + (hasDates && !hasTimes ? " date-only" : "") + (!hasDates && hasTimes ? " time-only" : "");
 
     return html`
       <ha-card>
@@ -450,6 +448,7 @@ class TimeSpinnerCard extends LitElement {
         const minYear = this.getMinYear();
         const maxYear = this.getMaxYear();
         const yearCount = maxYear - minYear + 1;
+        
         this.buildWheel(yearsEl, yearCount, v => {
           this.selectedYear = minYear + v;
         }, false, minYear);
@@ -457,21 +456,20 @@ class TimeSpinnerCard extends LitElement {
           this.selectedMonth = v + 1;
         }, false, 1);
         this.buildWheel(daysEl, daysInMonth, v => this.selectedDay = v + 1, false, 1);
+        
+        // Set initial positions
+        this.setInitial(yearsEl, yearCount, this.selectedYear - minYear);
+        this.setInitial(monthsEl, 12, this.selectedMonth - 1);
+        this.setInitial(daysEl, daysInMonth, this.selectedDay - 1);
       }
       
       if (hasTimes) {
         this.buildWheel(hoursEl, 24, v => this.selectedHour = v, false);
         this.buildWheel(minutesEl, minuteCount, v => this.selectedMinute = v * step, true);
-      }
-
-      // Set initial positions
-      if (hasDates) {
-        const minYear = this.getMinYear();
-        const maxYear = this.getMaxYear();
-        const yearCount = maxYear - minYear + 1;
-        this.setInitial(yearsEl, yearCount, this.selectedYear - minYear);
-        this.setInitial(monthsEl, 12, this.selectedMonth - 1);
-        this.setInitial(daysEl, daysInMonth, this.selectedDay - 1);
+        
+        // Set initial positions
+        this.setInitial(hoursEl, 24, this.selectedHour);
+        this.setInitial(minutesEl, minuteCount, Math.round(this.selectedMinute / step));
       }
       
       if (hasTimes) {
@@ -479,6 +477,10 @@ class TimeSpinnerCard extends LitElement {
         this.setInitial(minutesEl, minuteCount, Math.round(this.selectedMinute / step));
       }
     });
+  }
+
+  _getEntityType(entityId) {
+    return entityId ? entityId.split(".")[0] : null;
   }
 
   _closeOverlay(save) {
@@ -586,7 +588,7 @@ class TimeSpinnerCard extends LitElement {
 
     // Handle dedicated date entity
     if (this.config.date_entity) {
-      const entityType = this.config.date_entity.split(".")[0];
+      const entityType = this._getEntityType(this.config.date_entity);
       
       if (entityType === "date") {
         this.hass.callService("date", "set_date", {
@@ -604,7 +606,7 @@ class TimeSpinnerCard extends LitElement {
 
     // Handle dedicated time entity
     if (this.config.time_entity) {
-      const entityType = this.config.time_entity.split(".")[0];
+      const entityType = this._getEntityType(this.config.time_entity);
       
       if (entityType === "time") {
         this.hass.callService("time", "set_value", {
@@ -622,7 +624,7 @@ class TimeSpinnerCard extends LitElement {
 
     // Handle main entity (only if no separate entities specified)
     if (this.config.entity && !this.config.date_entity && !this.config.time_entity) {
-      const entityType = this.config.entity.split(".")[0];
+      const entityType = this._getEntityType(this.config.entity);
       
       if (entityType === "time") {
         this.hass.callService("time", "set_value", {
