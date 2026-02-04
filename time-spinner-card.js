@@ -369,14 +369,9 @@ class TimeSpinnerCard extends LitElement {
   }
 
   _formatDateString(year, month, day) {
-    // Get the date format from HA locale or use default
-    const locale = this._getLocale();
-    let dateFormat = 'YYYY-MM-DD';
-    
-    // Try to get date_format from locale, with robust checking
-    if (locale && typeof locale.date_format === 'string' && locale.date_format.length > 0) {
-      dateFormat = locale.date_format;
-    }
+    // Always use default format for now
+    // HA locale.date_format may not be reliably available
+    const dateFormat = 'YYYY-MM-DD';
     
     // Use a placeholder approach to avoid replacement interference
     return dateFormat
