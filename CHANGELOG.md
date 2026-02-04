@@ -5,6 +5,20 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.0.10] - 2026-02-05
+
+### Verbesserungen
+- **Optimierte Platznutzung**
+  - Name-Bereich nutzt jetzt maximalen verfügbaren Platz (flex: 1)
+  - Reduzierte Abstände für kompakteres Layout (5px statt 16px)
+  - Zeit-Button schmaler (min-width: 70px) für ausgewogene Proportionen
+  - Mehr Platz für längere Entitätsnamen bei gleicher Button-Funktionalität
+
+### Geändert
+- Name padding-right: 16px → 5px
+- Button margin-left: 16px → 5px
+- Zeit-Button erhält eigene Breite für bessere Text-Proportionen
+
 ## [0.0.9] - 2026-02-04
 
 ### Hinzugefügt

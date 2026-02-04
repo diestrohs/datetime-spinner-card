@@ -62,9 +62,9 @@ class TimeSpinnerCard extends LitElement {
         margin-left: 4px;
         margin-inline-start: 4px;
         margin-inline-end: initial;
-        padding-right: 16px;
-        padding-inline-end: 16px;
-        flex: 1 1 30%;
+        padding-right: 5px;
+        padding-inline-end: 5px;
+        flex: 1;
         color: var(--primary-text-color);
         white-space: nowrap;
         overflow: hidden;
@@ -72,8 +72,8 @@ class TimeSpinnerCard extends LitElement {
       }
       /* Time Button - Basierend auf ha-date-input/ha-time-input in hui-input-datetime-entity-row */
       .time-btn {
-        margin-left: 16px;
-        margin-inline-start: 16px;
+        margin-left: 5px;
+        margin-inline-start: 5px;
         margin-inline-end: initial;
         direction: var(--direction);
         padding: 24px 12px 12px;
@@ -116,6 +116,10 @@ class TimeSpinnerCard extends LitElement {
       .time-btn:active {
         border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
         padding-bottom: 11px;
+      }
+      .time-btn + .time-btn {
+        margin-left: 5px;
+        min-width: 70px;
       }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; }
       .overlay-content { background: var(--card-background-color); padding: 16px; border-radius: 12px; max-width: min(90vw, 560px); max-height: 90vh; overflow: auto; }
