@@ -5,6 +5,20 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.0.8] - 2026-02-04
+
+### Hinzugefügt
+- Code cleanup und Optimierungen
+- Bug fixes und Verbesserungen
+
+### Behoben
+- Duplicate `_getEntityType()` Methode entfernt
+- Code quality improvements
+
+### Dokumentation
+- README aktualisiert mit v0.0.7 Features
+- CHANGELOG erweitert
+
 ## [0.0.7] - 2026-02-04
 
 ### Hinzugefügt
