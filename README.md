@@ -283,6 +283,12 @@ MIT License
 - Englisch: "Save" statt "OK"
 - Button-Abstand erhöht auf 4px (verhindert visuelles Zusammenstoßen)
 
+**Lokalisierung und Personalisierung des Datumsformats**
+- Datumsformat respektiert HA-Personalisierungseinstellungen (DMY, MDY, YMD, language, system)
+- Dynamische Formatanzeige basierend auf Benutzerlocale
+- Unterstützt 19 verschiedene Sprach-/Regionseinstellungen mit lokalen Datumsformaten
+- Automatische Anpassung an Benutzer-Zeitzone
+
 Weitere Sprachen mit nativen Übersetzungen: Französisch, Spanisch, Italienisch, Niederländisch, Polnisch, Portugiesisch, Schwedisch, Ungarisch, Tschechisch, Rumänisch, Russisch, Ukrainisch, Japanisch, Chinesisch, Koreanisch
 
 ### Version 0.0.8 (2026-02-04)
