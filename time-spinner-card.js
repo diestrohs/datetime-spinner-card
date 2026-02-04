@@ -244,6 +244,16 @@ class TimeSpinnerCard extends LitElement {
     return /\d{2}:\d{2}:\d{2}$/.test(state);
   }
 
+  _getLocale() {
+    // Get locale from Home Assistant settings
+    return this.hass?.locale || { language: 'en' };
+  }
+
+  _getTimeZone() {
+    // Get timezone from Home Assistant config
+    return this.hass?.config?.time_zone || 'UTC';
+  }
+
   render() {
     const entityIcon = this.hass?.states[this.config.entity]?.attributes?.icon;
     const icon = this.config.icon || entityIcon || "mdi:clock";
@@ -317,6 +327,11 @@ class TimeSpinnerCard extends LitElement {
   _renderOverlay() {
     const hasDates = this._hasDates();
     const hasTimes = this._hasTimes();
+    const locale = this._getLocale();
+    
+    // Translate button labels based on HA language
+    const cancelLabel = this._getLocalizedString('cancel', locale.language);
+    const okLabel = this._getLocalizedString('ok', locale.language);
     
     return html`
       <div class="overlay" @click="${this._handleOverlayClick}">
@@ -338,8 +353,8 @@ class TimeSpinnerCard extends LitElement {
             <div class="indicator"></div>
           </div>
           <div class="buttons">
-            <button @click="${() => this._closeOverlay(false)}">Abbrechen</button>
-            <button @click="${() => this._closeOverlay(true)}">OK</button>
+            <button @click="${() => this._closeOverlay(false)}">${cancelLabel}</button>
+            <button @click="${() => this._closeOverlay(true)}">${okLabel}</button>
           </div>
         </div>
       </div>
@@ -481,6 +496,51 @@ class TimeSpinnerCard extends LitElement {
 
   _getEntityType(entityId) {
     return entityId ? entityId.split(".")[0] : null;
+  }
+
+  _getLocalizedString(key, language = 'en') {
+    const translations = {
+      cancel: {
+        en: 'Cancel',
+        de: 'Abbrechen',
+        fr: 'Annuler',
+        es: 'Cancelar',
+        it: 'Annulla',
+        nl: 'Annuleren',
+        pl: 'Anuluj',
+        pt: 'Cancelar',
+        sv: 'Avbryt',
+        hu: 'Mégse',
+        cs: 'Zrušit',
+        ro: 'Anulare',
+        ru: 'Отмена',
+        uk: 'Скасувати',
+        ja: 'キャンセル',
+        zh: '取消',
+        ko: '취소'
+      },
+      ok: {
+        en: 'OK',
+        de: 'OK',
+        fr: 'OK',
+        es: 'OK',
+        it: 'OK',
+        nl: 'OK',
+        pl: 'OK',
+        pt: 'OK',
+        sv: 'OK',
+        hu: 'OK',
+        cs: 'OK',
+        ro: 'OK',
+        ru: 'OK',
+        uk: 'OK',
+        ja: 'OK',
+        zh: 'OK',
+        ko: 'OK'
+      }
+    };
+    
+    return translations[key]?.[language] || translations[key]?.en || key;
   }
 
   _closeOverlay(save) {
