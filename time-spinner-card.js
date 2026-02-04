@@ -634,7 +634,7 @@ class TimeSpinnerCard extends LitElement {
       },
       ok: {
         en: 'OK',
-        de: 'OK',
+        de: 'Speichern',
         fr: 'OK',
         es: 'OK',
         it: 'OK',
