@@ -1,8 +1,8 @@
 # Time Spinner Card
 
-Eine moderne Home Assistant Lovelace Card mit Spinner-Interface zur Zeitauswahl für `input_datetime` und `time` Entities.
+Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.0.6
+## Version 0.0.7
 
 ### Screenshots
 
@@ -12,16 +12,18 @@ Eine moderne Home Assistant Lovelace Card mit Spinner-Interface zur Zeitauswahl 
 
 ### Features
 
-✨ **Pixel-perfektes HA Design** - Vollständig identisches Aussehen zur nativen input_datetime Entity Row  
-🎯 **Material Design** - Exakte MDC Text Field Implementierung mit allen HA Theme-Variablen  
-🎨 **Vollständig anpassbar** - Icon, Farbe, Name und mehr konfigurierbar (mit card_mod)  
-🔍 **Automatische Icon-Übernahme** - Übernimmt standardmäßig das Icon der Entity  
+📅 **Datums- und Zeitauswahl** - Jahr, Monat, Tag, Stunde und Minute mit iOS-style Spinner  
+🔀 **Flexible Entity-Konfiguration** - `entity`, `date_entity` und `time_entity` beliebig kombinierbar  
+🎯 **Min/Max Jahr-Kontrolle** - Aus Entity-Attributen auslesen oder in der Konfiguration überschreiben  
+🎨 **Pixel-perfektes HA Design** - Identisches Aussehen zur nativen input_datetime Entity Row  
+📱 **Mobile-Optimiert** - Responsive Design für iPhone, iPad und andere Geräte  
+✨ **Automatische Icon-Übernahme** - Übernimmt standardmäßig das Icon der Entity  
 ⚙️ **Flexible Minuten-Schrittweite** - 1, 5, 10, 15 oder 30 Minuten  
 🔄 **Konfigurierbare Wiederholungen** - Anpassbare Anzahl der Spinner-Wiederholungen  
 🖼️ **Visual Editor** - Komfortable Konfiguration über die Home Assistant UI  
 🌙 **Theme-Support** - Passt sich automatisch an Dark/Light Themes an  
 ⚡ **Lit-basiert** - Moderne Web Components mit Shadow DOM  
-🕐 **Universelle Entity-Unterstützung** - Funktioniert mit `input_datetime.*` und `time.*` Entities  
+🕐 **Universelle Entity-Unterstützung** - Funktioniert mit `input_datetime.*`, `date.*` und `time.*` Entities  
 
 ## Installation
 
@@ -47,21 +49,34 @@ Eine moderne Home Assistant Lovelace Card mit Spinner-Interface zur Zeitauswahl 
 
 ## Verwendung
 
-### Basis-Konfiguration
+### Basis-Konfiguration (Kombinierte Entity)
 
 ```yaml
 type: custom:time-spinner-card
 entity: input_datetime.wakeup_time
 ```
 
-### Erweiterte Konfiguration
+### Separate Datums- und Zeit-Entities
 
 ```yaml
 type: custom:time-spinner-card
-entity: time.evcc_elroq_repeating_plan_1_time
-name: Startzeit
-icon: mdi:timer-refresh
-icon_color: "#44739e"
+date_entity: date.appointment_date
+time_entity: time.appointment_time
+name: Termin
+icon: mdi:calendar-clock
+icon_color: "#2196f3"
+```
+
+### Erweiterte Konfiguration mit Min/Max Jahren
+
+```yaml
+type: custom:time-spinner-card
+entity: input_datetime.birthdate
+name: Geburtsdatum
+icon: mdi:cake-variant
+icon_color: "#ff6f7f"
+min_year: 1950
+max_year: 2023
 minute_step: 15
 repeat: 3
 ```
@@ -70,12 +85,16 @@ repeat: 3
 
 | Option | Typ | Standard | Beschreibung |
 |--------|-----|----------|--------------|
-| `entity` | string | **erforderlich** | Entity ID (`input_datetime.*` oder `time.*`) |
+| `entity` | string | *optional* | Kombinierte Entity ID (`input_datetime.*`, `date.*` oder `time.*`) - erkennt automatisch Typ |
+| `date_entity` | string | *optional* | Separate Datums-Entity (`date.*` oder `input_datetime.*`) |
+| `time_entity` | string | *optional* | Separate Zeit-Entity (`time.*` oder `input_datetime.*`) |
 | `name` | string | `"Terminzeit"` | Anzeigename der Card |
 | `icon` | string | *Entity-Icon oder `"mdi:clock"`* | Material Design Icon (übernimmt automatisch das Icon der Entity, falls nicht gesetzt) |
 | `icon_color` | string | `"var(--primary-text-color)"` | Icon-Farbe (Hex, CSS-Farbe oder CSS-Variable) |
 | `minute_step` | number | `5` | Minuten-Schrittweite (1, 5, 10, 15, 30) |
 | `repeat` | number | `3` | Anzahl Wiederholungen im Spinner (1-10) |
+| `min_year` | number | *aus Attribut* | Minimales Jahr im Spinner (Fallback: 1900) |
+| `max_year` | number | *aus Attribut* | Maximales Jahr im Spinner (Fallback: 2099) |
 
 ## Visual Editor
 
@@ -99,16 +118,29 @@ icon_color: "#ff9800"
 minute_step: 5
 ```
 
-### Terminplanung mit 15-Minuten-Schritten
+### Terminplanung mit Datum und Zeit (separate Entities)
 
 ```yaml
 type: custom:time-spinner-card
-entity: input_datetime.appointment_time
-name: Terminzeit
+date_entity: date.appointment_date
+time_entity: time.appointment_time
+name: Termin
 icon: mdi:calendar-clock
 icon_color: "#2196f3"
 minute_step: 15
 repeat: 5
+```
+
+### Geburtsdatum mit Jahres-Beschränkung
+
+```yaml
+type: custom:time-spinner-card
+entity: input_datetime.birthday
+name: Geburtsdatum
+icon: mdi:cake-variant
+icon_color: "#ff6f7f"
+min_year: 1950
+max_year: 2023
 ```
 
 ### EV-Ladeplanung mit 30-Minuten-Schritten (EVCC Scheduler)
@@ -219,35 +251,26 @@ card_mod:
       color: var(--primary-background-color);
 ```
 
-## Kompatibilität
+## Kompatibilität und Responsive Design
 
 - **Home Assistant**: 2024.1 oder höher
 - **Browser**: Alle modernen Browser mit ES6+ Support
-- **Entities**: 
-  - `input_datetime.*` (verwendet `input_datetime.set_datetime`)
-  - `time.*` (verwendet `time.set_value` - kompatibel mit EVCC Scheduler und anderen Integrationen)
-- **card_mod**: Optional für custom Styling
-
-## Technische Details
-
-- **Framework**: Lit 3.x
-- **Shadow DOM**: Ja (vollständige Isolation)
-- **Event System**: Custom Events für Config-Änderungen
-- **Styling**: CSS Custom Properties für Theme-Integration
+- **Mobil-Optimiert**: Vollständig responsive für iPhone, iPad und kleine Bildschirme
+- **Entities**: `input_datetime.*`, `date.*`, `time.*`
+- **Dienste**: Automatische Erkennung (`input_datetime.set_datetime`, `date.set_date`, `time.set_value`)
 
 ## Bekannte Einschränkungen
 
-- Unterstützt nur `input_datetime` und `time` Entities
-- Nur Zeit-Auswahl (keine Datums-Auswahl)
 - Overlay ist modal (blockiert Hintergrund-Interaktionen)
+- Benötigt mindestens eine Entity-Konfiguration (`entity` oder `date_entity`/`time_entity`)
 
 ## Roadmap
 
-- [ ] Datums-Auswahl Support
 - [ ] Mehr Styling-Optionen
 - [ ] Animationen konfigurierbar machen
 - [ ] Tastatur-Shortcuts
-- [ ] Accessibility-Verbesserungen
+- [ ] Accessibility-Verbesserungen (ARIA-Labels)
+- [ ] Custom Date Range Validierung
 
 ## Lizenz
 

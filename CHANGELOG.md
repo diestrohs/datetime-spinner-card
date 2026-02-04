@@ -5,6 +5,50 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.0.7] - 2026-02-04
+
+### Hinzugefügt
+- **Vollständige Datums-Auswahl (yyyy-mm-dd)**
+  - Jahr-Spinner (konfigurierbar mit min_year/max_year)
+  - Monat-Spinner (1-12)
+  - Tag-Spinner (dynamisch berechnet für jeden Monat/Jahr)
+  - Automatische Tag-Validierung (z.B. Feb 30 → Feb 28/29)
+- **Flexible Entity-Konfiguration**
+  - `date_entity`: Separate Date Entity (`date.*` oder `input_datetime.*`)
+  - `time_entity`: Separate Time Entity (`time.*` oder `input_datetime.*`)
+  - `entity`: Kombiniert beide Komponenten (automatische Erkennung)
+  - Beliebig kombinierbar (nur Datum, nur Zeit, oder beides)
+- **Min/Max Jahr-Kontrolle**
+  - Aus Entity-Attributen (`min_year`, `max_year`) auslesen
+  - Via Config überschreibbar (`min_year: 1950`, `max_year: 2030`)
+  - Fallback auf 1900-2099
+- **Support für alle Entity-Types**
+  - `input_datetime.*` (mit `input_datetime.set_datetime`)
+  - `date.*` (mit `date.set_date`)
+  - `time.*` (mit `time.set_value`)
+- **Mobile-Responsive Design**
+  - Optimierte Spinner-Breiten für verschiedene Bildschirmgrößen
+  - iPhone-optimierte Layouts
+  - Vertikale Ausrichtung für alle Element-Typen
+  - Responsive Schriftgrößen und Abstände
+- **Performance-Optimierungen**
+  - Caching von Year-Range-Berechnungen
+  - Helper-Methoden zur Code-Reduktion
+  - Effiziente CSS-Klassen-Berechnung
+
+### Behoben
+- **Flickering-Fix**: Date-Wheel wird nicht mehr während des Scrollens aktualisiert, nur nach Abschluss
+  - `smoothSnap` Parameter für kontrolliertes Scroll-Snapping
+  - `behavior: auto` für Date-Wheels (keine Animationen)
+  - `behavior: smooth` für Time-Spinner (bessere UX)
+- **Vertikale Ausrichtung**: Korrekte Alignment von Spinner-Elementen und Trennzeichen
+- **Responsive-Fehler**: Spinner-Größe passt sich jetzt korrekt an Bildschirmgröße an
+
+### Dokumentation
+- README.md mit neuen Date-Features, Beispielen und separaten Entity-Konfigurationen aktualisiert
+- info.md mit Datums-Support erweitert
+- Konfigurationsbeispiele für verschiedene Use-Cases hinzugefügt
+
 ## [0.0.6] - 2026-02-02
 
 ### Geändert
