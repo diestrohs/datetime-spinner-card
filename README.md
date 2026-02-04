@@ -15,7 +15,7 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 📅 **Datums- und Zeitauswahl** - Jahr, Monat, Tag, Stunde und Minute mit iOS-style Spinner  
 🔀 **Flexible Entity-Konfiguration** - `entity`, `date_entity` und `time_entity` beliebig kombinierbar  
 🎯 **Min/Max Jahr-Kontrolle** - Aus Entity-Attributen auslesen oder in der Konfiguration überschreiben  
-🎨 **Pixel-perfektes HA Design** - Identisches Aussehen zur nativen input_datetime Entity Row  
+🎨 **Angelehnt an HA Design** - Aussehen ähnlich wie input_datetime Entity Row  
 📱 **Mobile-Optimiert** - Responsive Design für iPhone, iPad und andere Geräte  
 ✨ **Automatische Icon-Übernahme** - Übernimmt standardmäßig das Icon der Entity  
 ⚙️ **Flexible Minuten-Schrittweite** - 1, 5, 10, 15 oder 30 Minuten  
@@ -30,12 +30,8 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 ### HACS (empfohlen)
 
 1. Öffnen Sie HACS in Home Assistant
-2. Gehen Sie zu "Frontend"
-3. Klicken Sie auf das Menü (⋮) oben rechts
-4. Wählen Sie "Custom repositories"
-5. Fügen Sie die Repository-URL hinzu: `https://github.com/diestrohs/time-spinner-card`
-6. Installieren Sie "Time Spinner Card"
-7. Fügen Sie die Ressource in Home Assistant hinzu (wird meist automatisch gemacht)
+2. Geben Sie in der Suche `Time Spinner Card` ein
+3. Installieren Sie "Time Spinner Card"
 
 ### Manuelle Installation
 
