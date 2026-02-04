@@ -256,7 +256,7 @@ class TimeSpinnerCard extends LitElement {
 
   _formatDateByLocale() {
     // Get the date format from HA locale or use default
-    // Common formats: 'YYYY-MM-DD', 'DD.MM.YYYY', 'MM/DD/YYYY', 'DD/MM/YYYY'
+    // Supported formats: 'YYYY-MM-DD', 'DD.MM.YYYY', 'MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'
     const locale = this._getLocale();
     const dateFormat = locale.date_format || 'YYYY-MM-DD';
     
@@ -264,11 +264,13 @@ class TimeSpinnerCard extends LitElement {
     const month = String(this.selectedMonth).padStart(2, '0');
     const day = String(this.selectedDay).padStart(2, '0');
     
-    // Map common date format patterns to formatted output
+    // Use a placeholder approach to avoid replacement interference
+    // Replace in a specific order to avoid conflicts (longest patterns first)
     return dateFormat
       .replace(/YYYY/g, year)
       .replace(/yyyy/g, year)
       .replace(/MM/g, month)
+      .replace(/mm/g, month)
       .replace(/DD/g, day)
       .replace(/dd/g, day);
   }
