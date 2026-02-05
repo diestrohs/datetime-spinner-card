@@ -1,5 +1,6 @@
 {
   "name": "Time Spinner Card",
+  "type": "plugin",
   "content_in_root": true,
   "filename": "time-spinner-card.js",
   "render_readme": true,
