@@ -2,7 +2,16 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.1.1
+## Version 0.1.2
+
+### Änderungen in v0.1.2
+
+⚡ **Performance-Optimierungen**
+- Wiederholte Berechnung von `Math.floor(this.repeat / 2)` optimiert
+- Unbenutzte Funktion `updateDaysWheel()` entfernt
+
+📝 **Dokumentation**
+- Screenshot für Date+Time Spinner entfernt (nicht mehr verfügbar)
 
 ### Features
 
