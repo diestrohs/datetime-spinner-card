@@ -14,18 +14,20 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 
 📅 **Datums- und Zeitauswahl** - Jahr, Monat, Tag, Stunde und Minute mit iOS-style Spinner  
 🔀 **Flexible Entity-Konfiguration** - `entity`, `date_entity` und `time_entity` beliebig kombinierbar  
+⚡ **"Heute"-Button** - Schnellauswahl für aktuelles Datum im Date-Picker  
 🎯 **Min/Max Jahr-Kontrolle** - Aus Entity-Attributen auslesen oder in der Konfiguration überschreiben  
 🎨 **Angelehnt an HA Design** - Aussehen ähnlich wie input_datetime Entity Row  
 📱 **Mobile-Optimiert** - Responsive Design für iPhone, iPad und andere Geräte  
 ✨ **Automatische Icon-Übernahme** - Übernimmt standardmäßig das Icon der Entity  
 ⚙️ **Flexible Minuten-Schrittweite** - 1, 5, 10, 15 oder 30 Minuten  
-🔄 **Konfigurierbare Wiederholungen** - Anpassbare Anzahl der Spinner-Wiederholungen  
+🔄 **Konfigurierbare Wiederholungen** - Anpassbare Anzahl der Spinner-Wiederholungen (1-10)  
 🖼️ **Visual Editor** - Komfortable Konfiguration über die Home Assistant UI  
 🌙 **Theme-Support** - Passt sich automatisch an Dark/Light Themes an  
 ⚡ **Lit-basiert** - Moderne Web Components mit Shadow DOM  
 🕐 **Universelle Entity-Unterstützung** - Funktioniert mit `input_datetime.*`, `date.*` und `time.*` Entities  
-🌍 **Vollständige Mehrsprachigkeit** - 17+ Sprachen mit lokalisierten Buttons und Datumsformaten  
+🌍 **Vollständige Mehrsprachigkeit** - 16+ Sprachen mit lokalisierten Buttons und Datumsformaten  
 ⏰ **12-Stunden AM/PM-Format** - Automatische Format-Erkennung aus HA Benutzereinstellungen  
+🎨 **Button-Layout optimiert** - "Heute" links, "Abbrechen" mittig, "Speichern" rechts mit flexiblem Spacing  
 
 ### Neue Features in v0.1.1
 
@@ -286,11 +288,48 @@ card_mod:
 - **Mobil-Optimiert**: Vollständig responsive für iPhone, iPad und kleine Bildschirme
 - **Entities**: `input_datetime.*`, `date.*`, `time.*`
 - **Dienste**: Automatische Erkennung (`input_datetime.set_datetime`, `date.set_date`, `time.set_value`)
+- **Lokalisierung**: 16+ Sprachen (de, en, fr, es, it, nl, pl, pt, sv, hu, cs, ro, ru, uk, ja, zh, ko)
+- **Zeit-Formate**: Automatische Erkennung 12h/24h aus HA Benutzereinstellungen
+- **Datums-Formate**: DMY, MDY, YMD basierend auf HA Locale-Einstellungen
 
 ## Bekannte Einschränkungen
 
 - Overlay ist modal (blockiert Hintergrund-Interaktionen)
 - Benötigt mindestens eine Entity-Konfiguration (`entity` oder `date_entity`/`time_entity`)
+- Minuten-Schrittweite nur in vordefinierten Werten (1, 5, 10, 15, 30)
+
+## Implementierte Features (Stand v0.1.1)
+
+✅ **Basis-Funktionalität**
+- iOS-style Spinner-Interface für Datum und Zeit
+- Separate oder kombinierte Entity-Konfiguration
+- Visual Editor in Home Assistant UI
+
+✅ **Datum-Features**
+- Jahr, Monat, Tag Auswahl mit Spinner-Wheels
+- "Heute"-Button für Schnellauswahl (16+ Sprachen lokalisiert)
+- Min/Max Jahr aus Entity-Attributen oder Config
+- Automatische Tagesanzahl-Anpassung pro Monat (28-31)
+- Highlighting für aktuell ausgewähltes Datum
+
+✅ **Zeit-Features**
+- 12-Stunden-Format mit AM/PM-Rad
+- 24-Stunden-Format
+- Automatische Format-Erkennung aus HA Settings
+- Flexible Minuten-Schrittweite (1, 5, 10, 15, 30)
+
+✅ **UI/UX**
+- Button-Layout: "Heute" (links), "Abbrechen" (mitte), "Speichern" (rechts)
+- Flexibles Spacing zwischen Buttons (5px minimum)
+- Theme-Support (Dark/Light Mode)
+- Mobile-responsive Design
+- Icon-Übernahme von Entity
+
+✅ **Lokalisierung**
+- 16+ Sprachen vollständig unterstützt
+- Datums-Format aus HA Locale (DMY/MDY/YMD)
+- Zeit-Format aus HA Settings (12h/24h)
+- Lokalisierte Button-Texte ("Heute", "Speichern", "Abbrechen")
 
 ## Roadmap
 
@@ -299,6 +338,7 @@ card_mod:
 - [ ] Tastatur-Shortcuts
 - [ ] Accessibility-Verbesserungen (ARIA-Labels)
 - [ ] Custom Date Range Validierung
+- [ ] Sekunden-Unterstützung
 
 ## Lizenz
 
