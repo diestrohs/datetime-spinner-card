@@ -2,7 +2,7 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.1.0
+## Version 0.1.1
 
 ### Screenshots
 
@@ -27,7 +27,13 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 🌍 **Vollständige Mehrsprachigkeit** - 17+ Sprachen mit lokalisierten Buttons und Datumsformaten  
 ⏰ **12-Stunden AM/PM-Format** - Automatische Format-Erkennung aus HA Benutzereinstellungen  
 
-### Neue Features in v0.1.0
+### Neue Features in v0.1.1
+
+🐛 **Bugfix: "Heute"-Button Highlighting**
+- Highlighting wird jetzt korrekt angezeigt, wenn der "Heute"-Button geklickt wird
+- Behebt Problem bei Wechsel zwischen Monaten mit unterschiedlichen Tageszahlen (z.B. 31 → 28 Tage)
+
+### Features in v0.1.0
 
 ⏰ **12-Stunden-Zeit-Format mit AM/PM-Unterstützung**
 - Automatische Format-Erkennung aus Home Assistant Benutzereinstellungen
