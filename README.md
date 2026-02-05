@@ -56,6 +56,15 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 2. Geben Sie in der Suche `Time Spinner Card` ein
 3. Installieren Sie "Time Spinner Card"
 
+**Falls die Card noch nicht in HACS verfügbar ist** (z.B. während der Review-Phase):
+
+1. HACS → Menü (⋮) → **Custom repositories**
+2. Repository hinzufügen:
+   - **Repository**: `https://github.com/diestrohs/time-spinner-card`
+   - **Typ**: `Lovelace`
+3. Speichern, dann HACS neu laden
+4. Suchen Sie nach "Time Spinner Card" und installieren Sie die Card
+
 ### Manuelle Installation
 
 1. Laden Sie `time-spinner-card.js` herunter
