@@ -38,6 +38,10 @@ class TimeSpinnerCard extends LitElement {
     return repeat >= 1 && repeat <= 10 ? repeat : 3;
   }
 
+  get repeatMid() {
+    return Math.floor(this.repeat / 2);
+  }
+
   static get styles() {
     return css`
       ha-card { 
@@ -658,13 +662,6 @@ class TimeSpinnerCard extends LitElement {
       // Get days in selected month
       const daysInMonth = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
 
-      const updateDaysWheel = () => {
-        const maxDay = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
-        if (this.selectedDay > maxDay) this.selectedDay = maxDay;
-        this.buildWheel(daysEl, maxDay, v => this.selectedDay = v + 1, false, 1);
-        this.setInitial(daysEl, maxDay, this.selectedDay - 1);
-      };
-
       // Build wheels based on what's supported
       if (showDates) {
         const minYear = this.getMinYear();
@@ -811,7 +808,7 @@ class TimeSpinnerCard extends LitElement {
         this.setInitial(yearsEl, yearCount, this.selectedYear - minYear);
         // Update active highlight
         requestAnimationFrame(() => {
-          const yearIdx = (Math.floor(this.repeat / 2) * yearCount) + (this.selectedYear - minYear);
+          const yearIdx = (this.repeatMid * yearCount) + (this.selectedYear - minYear);
           yearsEl.items.forEach((e, i) =>
             e.classList.toggle("active", i === yearIdx)
           );
@@ -824,7 +821,7 @@ class TimeSpinnerCard extends LitElement {
         this.setInitial(monthsEl, 12, this.selectedMonth - 1);
         // Update active highlight
         requestAnimationFrame(() => {
-          const monthIdx = (Math.floor(this.repeat / 2) * 12) + (this.selectedMonth - 1);
+          const monthIdx = (this.repeatMid * 12) + (this.selectedMonth - 1);
           monthsEl.items.forEach((e, i) =>
             e.classList.toggle("active", i === monthIdx)
           );
@@ -836,7 +833,7 @@ class TimeSpinnerCard extends LitElement {
         this.setInitial(daysEl, daysInMonth, this.selectedDay - 1);
         // Update active highlight
         requestAnimationFrame(() => {
-          const dayIdx = (Math.floor(this.repeat / 2) * daysInMonth) + (this.selectedDay - 1);
+          const dayIdx = (this.repeatMid * daysInMonth) + (this.selectedDay - 1);
           daysEl.items.forEach((e, i) =>
             e.classList.toggle("active", i === dayIdx)
           );
@@ -944,7 +941,7 @@ class TimeSpinnerCard extends LitElement {
       this.setInitial(this._daysEl, maxDay, this.selectedDay - 1);
       // Update active highlight for the day wheel after rebuild
       requestAnimationFrame(() => {
-        const dayIdx = (Math.floor(this.repeat / 2) * maxDay) + (this.selectedDay - 1);
+        const dayIdx = (this.repeatMid * maxDay) + (this.selectedDay - 1);
         this._daysEl.items.forEach((e, i) =>
           e.classList.toggle("active", i === dayIdx)
         );
@@ -954,7 +951,7 @@ class TimeSpinnerCard extends LitElement {
 
   setInitial(container, count, idx) {
     requestAnimationFrame(() => {
-      const mid = Math.floor(this.repeat / 2) * count;
+      const mid = this.repeatMid * count;
       container.scrollTop = (mid + idx) * this.itemHeight;
     });
   }
