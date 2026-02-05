@@ -132,7 +132,8 @@ class TimeSpinnerCard extends LitElement {
       .item.active { opacity: 1; }
       .colon { font-size: 16px; padding: 0 8px; }
       .indicator { position: absolute; top: 50%; left: 0; right: 0; height: 48px; margin-top: -24px; border-top: 2px solid var(--primary-color); border-bottom: 2px solid var(--primary-color); pointer-events: none; }
-      .buttons { display: flex; justify-content: space-between; gap: 4px; margin-top: 10px; }
+      .buttons { display: flex; gap: 5px; margin-top: 10px; }
+      .buttons .btn-today { margin-right: auto; }
       .buttons button { height: 35px; padding: 6px 14px; border-radius: 6px; border: none; background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.05)); color: var(--primary-text-color); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
       .buttons button:hover, .buttons button:active, .buttons button:focus { background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.08)); outline: none; }
       .buttons button:last-child { background: rgba(var(--rgb-primary-color), 0.12); color: var(--primary-color); font-weight: 500; }
@@ -519,6 +520,7 @@ class TimeSpinnerCard extends LitElement {
     // Translate button labels based on HA language
     const cancelLabel = this._getLocalizedString('cancel', locale.language);
     const okLabel = this._getLocalizedString('ok', locale.language);
+    const todayLabel = this._getLocalizedString('today', locale.language);
     
     const showDates = this.overlayType === 'date';
     const showTimes = this.overlayType === 'time';
@@ -545,6 +547,9 @@ class TimeSpinnerCard extends LitElement {
             <div class="indicator"></div>
           </div>
           <div class="buttons">
+            ${showDates ? html`
+              <button class="btn-today" @click="${() => this._setToday()}">${todayLabel}</button>
+            ` : ''}
             <button @click="${() => this._closeOverlay(false)}">${cancelLabel}</button>
             <button @click="${() => this._closeOverlay(true)}">${okLabel}</button>
           </div>
@@ -753,6 +758,25 @@ class TimeSpinnerCard extends LitElement {
         ja: '保存',
         zh: '保存',
         ko: '저장'
+      },
+      today: {
+        en: 'Today',
+        de: 'Heute',
+        fr: "Aujourd'hui",
+        es: 'Hoy',
+        it: 'Oggi',
+        nl: 'Vandaag',
+        pl: 'Dzisiaj',
+        pt: 'Hoje',
+        sv: 'Idag',
+        hu: 'Ma',
+        cs: 'Dnes',
+        ro: 'Azi',
+        ru: 'Сегодня',
+        uk: 'Сьогодні',
+        ja: '今日',
+        zh: '今天',
+        ko: '오늘'
       }
     };
     
@@ -763,6 +787,62 @@ class TimeSpinnerCard extends LitElement {
     if (save) this._save();
     this.overlayOpen = false;
     this.overlayType = null;
+  }
+
+  _setToday() {
+    const now = new Date();
+    this.selectedYear = now.getFullYear();
+    this.selectedMonth = now.getMonth() + 1;
+    this.selectedDay = now.getDate();
+    
+    // Update the UI
+    requestAnimationFrame(() => {
+      const minYear = this.getMinYear();
+      const daysEl = this.shadowRoot.getElementById("days-wheel");
+      const monthsEl = this.shadowRoot.getElementById("months-wheel");
+      const yearsEl = this.shadowRoot.getElementById("years-wheel");
+      
+      if (yearsEl) {
+        const maxYear = this.getMaxYear();
+        const yearCount = maxYear - minYear + 1;
+        this.buildWheel(yearsEl, yearCount, v => {
+          this.selectedYear = minYear + v;
+        }, false, minYear);
+        this.setInitial(yearsEl, yearCount, this.selectedYear - minYear);
+        // Update active highlight
+        requestAnimationFrame(() => {
+          const yearIdx = (Math.floor(this.repeat / 2) * yearCount) + (this.selectedYear - minYear);
+          yearsEl.items.forEach((e, i) =>
+            e.classList.toggle("active", i === yearIdx)
+          );
+        });
+      }
+      if (monthsEl) {
+        this.buildWheel(monthsEl, 12, v => {
+          this.selectedMonth = v + 1;
+        }, false, 1);
+        this.setInitial(monthsEl, 12, this.selectedMonth - 1);
+        // Update active highlight
+        requestAnimationFrame(() => {
+          const monthIdx = (Math.floor(this.repeat / 2) * 12) + (this.selectedMonth - 1);
+          monthsEl.items.forEach((e, i) =>
+            e.classList.toggle("active", i === monthIdx)
+          );
+        });
+      }
+      if (daysEl) {
+        const daysInMonth = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
+        this.buildWheel(daysEl, daysInMonth, v => this.selectedDay = v + 1, false, 1);
+        this.setInitial(daysEl, daysInMonth, this.selectedDay - 1);
+        // Update active highlight
+        requestAnimationFrame(() => {
+          const dayIdx = (Math.floor(this.repeat / 2) * daysInMonth) + (this.selectedDay - 1);
+          daysEl.items.forEach((e, i) =>
+            e.classList.toggle("active", i === dayIdx)
+          );
+        });
+      }
+    });
   }
 
   buildPeriodWheel(container) {
