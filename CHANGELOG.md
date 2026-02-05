@@ -5,6 +5,14 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.1.1] - 2026-02-05
+
+### Behoben
+- **Highlighting korrekt bei "Heute"-Button**
+  - Datum-Wheels werden jetzt mit buildWheel() neu erstellt vor setInitial()
+  - Behebt Problem bei Monaten mit unterschiedlichen Tagen (z.B. 31 → 28)
+  - Highlighting zeigt jetzt das richtige Datum an, wenn "Heute" geklickt wird
+
 ## [0.1.0] - 2026-02-05
 
 ### Hinzugefügt
