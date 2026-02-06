@@ -1223,7 +1223,7 @@ class TimeSpinnerCardEditor extends LitElement {
           <label>Layout</label>
           <ha-select
             .value=${this.config.layout || 'horizontal'}
-            @selected=${this._layoutChanged}
+            @closed=${this._layoutChanged}
           >
             <mwc-list-item value="horizontal">Horizontal</mwc-list-item>
             <mwc-list-item value="vertical">Vertikal</mwc-list-item>
@@ -1307,7 +1307,8 @@ class TimeSpinnerCardEditor extends LitElement {
 
   _layoutChanged(ev) {
     if (!this.config || !this.hass) return;
-    const newConfig = { ...this.config, layout: ev.target.value };
+    const select = ev.target;
+    const newConfig = { ...this.config, layout: select.value };
     this._fireConfigChanged(newConfig);
   }
 
