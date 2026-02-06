@@ -64,6 +64,11 @@ class TimeSpinnerCard extends LitElement {
         align-items: stretch;
         gap: 8px;
       }
+      .header-row {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+      }
       /* Icon/Badge - state-badge Standard ist 40px flex-basis */
       ha-icon { 
         flex: 0 0 40px;
@@ -309,8 +314,15 @@ class TimeSpinnerCard extends LitElement {
     return html`
       <ha-card>
         <div class="entity-row ${layout}">
-          <ha-icon icon="${icon}" style="color:${iconColor}"></ha-icon>
-          <div class="name">${name}</div>
+          ${layout === 'vertical' ? html`
+            <div class="header-row">
+              <ha-icon icon="${icon}" style="color:${iconColor}"></ha-icon>
+              <div class="name">${name}</div>
+            </div>
+          ` : html`
+            <ha-icon icon="${icon}" style="color:${iconColor}"></ha-icon>
+            <div class="name">${name}</div>
+          `}
           ${this._renderButtons(hasDates, hasTimes)}
         </div>
       </ha-card>
