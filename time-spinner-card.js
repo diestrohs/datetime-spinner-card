@@ -45,8 +45,8 @@ class TimeSpinnerCard extends LitElement {
   static get styles() {
     return css`
       ha-card { 
-        border: none; 
-        box-shadow: none; 
+        border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, rgba(0, 0, 0, 0.12)));
+        box-shadow: var(--ha-card-box-shadow, 0 2px 1px -1px rgba(0, 0, 0, 0.2));
       }
       /* Entity Row - Basierend auf hui-generic-entity-row .row */
       .entity-row { 
