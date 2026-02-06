@@ -38,10 +38,6 @@ class TimeSpinnerCard extends LitElement {
     return repeat >= 1 && repeat <= 10 ? repeat : 3;
   }
 
-  get layout() {
-    return this.config.layout || 'horizontal';
-  }
-
   get repeatMid() {
     return Math.floor(this.repeat / 2);
   }
@@ -308,10 +304,11 @@ class TimeSpinnerCard extends LitElement {
     const name = this.config.name || "Terminzeit";
     const hasDates = this._hasDates();
     const hasTimes = this._hasTimes();
+    const layout = this.config.layout || 'horizontal';
 
     return html`
       <ha-card>
-        <div class="entity-row ${this.layout}">
+        <div class="entity-row ${layout}">
           <ha-icon icon="${icon}" style="color:${iconColor}"></ha-icon>
           <div class="name">${name}</div>
           ${this._renderButtons(hasDates, hasTimes)}
