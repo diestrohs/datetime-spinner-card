@@ -38,6 +38,10 @@ class TimeSpinnerCard extends LitElement {
     return repeat >= 1 && repeat <= 10 ? repeat : 3;
   }
 
+  get layout() {
+    return this.config.layout || 'horizontal';
+  }
+
   get repeatMid() {
     return Math.floor(this.repeat / 2);
   }
@@ -52,10 +56,17 @@ class TimeSpinnerCard extends LitElement {
       .entity-row { 
         display: flex; 
         align-items: center; 
-        flex-direction: row;
         padding: 4px 16px;
         min-height: 56px;
         box-sizing: border-box;
+      }
+      .entity-row.horizontal {
+        flex-direction: row;
+      }
+      .entity-row.vertical {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
       }
       /* Icon/Badge - state-badge Standard ist 40px flex-basis */
       ha-icon { 
@@ -300,7 +311,7 @@ class TimeSpinnerCard extends LitElement {
 
     return html`
       <ha-card>
-        <div class="entity-row">
+        <div class="entity-row ${this.layout}">
           <ha-icon icon="${icon}" style="color:${iconColor}"></ha-icon>
           <div class="name">${name}</div>
           ${this._renderButtons(hasDates, hasTimes)}
@@ -1200,6 +1211,17 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
+          <label>Layout</label>
+          <ha-select
+            .value=${this.config.layout || 'horizontal'}
+            @selected=${this._layoutChanged}
+          >
+            <mwc-list-item value="horizontal">Horizontal</mwc-list-item>
+            <mwc-list-item value="vertical">Vertikal</mwc-list-item>
+          </ha-select>
+        </div>
+
+        <div class="option">
           <label>Minimales Jahr (optional - wird aus Entity-Attributen überschrieben)</label>
           <ha-textfield
             type="number"
@@ -1271,6 +1293,12 @@ class TimeSpinnerCardEditor extends LitElement {
     if (!this.config || !this.hass) return;
     const value = parseInt(ev.target.value) || 3;
     const newConfig = { ...this.config, repeat: value };
+    this._fireConfigChanged(newConfig);
+  }
+
+  _layoutChanged(ev) {
+    if (!this.config || !this.hass) return;
+    const newConfig = { ...this.config, layout: ev.target.value };
     this._fireConfigChanged(newConfig);
   }
 
