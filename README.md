@@ -2,7 +2,7 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.1.3
+## Version 0.1.4
 
 ### Screenshots
 
@@ -22,13 +22,24 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 ⚙️ **Flexible Minuten-Schrittweite** - 1, 5, 10, 15 oder 30 Minuten  
 🏷️ **Optional Labels in Buttons** - Zeigt Datumsformat (dd.mm.yyyy) und Zeit-Format (hh:mm) in den Buttons  
 🔄 **Konfigurierbare Wiederholungen** - Anpassbare Anzahl der Spinner-Wiederholungen (1-10)  
-🖼️ **Visual Editor** - Komfortable Konfiguration über die Home Assistant UI  
+🖼️ **Visual Editor** - Komfortable Konfiguration über die Home Assistant UI mit DE/EN Übersetzungen  
 🌙 **Theme-Support** - Passt sich automatisch an Dark/Light Themes an  
 ⚡ **Lit-basiert** - Moderne Web Components mit Shadow DOM  
 🕐 **Universelle Entity-Unterstützung** - Funktioniert mit `input_datetime.*`, `date.*` und `time.*` Entities  
 🌍 **Vollständige Mehrsprachigkeit** - 16+ Sprachen mit lokalisierten Buttons und Datumsformaten  
 ⏰ **12-Stunden AM/PM-Format** - Automatische Format-Erkennung aus HA Benutzereinstellungen  
-🎨 **Button-Layout optimiert** - "Heute" links, "Abbrechen" mittig, "Speichern" rechts mit flexiblem Spacing  
+🎯 **Smart Save Button** - Primary-Farbe nur bei tatsächlichen Änderungen für bessere UX  
+📐 **Optimiertes Button-Layout** - Perfekte Ausrichtung in allen Modi (date/time/combined)
+
+### Änderungen in v0.1.4
+
+✨ **Neue Features**
+- Visual Editor vollständig übersetzt (Deutsch/Englisch) mit automatischer Spracherkennung
+
+💅 **Verbesserungen**
+- Smart Save Button: Primary-Farbe nur bei tatsächlichen Änderungen
+- Button-Alignment optimiert: Save rechtsbündig zum letzten Wheel, Cancel linksbündig
+- Verhindert ungewollte Farbe während des initialen Snappings
 
 ### Änderungen in v0.1.3
 

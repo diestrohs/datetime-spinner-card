@@ -13,7 +13,8 @@ class TimeSpinnerCard extends LitElement {
       selectedYear: { type: Number },
       selectedMonth: { type: Number },
       selectedDay: { type: Number },
-      selectedPeriod: { type: String }
+      selectedPeriod: { type: String },
+      hasChanges: { type: Boolean }
     };
   }
 
@@ -21,6 +22,7 @@ class TimeSpinnerCard extends LitElement {
     super();
     this.itemHeight = 48;
     this.visibleItems = 5;
+    this.isInitializing = false;
     this.overlayOpen = false;
     this.overlayType = null;
     this.selectedHour = 0;
@@ -28,6 +30,7 @@ class TimeSpinnerCard extends LitElement {
     this.selectedYear = 2025;
     this.selectedMonth = 1;
     this.selectedDay = 1;
+    this.hasChanges = false;
     this.selectedPeriod = 'AM';
     this.config = {};
     this.hass = null;
@@ -159,11 +162,11 @@ class TimeSpinnerCard extends LitElement {
       .colon { font-size: 16px; padding: 0 8px; }
       .indicator { position: absolute; top: 50%; left: 0; right: 0; height: 48px; margin-top: -24px; border-top: 2px solid var(--primary-color); border-bottom: 2px solid var(--primary-color); pointer-events: none; }
       .buttons { display: flex; gap: 5px; margin-top: 10px; width: 100%; }
-      .buttons .btn-today { margin-right: auto; }
+      .buttons button:first-child { margin-right: auto; }
       .buttons button { height: 35px; padding: 6px 14px; border-radius: 6px; border: none; background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.05)); color: var(--primary-text-color); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
       .buttons button:hover, .buttons button:active, .buttons button:focus { background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0,0,0), 0.08)); outline: none; }
-      .buttons button:last-child { background: rgba(var(--rgb-primary-color), 0.12); color: var(--primary-color); font-weight: 500; }
-      .buttons button:last-child:hover { background: rgba(var(--rgb-primary-color), 0.18); }
+      .buttons button[data-changed="true"] { background: rgba(var(--rgb-primary-color), 0.12); color: var(--primary-color); font-weight: 500; }
+      .buttons button[data-changed="true"]:hover, .buttons button[data-changed="true"]:active, .buttons button[data-changed="true"]:focus { background: rgba(var(--rgb-primary-color), 0.18); outline: none; }
       @media (min-width: 768px) {
         .wrapper.date-time { min-width: 360px; }
       }
@@ -545,7 +548,7 @@ class TimeSpinnerCard extends LitElement {
               <button class="btn-today" @click="${() => this._setToday()}">${todayLabel}</button>
             ` : ''}
             <button @click="${() => this._closeOverlay(false)}">${cancelLabel}</button>
-            <button @click="${() => this._closeOverlay(true)}">${okLabel}</button>
+            <button data-changed="${this.hasChanges}" @click="${() => this._closeOverlay(true)}">${okLabel}</button>
           </div>
         </div>
       </div>
@@ -563,6 +566,8 @@ class TimeSpinnerCard extends LitElement {
   _handleOpenOverlay(type) {
     if (this.overlayOpen) return;
     this.overlayType = type;
+    this.hasChanges = false;
+    this.requestUpdate();
     this.overlayOpen = true;
   }
 
@@ -571,7 +576,9 @@ class TimeSpinnerCard extends LitElement {
   }
 
   _initializeOverlay() {
+    this.isInitializing = true;
     requestAnimationFrame(() => {
+      this.hasChanges = false;
       const showDates = this.overlayType === 'date';
       const showTimes = this.overlayType === 'time';
       
@@ -659,12 +666,17 @@ class TimeSpinnerCard extends LitElement {
         const yearCount = maxYear - minYear + 1;
         
         this.buildWheel(yearsEl, yearCount, v => {
+          if (!this.isInitializing) this.hasChanges = true;
           this.selectedYear = minYear + v;
         }, false, minYear);
         this.buildWheel(monthsEl, 12, v => {
+          if (!this.isInitializing) this.hasChanges = true;
           this.selectedMonth = v + 1;
         }, false, 1);
-        this.buildWheel(daysEl, daysInMonth, v => this.selectedDay = v + 1, false, 1);
+        this.buildWheel(daysEl, daysInMonth, v => {
+          if (!this.isInitializing) this.hasChanges = true;
+          this.selectedDay = v + 1;
+        }, false, 1);
         
         // Set initial positions
         this.setInitial(yearsEl, yearCount, this.selectedYear - minYear);
@@ -675,8 +687,14 @@ class TimeSpinnerCard extends LitElement {
       if (showTimes) {
         if (this._is12HourFormat()) {
           // 12-hour format: 1-12
-          this.buildWheel(hoursEl, 12, v => this.selectedHour = v + 1, false, 1);
-          this.buildWheel(minutesEl, minuteCount, v => this.selectedMinute = v * step, true);
+          this.buildWheel(hoursEl, 12, v => {
+            if (!this.isInitializing) this.hasChanges = true;
+            this.selectedHour = v + 1;
+          }, false, 1);
+          this.buildWheel(minutesEl, minuteCount, v => {
+            if (!this.isInitializing) this.hasChanges = true;
+            this.selectedMinute = v * step;
+          }, true);
           
           // Build AM/PM wheel
           if (periodEl) {
@@ -691,14 +709,25 @@ class TimeSpinnerCard extends LitElement {
           }
         } else {
           // 24-hour format: 0-23
-          this.buildWheel(hoursEl, 24, v => this.selectedHour = v, false);
-          this.buildWheel(minutesEl, minuteCount, v => this.selectedMinute = v * step, true);
+          this.buildWheel(hoursEl, 24, v => {
+            if (!this.isInitializing) this.hasChanges = true;
+            this.selectedHour = v;
+          }, false);
+          this.buildWheel(minutesEl, minuteCount, v => {
+            if (!this.isInitializing) this.hasChanges = true;
+            this.selectedMinute = v * step;
+          }, true);
           
           // Set initial positions
           this.setInitial(hoursEl, 24, this.selectedHour);
           this.setInitial(minutesEl, minuteCount, Math.round(this.selectedMinute / step));
         }
       }
+      
+      // Setze isInitializing=false nach allen Snap-Callbacks (80ms timeout + buffer)
+      setTimeout(() => {
+        this.isInitializing = false;
+      }, 150);
     });
   }
 
@@ -777,6 +806,7 @@ class TimeSpinnerCard extends LitElement {
   }
 
   _setToday() {
+    this.hasChanges = true;
     const now = new Date();
     this.selectedYear = now.getFullYear();
     this.selectedMonth = now.getMonth() + 1;
@@ -864,6 +894,7 @@ class TimeSpinnerCard extends LitElement {
         const idx = Math.round(container.scrollTop / this.itemHeight);
         container.scrollTo({ top: idx * this.itemHeight, behavior: "smooth" });
         const logical = idx % 2;
+        if (!this.isInitializing) this.hasChanges = true;
         this.selectedPeriod = periods[logical];
         container.items.forEach((e, i) =>
           e.classList.toggle("active", i === idx)
@@ -1101,6 +1132,36 @@ class TimeSpinnerCardEditor extends LitElement {
     this.config = config;
   }
 
+  _getLanguage() {
+    return this.hass?.language || 'en';
+  }
+
+  _t(key) {
+    const translations = {
+      entity: { en: 'Entity (optional - for combined time or individual date/time)', de: 'Entity (optional - für kombinierte Zeit oder einzelne date/time)' },
+      date_entity: { en: 'Date Entity (optional - separate date entity)', de: 'Date Entity (optional - separate Datum Entity)' },
+      time_entity: { en: 'Time Entity (optional - separate time entity)', de: 'Time Entity (optional - separate Zeit Entity)' },
+      name: { en: 'Name', de: 'Name' },
+      icon: { en: 'Icon', de: 'Icon' },
+      icon_color: { en: 'Icon Color (e.g. #44739e or red)', de: 'Icon Farbe (z.B. #44739e oder red)' },
+      minute_step: { en: 'Minute Step', de: 'Minuten-Schrittweite' },
+      minute_step_helper: { en: 'Valid values: 1, 5, 10, 15, 30', de: 'Gültige Werte: 1, 5, 10, 15, 30' },
+      repeat: { en: 'Repetitions in Spinner', de: 'Wiederholungen im Spinner' },
+      repeat_helper: { en: 'Valid values: 1-10 (Default: 3)', de: 'Gültige Werte: 1-10 (Standard: 3)' },
+      layout: { en: 'Layout', de: 'Layout' },
+      horizontal: { en: 'Horizontal', de: 'Horizontal' },
+      vertical: { en: 'Vertical', de: 'Vertikal' },
+      show_label: { en: 'Show label in buttons', de: 'Label in Buttons anzeigen' },
+      min_year: { en: 'Minimum Year (optional - overridden by entity attributes)', de: 'Minimales Jahr (optional - wird aus Entity-Attributen überschrieben)' },
+      min_year_helper: { en: 'Default: 1900 or entity min_year attribute', de: 'Standard: 1900 oder Entity min_year Attribut' },
+      max_year: { en: 'Maximum Year (optional - overridden by entity attributes)', de: 'Maximales Jahr (optional - wird aus Entity-Attributen überschrieben)' },
+      max_year_helper: { en: 'Default: 2099 or entity max_year attribute', de: 'Standard: 2099 oder Entity max_year Attribut' }
+    };
+    
+    const lang = this._getLanguage();
+    return translations[key]?.[lang] || translations[key]?.['en'] || key;
+  }
+
   render() {
     if (!this.hass || !this.config) {
       return html``;
@@ -1109,7 +1170,7 @@ class TimeSpinnerCardEditor extends LitElement {
     return html`
       <div class="card-config">
         <div class="option">
-          <label>Entity (optional - für kombinierte Zeit oder einzelne date/time)</label>
+          <label>${this._t('entity')}</label>
           <ha-entity-picker
             .hass=${this.hass}
             .value=${this.config.entity}
@@ -1120,7 +1181,7 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
-          <label>Date Entity (optional - separate Datum Entity)</label>
+          <label>${this._t('date_entity')}</label>
           <ha-entity-picker
             .hass=${this.hass}
             .value=${this.config.date_entity || ""}
@@ -1131,7 +1192,7 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
-          <label>Time Entity (optional - separate Zeit Entity)</label>
+          <label>${this._t('time_entity')}</label>
           <ha-entity-picker
             .hass=${this.hass}
             .value=${this.config.time_entity || ""}
@@ -1142,7 +1203,7 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
-          <label>Name</label>
+          <label>${this._t('name')}</label>
           <ha-textfield
             .value=${this.config.name || ""}
             .placeholder=${"Terminzeit"}
@@ -1151,7 +1212,7 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
-          <label>Icon</label>
+          <label>${this._t('icon')}</label>
           <ha-icon-picker
             .hass=${this.hass}
             .value=${this.config.icon || "mdi:clock"}
@@ -1160,7 +1221,7 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
-          <label>Icon Farbe (z.B. #44739e oder red)</label>
+          <label>${this._t('icon_color')}</label>
           <ha-textfield
             .value=${this.config.icon_color || ""}
             .placeholder=${"var(--primary-text-color)"}
@@ -1169,41 +1230,41 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
-          <label>Minuten-Schrittweite</label>
+          <label>${this._t('minute_step')}</label>
           <ha-textfield
             type="number"
             .value=${this.config.minute_step || 5}
             .placeholder=${"5"}
             @input=${this._minuteStepChanged}
-            .helper=${"Gültige Werte: 1, 5, 10, 15, 30"}
+            .helper=${this._t('minute_step_helper')}
           ></ha-textfield>
         </div>
 
         <div class="option">
-          <label>Wiederholungen im Spinner</label>
+          <label>${this._t('repeat')}</label>
           <ha-textfield
             type="number"
             .value=${this.config.repeat || 3}
             .placeholder=${"3"}
             @input=${this._repeatChanged}
-            .helper=${"Gültige Werte: 1-10 (Standard: 3)"}
+            .helper=${this._t('repeat_helper')}
           ></ha-textfield>
         </div>
 
         <div class="option">
-          <label>Layout</label>
+          <label>${this._t('layout')}</label>
           <ha-select
             .value=${this.config.layout || 'horizontal'}
             @selected=${(ev) => this._layoutChanged(ev)}
             @closed=${(ev) => ev.stopPropagation()}
           >
-            <mwc-list-item value="horizontal">Horizontal</mwc-list-item>
-            <mwc-list-item value="vertical">Vertikal</mwc-list-item>
+            <mwc-list-item value="horizontal">${this._t('horizontal')}</mwc-list-item>
+            <mwc-list-item value="vertical">${this._t('vertical')}</mwc-list-item>
           </ha-select>
         </div>
 
         <div class="option">
-          <label>Label in Buttons anzeigen</label>
+          <label>${this._t('show_label')}</label>
           <ha-switch
             .checked=${this.config.show_label === true}
             @change=${this._showLabelChanged}
@@ -1211,24 +1272,24 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
-          <label>Minimales Jahr (optional - wird aus Entity-Attributen überschrieben)</label>
+          <label>${this._t('min_year')}</label>
           <ha-textfield
             type="number"
             .value=${this.config.min_year || ""}
             .placeholder=${"1900"}
             @input=${this._minYearChanged}
-            .helper=${"Standard: 1900 oder Entity min_year Attribut"}
+            .helper=${this._t('min_year_helper')}
           ></ha-textfield>
         </div>
 
         <div class="option">
-          <label>Maximales Jahr (optional - wird aus Entity-Attributen überschrieben)</label>
+          <label>${this._t('max_year')}</label>
           <ha-textfield
             type="number"
             .value=${this.config.max_year || ""}
             .placeholder=${"2099"}
             @input=${this._maxYearChanged}
-            .helper=${"Standard: 2099 oder Entity max_year Attribut"}
+            .helper=${this._t('max_year_helper')}
           ></ha-textfield>
         </div>
       </div>

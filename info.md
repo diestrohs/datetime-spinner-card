@@ -6,8 +6,21 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 
 ### Änderungen in v0.1.4
 
-🐛 **Bugfixes**
-- Save Button Ausrichtung korrigiert: Gewährleistet konsistente rechts-Ausrichtung im Zeitpicker mit AM/PM-Rad
+✨ **Neue Features**
+- Visual Editor vollständig übersetzt (Deutsch/Englisch)
+  - Automatische Spracherkennung aus Home Assistant
+  - Alle Labels, Helper-Texte und Optionen in beiden Sprachen
+
+💅 **Verbesserungen**
+- Smart Save Button: Primary-Farbe nur bei tatsächlichen Änderungen
+  - Normale Farbe beim Öffnen (wie Cancel Button)
+  - Wechselt zu Primary-Farbe nur nach Benutzerinteraktion
+  - Verhindert ungewollte Farbe während des initialen Snappings
+
+- Button-Alignment in allen Modi optimiert
+  - Save Button rechtsbündig zum letzten Wheel (Minutes oder AM/PM)
+  - Cancel Button linksbündig
+  - Funktioniert in allen Szenarien: time only, date only, date & time
 
 ## Version 0.1.3
 
