@@ -2,6 +2,13 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
+## Version 0.1.4
+
+### Änderungen in v0.1.4
+
+🐛 **Bugfixes**
+- Save Button Ausrichtung korrigiert: Gewährleistet konsistente rechts-Ausrichtung im Zeitpicker mit AM/PM-Rad
+
 ## Version 0.1.3
 
 ### Änderungen in v0.1.3

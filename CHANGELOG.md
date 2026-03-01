@@ -5,6 +5,13 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.1.4] - 2026-03-03
+
+### Behoben
+- **Save Button Ausrichtung** - Korrekte rechts-Ausrichtung des Save Buttons im Zeitpicker wenn AM/PM-Rad vorhanden ist
+  - Added `width: 100%` zu `.buttons` CSS Container
+  - Gewährleistet konsistente Ausrichtung unabhängig vom AM/PM-Rad
+
 ## [0.1.3] - 2026-03-02
 
 ### Hinzugefügt
