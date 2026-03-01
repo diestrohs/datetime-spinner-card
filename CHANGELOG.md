@@ -5,6 +5,41 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.1.3] - 2026-03-02
+
+### Hinzugefügt
+- **`show_label` Config-Option** - Optionale Label in Buttons (Datumsformat + Zeitformat)
+  - Standardmäßig `false` (kein Label)
+  - Zeigt "dd.mm.yyyy" und "hh:mm" in den Buttons wenn aktiviert
+  - Toggle im Visual Editor vorhanden
+  - Keine Höhen-Veränderung bei Aktivierung/Deaktivierung
+
+- **Tile-ähnliches Layout**
+  - Buttons auf der rechten Seite ausgerichtet (`margin-left: auto`)
+  - Konsistente Höhe durch `min-height: 56px` auf entity-row
+  - Responsive Design mit flexbox
+
+- **Adaptive Button-Höhen**
+  - 40px ohne Label
+  - 56px mit Label
+  - Smooth Transition zwischen Layouts
+
+### Behoben
+- **Kritischer Rekursions-Bug in `_formatDateByLocale()`** 
+  - Methode rief sich selbst auf statt Formatierungs-Logik auszuführen
+  - Wurde zu Duplikat konsolidiert
+
+### Geändert
+- Entfernte ungenutzete Methode `_getTimeZone()`
+- Entfernte redundante Methode `_getFormatLabel()`
+- Card-Höhe jetzt `height: auto` (nimmt nur benötigte Höhe ein)
+- Verbesserter Code-Flow und Wartbarkeit
+
+### Dokumentation
+- `show_label` Config-Option dokumentiert
+- Beispiele mit Labels aktualisiert
+- Features-Liste erweitert
+
 ## [0.1.2] - 2026-02-05
 
 ### Verbesserungen

@@ -2,6 +2,22 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
+## Version 0.1.3
+
+### Änderungen in v0.1.3
+
+✨ **Neue Features**
+- `show_label` Config-Option für optionale Label in Buttons ("dd.mm.yyyy", "hh:mm")
+- Tile-ähnliches Layout mit rechts-ausgerichteten Buttons (`margin-left: auto`)
+- Adaptive Button-Höhen: 40px (ohne Label) / 56px (mit Label)
+- Konsistente Card-Höhe durch `min-height: 56px` auf entity-row
+
+🧹 **Code-Bereinigung**
+- Rekursions-Bug in `_formatDateByLocale()` behoben
+- Ungenutzten Methode `_getTimeZone()` entfernt
+- Redundante Methode `_getFormatLabel()` entfernt
+- Code-Konsistenz und Wartbarkeit verbessert
+
 ## Version 0.1.2
 
 ### Änderungen in v0.1.2
@@ -22,6 +38,7 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 📱 **Mobile-Optimiert** - Responsive Design für iPhone, iPad und andere Geräte  
 ✨ **Automatische Icon-Übernahme** - Übernimmt standardmäßig das Icon der Entity  
 ⚙️ **Flexible Minuten-Schrittweite** - 1, 5, 10, 15 oder 30 Minuten  
+🏷️ **Optional Labels in Buttons** - Zeigt Datumsformat (dd.mm.yyyy) und Zeit-Format (hh:mm) in den Buttons  
 🔄 **Konfigurierbare Wiederholungen** - Anpassbare Anzahl der Spinner-Wiederholungen  
 🖼️ **Visual Editor** - Komfortable Konfiguration über die Home Assistant UI  
 🌙 **Theme-Support** - Passt sich automatisch an Dark/Light Themes an  

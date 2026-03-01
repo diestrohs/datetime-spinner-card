@@ -45,6 +45,7 @@ class TimeSpinnerCard extends LitElement {
   static get styles() {
     return css`
       ha-card { 
+        height: auto;
         border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, rgba(0, 0, 0, 0.12)));
         box-shadow: var(--ha-card-box-shadow, 0 2px 1px -1px rgba(0, 0, 0, 0.2));
       }
@@ -52,7 +53,7 @@ class TimeSpinnerCard extends LitElement {
       .entity-row { 
         display: flex; 
         align-items: center; 
-        padding: 4px 16px;
+        padding: 0 12px 0 16px;
         min-height: 56px;
         box-sizing: border-box;
       }
@@ -71,17 +72,15 @@ class TimeSpinnerCard extends LitElement {
       }
       /* Icon/Badge - state-badge Standard ist 40px flex-basis */
       ha-icon { 
-        flex: 0 0 40px;
-        padding: 8px;
+        flex: 0 0 var(--mdc-icon-size, 24px);
+        width: var(--mdc-icon-size, 24px);
         color: var(--state-icon-color, var(--paper-item-icon-color, #44739e));
       }
       /* Name/Info - hui-generic-entity-row .info */
       .name {
-        margin-left: 4px;
-        margin-inline-start: 4px;
+        margin-left: 16px;
+        margin-inline-start: 16px;
         margin-inline-end: initial;
-        padding-right: 5px;
-        padding-inline-end: 5px;
         flex: 1;
         color: var(--primary-text-color);
         white-space: nowrap;
@@ -90,13 +89,13 @@ class TimeSpinnerCard extends LitElement {
       }
       /* Time Button - Basierend auf ha-date-input/ha-time-input in hui-input-datetime-entity-row */
       .time-btn {
-        margin-left: 5px;
-        margin-inline-start: 5px;
-        margin-inline-end: initial;
+        margin-left: 0;
+        margin-right: 0;
         direction: var(--direction);
-        padding: 24px 12px 12px;
+        padding: 4px 16px;
         min-width: 90px;
-        min-height: 56px;
+        height: 40px;
+        min-height: 40px;
         border: none;
         border-bottom: 1px solid var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
         border-radius: 4px 4px 0 0;
@@ -109,6 +108,19 @@ class TimeSpinnerCard extends LitElement {
         transition: border-color 0.2s, background-color 0.2s;
         box-sizing: border-box;
         position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .time-btn.with-label {
+        padding-top: 24px;
+        padding-bottom: 8px;
+        align-items: flex-end;
+        height: 56px;
+        min-height: 56px;
+      }
+      .name + .time-btn {
+        margin-left: auto;
       }
       .time-btn-label {
         position: absolute;
@@ -129,11 +141,9 @@ class TimeSpinnerCard extends LitElement {
       .time-btn:focus-visible {
         outline: none;
         border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
-        padding-bottom: 11px;
       }
       .time-btn:active {
         border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
-        padding-bottom: 11px;
       }
       .time-btn + .time-btn {
         margin-left: 5px;
@@ -164,7 +174,11 @@ class TimeSpinnerCard extends LitElement {
     if (!config?.entity && !config?.date_entity && !config?.time_entity) {
       throw new Error("Mindestens eine Entity erforderlich (entity, date_entity oder time_entity)");
     }
-    this.config = { ...config };
+    this.config = { show_label: false, ...config };
+  }
+
+  get showLabel() {
+    return this.config.show_label === true;
   }
 
   get minuteStep() {
@@ -270,10 +284,7 @@ class TimeSpinnerCard extends LitElement {
     return { language: 'en', date_format: 'YYYY-MM-DD' };
   }
 
-  _getTimeZone() {
-    // Get timezone from Home Assistant config
-    return this.hass?.config?.time_zone || 'UTC';
-  }
+
 
   _is12HourFormat() {
     // Get time format from Home Assistant user settings
@@ -296,10 +307,36 @@ class TimeSpinnerCard extends LitElement {
     return false;
   }
 
-  _formatDateByLocale() {
-    // This method is used for formatting selectedYear/Month/Day in the overlay
-    const dateObj = new Date(this.selectedYear, this.selectedMonth - 1, this.selectedDay);
-    return this._formatDateByLocale(dateObj);
+  _formatDateByLocale(dateObj) {
+    const locale = this._getLocale();
+    const dateFormat = locale.date_format;
+    
+    // Format date according to user's locale preference
+    const formatter = new Intl.DateTimeFormat(locale.language, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    
+    const parts = formatter.formatToParts(dateObj);
+    const day = parts.find(p => p.type === 'day')?.value;
+    const month = parts.find(p => p.type === 'month')?.value;
+    const year = parts.find(p => p.type === 'year')?.value;
+    
+    // Apply user's preferred date format
+    switch (dateFormat) {
+      case 'DMY':
+        return `${day}.${month}.${year}`;
+      case 'MDY':
+        return `${month}/${day}/${year}`;
+      case 'YMD':
+        return `${year}-${month}-${day}`;
+      case 'language':
+      case 'system':
+      default:
+        // Use Intl.DateTimeFormat with proper locale
+        return formatter.format(dateObj);
+    }
   }
 
   render() {
@@ -335,29 +372,30 @@ class TimeSpinnerCard extends LitElement {
     const timeDisplay = this._getTimeDisplay();
     const dateFormatLabel = this._getDateFormatLabel();
     const timeFormatLabel = 'hh:mm';
+    const showLabel = this.showLabel;
 
     if (hasDates && hasTimes) {
       return html`
-        <button class="time-btn" @click="${() => this._handleOpenOverlay('date')}">
-          <span class="time-btn-label">${dateFormatLabel}</span>
+        <button class="time-btn ${showLabel ? 'with-label' : ''}" @click="${() => this._handleOpenOverlay('date')}">
+          ${showLabel ? html`<span class="time-btn-label">${dateFormatLabel}</span>` : ''}
           ${dateDisplay}
         </button>
-        <button class="time-btn" @click="${() => this._handleOpenOverlay('time')}">
-          <span class="time-btn-label">${timeFormatLabel}</span>
+        <button class="time-btn ${showLabel ? 'with-label' : ''}" @click="${() => this._handleOpenOverlay('time')}">
+          ${showLabel ? html`<span class="time-btn-label">${timeFormatLabel}</span>` : ''}
           ${timeDisplay}
         </button>
       `;
     } else if (hasDates) {
       return html`
-        <button class="time-btn" @click="${() => this._handleOpenOverlay('date')}">
-          <span class="time-btn-label">${dateFormatLabel}</span>
+        <button class="time-btn ${showLabel ? 'with-label' : ''}" @click="${() => this._handleOpenOverlay('date')}">
+          ${showLabel ? html`<span class="time-btn-label">${dateFormatLabel}</span>` : ''}
           ${dateDisplay}
         </button>
       `;
     } else if (hasTimes) {
       return html`
-        <button class="time-btn" @click="${() => this._handleOpenOverlay('time')}">
-          <span class="time-btn-label">${timeFormatLabel}</span>
+        <button class="time-btn ${showLabel ? 'with-label' : ''}" @click="${() => this._handleOpenOverlay('time')}">
+          ${showLabel ? html`<span class="time-btn-label">${timeFormatLabel}</span>` : ''}
           ${timeDisplay}
         </button>
       `;
@@ -422,38 +460,6 @@ class TimeSpinnerCard extends LitElement {
     }
   }
 
-  _formatDateByLocale(dateObj) {
-    const locale = this._getLocale();
-    const dateFormat = locale.date_format;
-    
-    // Format date according to user's locale preference
-    const formatter = new Intl.DateTimeFormat(locale.language, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-    
-    const parts = formatter.formatToParts(dateObj);
-    const day = parts.find(p => p.type === 'day')?.value;
-    const month = parts.find(p => p.type === 'month')?.value;
-    const year = parts.find(p => p.type === 'year')?.value;
-    
-    // Apply user's preferred date format
-    switch (dateFormat) {
-      case 'DMY':
-        return `${day}.${month}.${year}`;
-      case 'MDY':
-        return `${month}/${day}/${year}`;
-      case 'YMD':
-        return `${year}-${month}-${day}`;
-      case 'language':
-      case 'system':
-      default:
-        // Use Intl.DateTimeFormat with proper locale
-        return formatter.format(dateObj);
-    }
-  }
-
   _getDateFormatLabel() {
     const locale = this._getLocale();
     const dateFormat = locale.date_format;
@@ -473,43 +479,7 @@ class TimeSpinnerCard extends LitElement {
     }
   }
 
-  _getFormatLabel(hasDates, hasTimes) {
-    if (!hasDates && !hasTimes) return '';
-    
-    let dateLabel = '';
-    let timeLabel = 'hh:mm';
-    
-    if (hasDates) {
-      const locale = this._getLocale();
-      const dateFormat = locale.date_format;
-      
-      switch (dateFormat) {
-        case 'DMY':
-          dateLabel = 'dd.mm.yyyy';
-          break;
-        case 'MDY':
-          dateLabel = 'mm/dd/yyyy';
-          break;
-        case 'YMD':
-          dateLabel = 'yyyy-mm-dd';
-          break;
-        case 'language':
-        case 'system':
-        default:
-          // Use locale-specific format hint
-          dateLabel = this._getLocaleDateFormatHint(locale.language);
-          break;
-      }
-    }
-    
-    if (hasDates && hasTimes) {
-      return `${dateLabel} ${timeLabel}`;
-    } else if (hasDates) {
-      return dateLabel;
-    } else {
-      return timeLabel;
-    }
-  }
+
 
   _getLocaleDateFormatHint(language) {
     // Return locale-specific date format hints
@@ -1083,6 +1053,7 @@ class TimeSpinnerCard extends LitElement {
       name: "Terminzeit",
       icon: "mdi:clock",
       icon_color: "",
+      show_label: false,
       minute_step: 5,
       repeat: 3
     };
@@ -1232,6 +1203,14 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
+          <label>Label in Buttons anzeigen</label>
+          <ha-switch
+            .checked=${this.config.show_label === true}
+            @change=${this._showLabelChanged}
+          ></ha-switch>
+        </div>
+
+        <div class="option">
           <label>Minimales Jahr (optional - wird aus Entity-Attributen überschrieben)</label>
           <ha-textfield
             type="number"
@@ -1311,6 +1290,12 @@ class TimeSpinnerCardEditor extends LitElement {
     const index = ev.detail.index;
     const value = index === 0 ? 'horizontal' : 'vertical';
     const newConfig = { ...this.config, layout: value };
+    this._fireConfigChanged(newConfig);
+  }
+
+  _showLabelChanged(ev) {
+    if (!this.config || !this.hass) return;
+    const newConfig = { ...this.config, show_label: ev.target.checked === true };
     this._fireConfigChanged(newConfig);
   }
 

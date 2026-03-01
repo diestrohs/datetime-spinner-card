@@ -2,7 +2,7 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.1.2
+## Version 0.1.3
 
 ### Screenshots
 
@@ -20,6 +20,7 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 📱 **Mobile-Optimiert** - Responsive Design für iPhone, iPad und andere Geräte  
 ✨ **Automatische Icon-Übernahme** - Übernimmt standardmäßig das Icon der Entity  
 ⚙️ **Flexible Minuten-Schrittweite** - 1, 5, 10, 15 oder 30 Minuten  
+🏷️ **Optional Labels in Buttons** - Zeigt Datumsformat (dd.mm.yyyy) und Zeit-Format (hh:mm) in den Buttons  
 🔄 **Konfigurierbare Wiederholungen** - Anpassbare Anzahl der Spinner-Wiederholungen (1-10)  
 🖼️ **Visual Editor** - Komfortable Konfiguration über die Home Assistant UI  
 🌙 **Theme-Support** - Passt sich automatisch an Dark/Light Themes an  
@@ -28,6 +29,25 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 🌍 **Vollständige Mehrsprachigkeit** - 16+ Sprachen mit lokalisierten Buttons und Datumsformaten  
 ⏰ **12-Stunden AM/PM-Format** - Automatische Format-Erkennung aus HA Benutzereinstellungen  
 🎨 **Button-Layout optimiert** - "Heute" links, "Abbrechen" mittig, "Speichern" rechts mit flexiblem Spacing  
+
+### Änderungen in v0.1.3
+
+✨ **Neue Features**
+- `show_label` Config-Option für optionale Label in Buttons ("dd.mm.yyyy", "hh:mm")
+- Tile-ähnliches Layout mit rechts-ausgerichteten Buttons (`margin-left: auto`)
+- Adaptive Button-Höhen: 40px (ohne Label) / 56px (mit Label)
+- Konsistente Card-Höhe durch `min-height: 56px` auf entity-row
+
+🧹 **Code-Bereinigung**
+- Rekursions-Bug in `_formatDateByLocale()` behoben
+- Ungenutzten Methode `_getTimeZone()` entfernt
+- Redundante Methode `_getFormatLabel()` entfernt  
+- Code-Konsistenz und Wartbarkeit verbessert
+
+🎨 **UI/UX Verbesserungen**
+- Card nimmt nur benötigte Höhe ein (`height: auto`)
+- Konsistente Row-Höhe (56px) unabhängig von Label-Visibility
+- Flexbox basiertes Layout für bessere Responsivität
 
 ### Änderungen in v0.1.2
 
@@ -130,6 +150,7 @@ repeat: 3
 | `name` | string | `"Terminzeit"` | Anzeigename der Card |
 | `icon` | string | *Entity-Icon oder `"mdi:clock"`* | Material Design Icon (übernimmt automatisch das Icon der Entity, falls nicht gesetzt) |
 | `icon_color` | string | `"var(--primary-text-color)"` | Icon-Farbe (Hex, CSS-Farbe oder CSS-Variable) |
+| `show_label` | boolean | `false` | Labels in Buttons anzeigen (Datumsformat + Zeitformat) |
 | `minute_step` | number | `5` | Minuten-Schrittweite (1, 5, 10, 15, 30) |
 | `repeat` | number | `3` | Anzahl Wiederholungen im Spinner (1-10) |
 | `min_year` | number | *aus Attribut* | Minimales Jahr im Spinner (Fallback: 1900) |
@@ -155,6 +176,7 @@ name: Weckzeit
 icon: mdi:alarm
 icon_color: "#ff9800"
 minute_step: 5
+show_label: true
 ```
 
 ### Terminplanung mit Datum und Zeit (separate Entities)
@@ -170,7 +192,7 @@ minute_step: 15
 repeat: 5
 ```
 
-### Geburtsdatum mit Jahres-Beschränkung
+### Geburtsdatum mit Jahres-Beschränkung und Label
 
 ```yaml
 type: custom:time-spinner-card
@@ -180,6 +202,7 @@ icon: mdi:cake-variant
 icon_color: "#ff6f7f"
 min_year: 1950
 max_year: 2023
+show_label: true
 ```
 
 ### EV-Ladeplanung mit 30-Minuten-Schritten (EVCC Scheduler)
@@ -333,6 +356,9 @@ card_mod:
 - Theme-Support (Dark/Light Mode)
 - Mobile-responsive Design
 - Icon-Übernahme von Entity
+- Optional Labels in Buttons (Datumsformat + Zeitformat)
+- Tile-ähnliches Layout mit rechts-ausgerichteten Buttons
+- Adaptive Button-Höhen (40px - 56px)
 
 ✅ **Lokalisierung**
 - 16+ Sprachen vollständig unterstützt
