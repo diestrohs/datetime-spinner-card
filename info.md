@@ -2,7 +2,21 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.1.4
+## Version 0.1.5
+
+### Änderungen in v0.1.5
+
+✨ **Neue Features & Verbesserungen**
+- **Intelligente Monatsnamen-Kürzung im Wochenvorschau-Modus**
+  - Monate mit ≤4 Zeichen bleiben unverändert (März, Mai, Juni, Juli)
+  - Längere Monate werden auf 3 Zeichen + Punkt gekürzt (Jan., Feb., Apr., Sep.)
+  - Konsistente Formatierung über alle 16+ unterstützten Sprachen
+  - Format im week_forecast: "Mo. 31. Sep." (Wochentag + Tag + Monat)
+
+- **Button-Breite Optimierung**
+  - Reduziert von 180px auf 140px für kompaktere Layouts
+  - Perfekte Balance zwischen Kompaktheit und Lesbarkeit
+  - Bessere Raumausnutzung ohne Text-Cutoff
 
 ### Änderungen in v0.1.4
 
@@ -66,6 +80,8 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 🕐 **Universelle Entity-Unterstützung** - Funktioniert mit `input_datetime.*`, `date.*` und `time.*` Entities  
 🌍 **Vollständige Mehrsprachigkeit** - 17+ Sprachen mit lokalisierten Buttons und Datumsformaten  
 ⏰ **12-Stunden AM/PM-Format** - Automatische Format-Erkennung aus HA Benutzereinstellungen  
+📅 **Wochenvorschau-Modus** - 7-Tage-Datumsauswahl mit intelligenter Monatsnamen-Kürzung  
+📏 **Kompakte Button-Breite** - Optimiert auf 140px für effiziente Raumausnutzung  
 
 ### Neue Features in v0.1.0
 
@@ -137,6 +153,17 @@ minute_step: 15
 repeat: 3
 ```
 
+### Wochenvorschau-Modus (7-Tage-Auswahl)
+
+```yaml
+type: custom:time-spinner-card
+date_entity: date.appointment_date
+name: Termin
+icon: mdi:calendar-check
+icon_color: "#4caf50"
+week_forecast: true
+```
+
 ## Konfigurationsoptionen
 
 | Option | Beschreibung |
@@ -147,6 +174,9 @@ repeat: 3
 | `name` | Anzeigename der Card (Standard: "Terminzeit") |
 | `icon` | Material Design Icon (übernimmt automatisch das Icon der Entity) |
 | `icon_color` | Icon-Farbe (Hex, CSS-Farbe oder CSS-Variable) |
+| `layout` | Layout-Modus: `horizontal` (Standard) oder `vertical` |
+| `show_label` | Labels in Buttons anzeigen (Datumsformat + Zeitformat) - Standard: false |
+| `week_forecast` | Wochenvorschau-Modus: 7-Tage-Auswahl mit "Heute", "Morgen" und formatierte Tage (z.B. "Mo. 31. Sep.") - Standard: false |
 | `minute_step` | Minuten-Schrittweite: 1, 5, 10, 15, 30 (Standard: 5) |
 | `repeat` | Anzahl Wiederholungen im Spinner 1-10 (Standard: 3) |
 | `min_year` | Minimales Jahr im Spinner (Standard: 1900 oder Entity-Attribut) |

@@ -2,7 +2,7 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.1.4
+## Version 0.1.5
 
 ### Screenshots
 
@@ -29,7 +29,23 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 🌍 **Vollständige Mehrsprachigkeit** - 16+ Sprachen mit lokalisierten Buttons und Datumsformaten  
 ⏰ **12-Stunden AM/PM-Format** - Automatische Format-Erkennung aus HA Benutzereinstellungen  
 🎯 **Smart Save Button** - Primary-Farbe nur bei tatsächlichen Änderungen für bessere UX  
-📐 **Optimiertes Button-Layout** - Perfekte Ausrichtung in allen Modi (date/time/combined)
+📐 **Optimiertes Button-Layout** - Perfekte Ausrichtung in allen Modi (date/time/combined)  
+📅 **Wochenvorschau-Modus** - 7-Tage-Datumsauswahl mit intelligenter Monatsnamen-Kürzung (week_forecast)  
+📏 **Kompakte Button-Breite** - Optimiert auf 140px für effiziente Raumausnutzung
+
+### Änderungen in v0.1.5
+
+✨ **Neue Features & Verbesserungen**
+- **Intelligente Monatsnamen-Kürzung im Wochenvorschau-Modus**
+  - Monate mit ≤4 Zeichen bleiben unverändert (März, Mai, Juni, Juli)
+  - Längere Monate werden auf 3 Zeichen + Punkt gekürzt (Jan., Feb., Apr., Sep., etc.)
+  - Konsistente Formatierung über alle 16+ unterstützten Sprachen
+  - Anwendbar in Wochenvorschau-Button und Forecast-Wheel
+
+- **Button-Breite Optimierung**
+  - Reduziert von 180px auf 140px für kompaktere Layouts
+  - Bessere Raumausnutzung ohne Text-Cutoff bei Standard-Datumsformat
+  - Perfekte Balance zwischen Kompaktheit und Lesbarkeit im week_forecast Modus
 
 ### Änderungen in v0.1.4
 
@@ -137,6 +153,23 @@ icon: mdi:calendar-clock
 icon_color: "#2196f3"
 ```
 
+### Wochenvorschau-Modus (7-Tage-Auswahl)
+
+```yaml
+type: custom:time-spinner-card
+date_entity: date.appointment_date
+name: Termin
+icon: mdi:calendar-check
+icon_color: "#4caf50"
+week_forecast: true
+```
+
+Dieser Modus zeigt eine 7-Tage-Vorschau:
+- **Heute** und **Morgen** als lesbare Labels
+- Weitere Tage im Format "Mo. 31. Sep." (Wochentag 2 Zeichen + Tag + Monat intelligent gekürzt)
+- Vergangene Tage sind deaktiviert (nur Zukunftsdaten auswählbar)
+- Optimal für Terminbuchungen und Planungen
+
 ### Erweiterte Konfiguration mit Min/Max Jahren
 
 ```yaml
@@ -161,7 +194,9 @@ repeat: 3
 | `name` | string | `"Terminzeit"` | Anzeigename der Card |
 | `icon` | string | *Entity-Icon oder `"mdi:clock"`* | Material Design Icon (übernimmt automatisch das Icon der Entity, falls nicht gesetzt) |
 | `icon_color` | string | `"var(--primary-text-color)"` | Icon-Farbe (Hex, CSS-Farbe oder CSS-Variable) |
+| `layout` | string | `"horizontal"` | Layout-Modus: `"horizontal"` (Icon+Name+Buttons in einer Zeile) oder `"vertical"` (Icon+Name oben, Buttons darunter) |
 | `show_label` | boolean | `false` | Labels in Buttons anzeigen (Datumsformat + Zeitformat) |
+| `week_forecast` | boolean | `false` | Wochenvorschau-Modus: 7-Tage-Auswahl mit "Heute", "Morgen" und formatierte Tage (z.B. "Mo. 31. Sep.") |
 | `minute_step` | number | `5` | Minuten-Schrittweite (1, 5, 10, 15, 30) |
 | `repeat` | number | `3` | Anzahl Wiederholungen im Spinner (1-10) |
 | `min_year` | number | *aus Attribut* | Minimales Jahr im Spinner (Fallback: 1900) |
