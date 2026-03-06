@@ -2,7 +2,7 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.1.5
+## Version 0.1.6
 
 ### Screenshots
 
@@ -32,6 +32,24 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 📐 **Optimiertes Button-Layout** - Perfekte Ausrichtung in allen Modi (date/time/combined)  
 📅 **Wochenvorschau-Modus** - 7-Tage-Datumsauswahl mit intelligenter Monatsnamen-Kürzung (week_forecast)  
 📏 **Kompakte Button-Breite** - Optimiert auf 140px für effiziente Raumausnutzung
+
+### Änderungen in v0.1.6
+
+🐛 **Stabilitäts- und Fehlerbereinigungen**
+- **Spinner Stabilitätsfixes**
+  - Behobene Datumssprünge beim Monatswechsel (z.B. 04-16 → 05-14)
+  - Ursache: Day-Wheel-Rebuild ließ alte Event-Listener laufen → doppelte Snap-Events
+  - Lösung: Korrekte Cleanup mit AbortController und Timeout-Management pro Wheel-Container
+
+- **Focus-Jitter Reduktion während Initialisierung**
+  - Glattere Scrollbewegungen beim Öffnen der Spinner
+  - Auto-Scroll während Init statt Smooth-Scroll zur Vermeidung von Fokus-Flackern
+  - Besseres Timeout-Management für saubere Initialisierungspfade
+
+- **Forecast-Wheel optimiert**
+  - Scrollt jetzt zum gespeicherten Datum der Entity statt immer zu "Heute"
+  - Intelligente Offset-Berechnung zwischen Entity-Datum und aktuellem Datum
+  - Korrekte Positionierung im 9-Tage-View (0-8 Bereich)
 
 ### Änderungen in v0.1.5
 

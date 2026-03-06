@@ -5,6 +5,22 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.1.6] - 2026-03-06
+
+### Korrigiert
+- **Spinner Stabilitätsfixes** - Behobene Datumssprünge beim Monatswechsel
+  - OLD: Day-Wheel wurde bei Monatswechsel neu gebaut, alte Event-Listener liefen weiter → doppelte Snap-Events → Datumssprung
+  - NEW: Alte Listener/Timeouts werden vor Rebuild pro Wheel beendet (AbortController + _scrollTimeout pro Container)
+  - Reduktion redundanter DOM-Operationen und besseres Active-Item Tracking
+
+### Verbessert
+- **Forecast-Wheel Initialisierung** - Scrollt jetzt zum gespeicherten Datum statt immer auf "Heute"
+  - Berechnet Offset zwischen Entity-Datum und aktueller Datum
+  - Scrollt zur korrekten Position (begrenzt auf 0-8 für 9-Tage-View)
+- **Focus-Jitter Reduktion** - Glattere Scrollbewegungen während Initialisierung
+  - Auto-Scroll (statt Smooth) während isInitializing, um Fokus-Flackern zu vermeiden
+  - Bessere Verwaltung von Initialisierungs-Timeouts
+
 ## [0.1.5] - 2026-03-02
 
 ### Hinzugefügt
