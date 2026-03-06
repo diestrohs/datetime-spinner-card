@@ -2,6 +2,19 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
+## Version 0.1.7
+
+### Änderungen in v0.1.7
+
+✨ **Neue Features**
+- **Haptisches Feedback für iOS**
+  - Fühlbares Feedback beim Scrollen durch die Spinner-Räder
+  - Funktioniert in der Home Assistant iOS Companion App
+  - Synchronisiert mit Zahlenänderungen während des Scrollens
+  - Konfigurierbar über `haptic_feedback: true/false` (Standard: ein)
+  - Toggle-Schalter im Visual Editor verfügbar
+  - Silent Fallback bei nicht unterstützten Plattformen
+
 ## Version 0.1.6
 
 ### Änderungen in v0.1.6

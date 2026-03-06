@@ -1022,10 +1022,18 @@ class TimeSpinnerCard extends LitElement {
     
     // Handle scrolling with restrictions - Optimized: Track previous active item
     let prevActiveIdx = initialIdx;
+    let lastHapticIdx = initialIdx;
     const abortController = new AbortController();
     container._abortController = abortController;
     
     container.addEventListener("scroll", () => {
+      // Real-time haptic feedback during scrolling
+      const currentIdx = Math.round(container.scrollTop / this.itemHeight);
+      if (!this.isInitializing && currentIdx !== lastHapticIdx) {
+        lastHapticIdx = currentIdx;
+        this.triggerHaptic('selection');
+      }
+      
       if (container._scrollTimeout) {
         clearTimeout(container._scrollTimeout);
       }
@@ -1100,10 +1108,18 @@ class TimeSpinnerCard extends LitElement {
     container.append(list);
 
     let prevActiveIdx = -1;
+    let lastHapticIdx = -1;
     const abortController = new AbortController();
     container._abortController = abortController;
     
     container.addEventListener("scroll", () => {
+      // Real-time haptic feedback during scrolling
+      const currentIdx = Math.round(container.scrollTop / this.itemHeight);
+      if (!this.isInitializing && currentIdx !== lastHapticIdx) {
+        lastHapticIdx = currentIdx;
+        this.triggerHaptic('selection');
+      }
+      
       if (container._scrollTimeout) {
         clearTimeout(container._scrollTimeout);
       }
@@ -1172,13 +1188,26 @@ class TimeSpinnerCard extends LitElement {
 
     const abortController = new AbortController();
     container._abortController = abortController;
+    let lastSnapIdx = -1;
+    let lastHapticIdx = -1;
     
     container.addEventListener("scroll", () => {
+      // Real-time haptic feedback during scrolling
+      const currentIdx = Math.round(container.scrollTop / this.itemHeight);
+      if (!this.isInitializing && currentIdx !== lastHapticIdx) {
+        lastHapticIdx = currentIdx;
+        this.triggerHaptic('selection');
+      }
+      
       if (container._scrollTimeout) {
         clearTimeout(container._scrollTimeout);
       }
       container._scrollTimeout = setTimeout(() => {
-        this.snap(container, count, onChange);
+        const finalIdx = Math.round(container.scrollTop / this.itemHeight);
+        if (finalIdx !== lastSnapIdx) {
+          lastSnapIdx = finalIdx;
+          this.snap(container, count, onChange);
+        }
         container._scrollTimeout = null;
       }, 80);
     }, { signal: abortController.signal });
@@ -1229,6 +1258,26 @@ class TimeSpinnerCard extends LitElement {
       container.items[targetIdx].classList.add("active");
     }
     container._prevActiveIdx = targetIdx;
+  }
+
+  triggerHaptic(type = 'selection') {
+    // Check if haptic feedback is enabled (default: true)
+    const hapticEnabled = this.config.haptic_feedback !== false;
+    if (!hapticEnabled) return;
+    
+    // Trigger haptic feedback via Home Assistant iOS App
+    // Types: light, medium, heavy, selection, success, warning, error
+    try {
+      const event = new CustomEvent('haptic', {
+        bubbles: true,
+        composed: true,
+        cancelable: false,
+        detail: type
+      });
+      window.dispatchEvent(event);
+    } catch (e) {
+      // Silently fail if haptic not supported
+    }
   }
 
   _save() {
@@ -1341,7 +1390,8 @@ class TimeSpinnerCard extends LitElement {
       show_label: false,
       week_forecast: false,
       minute_step: 5,
-      repeat: 3
+      repeat: 3,
+      haptic_feedback: true
     };
   }
 }
@@ -1408,6 +1458,7 @@ class TimeSpinnerCardEditor extends LitElement {
       vertical: { en: 'Vertical', de: 'Vertikal' },
       show_label: { en: 'Show label in buttons', de: 'Label in Buttons anzeigen' },
       week_forecast: { en: 'Week forecast mode (7 days)', de: 'Wochenvorschau-Modus (7 Tage)' },
+      haptic_feedback: { en: 'Haptic feedback (iOS App)', de: 'Haptisches Feedback (iOS App)' },
       min_year: { en: 'Minimum Year (optional - overridden by entity attributes)', de: 'Minimales Jahr (optional - wird aus Entity-Attributen Ã¼berschrieben)' },
       min_year_helper: { en: 'Default: 1900 or entity min_year attribute', de: 'Standard: 1900 oder Entity min_year Attribut' },
       max_year: { en: 'Maximum Year (optional - overridden by entity attributes)', de: 'Maximales Jahr (optional - wird aus Entity-Attributen Ã¼berschrieben)' },
@@ -1536,6 +1587,14 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
+          <label>${this._t('haptic_feedback')}</label>
+          <ha-switch
+            .checked=${this.config.haptic_feedback !== false}
+            @change=${this._hapticFeedbackChanged}
+          ></ha-switch>
+        </div>
+
+        <div class="option">
           <label>${this._t('min_year')}</label>
           <ha-textfield
             type="number"
@@ -1627,6 +1686,12 @@ class TimeSpinnerCardEditor extends LitElement {
   _weekForecastChanged(ev) {
     if (!this.config || !this.hass) return;
     const newConfig = { ...this.config, week_forecast: ev.target.checked === true };
+    this._fireConfigChanged(newConfig);
+  }
+
+  _hapticFeedbackChanged(ev) {
+    if (!this.config || !this.hass) return;
+    const newConfig = { ...this.config, haptic_feedback: ev.target.checked === true };
     this._fireConfigChanged(newConfig);
   }
 

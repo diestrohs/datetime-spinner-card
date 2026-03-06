@@ -5,6 +5,16 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.1.7] - 2026-03-07
+
+### Hinzugefügt
+- **Haptisches Feedback (iOS)** - Fühlbares Feedback beim Scrollen durch die Spinner-Räder
+  - Funktioniert in der Home Assistant iOS Companion App
+  - Synchronisiert mit Zahlenänderungen während des Scrollens (nicht nur beim Snap-Ende)
+  - Konfigurierbar über `haptic_feedback` Parameter (default: true)
+  - Kann im Visual Editor aktiviert/deaktiviert werden
+  - Nutzt Home Assistant iOS App Native Haptic API (CustomEvent 'haptic')
+
 ## [0.1.6] - 2026-03-06
 
 ### Korrigiert
