@@ -1003,23 +1003,25 @@ class TimeSpinnerCard extends LitElement {
     
     container.append(list);
     
-    // Set initial position to "today" (index 2)
+    // Calculate offset of selected date from today
+    const selectedDate = new Date(this.selectedYear, this.selectedMonth - 1, this.selectedDay);
+    selectedDate.setHours(0, 0, 0, 0);
+    const dateDiffMs = selectedDate.getTime() - today.getTime();
+    const currentDayOffset = Math.round(dateDiffMs / (1000 * 60 * 60 * 24));
+    
+    // Calculate scroll index: clamp offset to valid range (0-8, where 2 is today)
+    const initialIdx = Math.max(0, Math.min(8, 2 + currentDayOffset));
+    
+    // Set initial position to currently selected date
     requestAnimationFrame(() => {
-      container.scrollTop = 2 * this.itemHeight;
-      container.items.forEach((e, i) =>
-        e.classList.toggle("active", i === 2)
-      );
+      container.scrollTop = initialIdx * this.itemHeight;
+      if (container.items[initialIdx]) {
+        container.items[initialIdx].classList.add("active");
+      }
     });
     
-    // Store selected date (today)
-    const todayDate = new Date();
-    todayDate.setHours(0, 0, 0, 0);
-    this.selectedYear = todayDate.getFullYear();
-    this.selectedMonth = todayDate.getMonth() + 1;
-    this.selectedDay = todayDate.getDate();
-    
     // Handle scrolling with restrictions - Optimized: Track previous active item
-    let prevActiveIdx = 2;
+    let prevActiveIdx = initialIdx;
     const abortController = new AbortController();
     container._abortController = abortController;
     
