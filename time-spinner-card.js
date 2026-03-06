@@ -1,30 +1,30 @@
-import { LitElement, html, css } from "https://unpkg.com/lit@3?module";
+﻿import { LitElement, html, css } from "https://unpkg.com/lit@3?module";
 
 // Static translations object for performance
 const TRANSLATIONS = {
   cancel: {
     en: 'Cancel', de: 'Abbrechen', fr: 'Annuler', es: 'Cancelar', it: 'Annulla',
-    nl: 'Annuleren', pl: 'Anuluj', pt: 'Cancelar', sv: 'Avbryt', hu: 'Mégse',
-    cs: 'Zrušit', ro: 'Anulare', ru: 'Отмена', uk: 'Скасувати',
-    ja: 'キャンセル', zh: '取消', ko: '취소'
+    nl: 'Annuleren', pl: 'Anuluj', pt: 'Cancelar', sv: 'Avbryt', hu: 'MÃ©gse',
+    cs: 'ZruÅ¡it', ro: 'Anulare', ru: 'ÐžÑ‚Ð¼ÐµÐ½Ð°', uk: 'Ð¡ÐºÐ°ÑÑƒÐ²Ð°Ñ‚Ð¸',
+    ja: 'ã‚­ãƒ£ãƒ³ã‚»ãƒ«', zh: 'å–æ¶ˆ', ko: 'ì·¨ì†Œ'
   },
   ok: {
     en: 'Save', de: 'Speichern', fr: 'Enregistrer', es: 'Guardar', it: 'Salva',
-    nl: 'Opslaan', pl: 'Zapisz', pt: 'Guardar', sv: 'Spara', hu: 'Mentés',
-    cs: 'Uložit', ro: 'Salvează', ru: 'Сохранить', uk: 'Зберегти',
-    ja: '保存', zh: '保存', ko: '저장'
+    nl: 'Opslaan', pl: 'Zapisz', pt: 'Guardar', sv: 'Spara', hu: 'MentÃ©s',
+    cs: 'UloÅ¾it', ro: 'SalveazÄƒ', ru: 'Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ', uk: 'Ð—Ð±ÐµÑ€ÐµÐ³Ñ‚Ð¸',
+    ja: 'ä¿å­˜', zh: 'ä¿å­˜', ko: 'ì €ìž¥'
   },
   today: {
     en: 'Today', de: 'Heute', fr: "Aujourd'hui", es: 'Hoy', it: 'Oggi',
     nl: 'Vandaag', pl: 'Dzisiaj', pt: 'Hoje', sv: 'Idag', hu: 'Ma',
-    cs: 'Dnes', ro: 'Azi', ru: 'Сегодня', uk: 'Сьогодні',
-    ja: '今日', zh: '今天', ko: '오늘'
+    cs: 'Dnes', ro: 'Azi', ru: 'Ð¡ÐµÐ³Ð¾Ð´Ð½Ñ', uk: 'Ð¡ÑŒÐ¾Ð³Ð¾Ð´Ð½Ñ–',
+    ja: 'ä»Šæ—¥', zh: 'ä»Šå¤©', ko: 'ì˜¤ëŠ˜'
   },
   tomorrow: {
-    en: 'Tomorrow', de: 'Morgen', fr: 'Demain', es: 'Mañana', it: 'Domani',
-    nl: 'Morgen', pl: 'Jutro', pt: 'Amanhã', sv: 'Imorgon', hu: 'Holnap',
-    cs: 'Zítra', ro: 'Mâine', ru: 'Завтра', uk: 'Завтра',
-    ja: '明日', zh: '明天', ko: '내일'
+    en: 'Tomorrow', de: 'Morgen', fr: 'Demain', es: 'MaÃ±ana', it: 'Domani',
+    nl: 'Morgen', pl: 'Jutro', pt: 'AmanhÃ£', sv: 'Imorgon', hu: 'Holnap',
+    cs: 'ZÃ­tra', ro: 'MÃ¢ine', ru: 'Ð—Ð°Ð²Ñ‚Ñ€Ð°', uk: 'Ð—Ð°Ð²Ñ‚Ñ€Ð°',
+    ja: 'æ˜Žæ—¥', zh: 'æ˜Žå¤©', ko: 'ë‚´ì¼'
   }
 };
 
@@ -234,7 +234,7 @@ class TimeSpinnerCard extends LitElement {
   }
 
   getMinYear() {
-    // Erst Entity-Attribute prüfen
+    // Erst Entity-Attribute prÃ¼fen
     let minYear = null;
     
     if (this.config.date_entity && this.hass) {
@@ -245,14 +245,14 @@ class TimeSpinnerCard extends LitElement {
       minYear = entity?.attributes?.min_year;
     }
     
-    // Dann Config überschreiben lassen
+    // Dann Config Ã¼berschreiben lassen
     if (this.config.min_year) minYear = this.config.min_year;
     
     return minYear || 1900;
   }
 
   getMaxYear() {
-    // Erst Entity-Attribute prüfen
+    // Erst Entity-Attribute prÃ¼fen
     let maxYear = null;
     
     if (this.config.date_entity && this.hass) {
@@ -263,7 +263,7 @@ class TimeSpinnerCard extends LitElement {
       maxYear = entity?.attributes?.max_year;
     }
     
-    // Dann Config überschreiben lassen
+    // Dann Config Ã¼berschreiben lassen
     if (this.config.max_year) maxYear = this.config.max_year;
     
     return maxYear || 2099;
@@ -506,7 +506,7 @@ class TimeSpinnerCard extends LitElement {
     } else if (diffDays === 1) {
       return this._getLocalizedString('tomorrow', locale.language);
     } else {
-      // Format: "We. 4. März" (exactly 2 chars + period) - Use cached formatters
+      // Format: "We. 4. MÃ¤rz" (exactly 2 chars + period) - Use cached formatters
       const weekdayFormatter = this._getFormatter(locale.language, { weekday: 'short' });
       const dayFormatter = this._getFormatter(locale.language, { day: 'numeric' });
       const monthFormatter = this._getFormatter(locale.language, { month: 'long' });
@@ -981,7 +981,7 @@ class TimeSpinnerCard extends LitElement {
       } else if (offset === 1) {
         d.textContent = this._getLocalizedString('tomorrow', locale.language);
       } else {
-        // Format: "We. 4. März" (exactly 2 chars + period) - Use cached formatters
+        // Format: "We. 4. MÃ¤rz" (exactly 2 chars + period) - Use cached formatters
         const weekdayFormatter = this._getFormatter(locale.language, { weekday: 'short' });
         const dayFormatter = this._getFormatter(locale.language, { day: 'numeric' });
         const monthFormatter = this._getFormatter(locale.language, { month: 'long' });
@@ -1391,24 +1391,24 @@ class TimeSpinnerCardEditor extends LitElement {
 
   _t(key) {
     const translations = {
-      entity: { en: 'Entity (optional - for combined time or individual date/time)', de: 'Entity (optional - für kombinierte Zeit oder einzelne date/time)' },
+      entity: { en: 'Entity (optional - for combined time or individual date/time)', de: 'Entity (optional - fÃ¼r kombinierte Zeit oder einzelne date/time)' },
       date_entity: { en: 'Date Entity (optional - separate date entity)', de: 'Date Entity (optional - separate Datum Entity)' },
       time_entity: { en: 'Time Entity (optional - separate time entity)', de: 'Time Entity (optional - separate Zeit Entity)' },
       name: { en: 'Name', de: 'Name' },
       icon: { en: 'Icon', de: 'Icon' },
       icon_color: { en: 'Icon Color (e.g. #44739e or red)', de: 'Icon Farbe (z.B. #44739e oder red)' },
       minute_step: { en: 'Minute Step', de: 'Minuten-Schrittweite' },
-      minute_step_helper: { en: 'Valid values: 1, 5, 10, 15, 30', de: 'Gültige Werte: 1, 5, 10, 15, 30' },
+      minute_step_helper: { en: 'Valid values: 1, 5, 10, 15, 30', de: 'GÃ¼ltige Werte: 1, 5, 10, 15, 30' },
       repeat: { en: 'Repetitions in Spinner', de: 'Wiederholungen im Spinner' },
-      repeat_helper: { en: 'Valid values: 1-10 (Default: 3)', de: 'Gültige Werte: 1-10 (Standard: 3)' },
+      repeat_helper: { en: 'Valid values: 1-10 (Default: 3)', de: 'GÃ¼ltige Werte: 1-10 (Standard: 3)' },
       layout: { en: 'Layout', de: 'Layout' },
       horizontal: { en: 'Horizontal', de: 'Horizontal' },
       vertical: { en: 'Vertical', de: 'Vertikal' },
       show_label: { en: 'Show label in buttons', de: 'Label in Buttons anzeigen' },
       week_forecast: { en: 'Week forecast mode (7 days)', de: 'Wochenvorschau-Modus (7 Tage)' },
-      min_year: { en: 'Minimum Year (optional - overridden by entity attributes)', de: 'Minimales Jahr (optional - wird aus Entity-Attributen überschrieben)' },
+      min_year: { en: 'Minimum Year (optional - overridden by entity attributes)', de: 'Minimales Jahr (optional - wird aus Entity-Attributen Ã¼berschrieben)' },
       min_year_helper: { en: 'Default: 1900 or entity min_year attribute', de: 'Standard: 1900 oder Entity min_year Attribut' },
-      max_year: { en: 'Maximum Year (optional - overridden by entity attributes)', de: 'Maximales Jahr (optional - wird aus Entity-Attributen überschrieben)' },
+      max_year: { en: 'Maximum Year (optional - overridden by entity attributes)', de: 'Maximales Jahr (optional - wird aus Entity-Attributen Ã¼berschrieben)' },
       max_year_helper: { en: 'Default: 2099 or entity max_year attribute', de: 'Standard: 2099 oder Entity max_year Attribut' }
     };
     
@@ -1663,3 +1663,4 @@ class TimeSpinnerCardEditor extends LitElement {
 }
 
 customElements.define("time-spinner-card-editor", TimeSpinnerCardEditor);
+
