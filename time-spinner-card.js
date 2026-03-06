@@ -1,5 +1,33 @@
 import { LitElement, html, css } from "https://unpkg.com/lit@3?module";
 
+// Static translations object for performance
+const TRANSLATIONS = {
+  cancel: {
+    en: 'Cancel', de: 'Abbrechen', fr: 'Annuler', es: 'Cancelar', it: 'Annulla',
+    nl: 'Annuleren', pl: 'Anuluj', pt: 'Cancelar', sv: 'Avbryt', hu: 'Mégse',
+    cs: 'Zrušit', ro: 'Anulare', ru: 'Отмена', uk: 'Скасувати',
+    ja: 'キャンセル', zh: '取消', ko: '취소'
+  },
+  ok: {
+    en: 'Save', de: 'Speichern', fr: 'Enregistrer', es: 'Guardar', it: 'Salva',
+    nl: 'Opslaan', pl: 'Zapisz', pt: 'Guardar', sv: 'Spara', hu: 'Mentés',
+    cs: 'Uložit', ro: 'Salvează', ru: 'Сохранить', uk: 'Зберегти',
+    ja: '保存', zh: '保存', ko: '저장'
+  },
+  today: {
+    en: 'Today', de: 'Heute', fr: "Aujourd'hui", es: 'Hoy', it: 'Oggi',
+    nl: 'Vandaag', pl: 'Dzisiaj', pt: 'Hoje', sv: 'Idag', hu: 'Ma',
+    cs: 'Dnes', ro: 'Azi', ru: 'Сегодня', uk: 'Сьогодні',
+    ja: '今日', zh: '今天', ko: '오늘'
+  },
+  tomorrow: {
+    en: 'Tomorrow', de: 'Morgen', fr: 'Demain', es: 'Mañana', it: 'Domani',
+    nl: 'Morgen', pl: 'Jutro', pt: 'Amanhã', sv: 'Imorgon', hu: 'Holnap',
+    cs: 'Zítra', ro: 'Mâine', ru: 'Завтра', uk: 'Завтра',
+    ja: '明日', zh: '明天', ko: '내일'
+  }
+};
+
 class TimeSpinnerCard extends LitElement {
 
   static get properties() {
@@ -34,6 +62,13 @@ class TimeSpinnerCard extends LitElement {
     this.selectedPeriod = 'AM';
     this.config = {};
     this.hass = null;
+    
+    // Cache for Intl formatters (performance optimization)
+    this._formatterCache = new Map();
+    
+    // AbortController for event listener cleanup
+    this._scrollAbortControllers = [];
+    this._initDoneTimeout = null;
   }
 
   get repeat() {
@@ -152,13 +187,18 @@ class TimeSpinnerCard extends LitElement {
         margin-left: 5px;
         min-width: 70px;
       }
+      .time-btn.forecast {
+        min-width: 140px;
+      }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; justify-content: center; align-items: center; z-index: 9999; }
       .overlay-content { background: var(--card-background-color); padding: 16px; border-radius: 12px; max-width: min(90vw, 560px); max-height: 90vh; overflow: auto; }
       .wrapper { display: flex; justify-content: center; align-items: center; height: 240px; position: relative; overflow: hidden; }
       .wheel { width: 80px; height: 100%; overflow-y: scroll; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+      .wheel.forecast { width: 100%; }
       .wheel::-webkit-scrollbar { display: none; }
       .item { height: 48px; display: flex; justify-content: center; align-items: center; font-size: 16px; opacity: 0.35; user-select: none; }
       .item.active { opacity: 1; }
+      .item.disabled { opacity: 0.35; pointer-events: none; color: var(--disabled-text-color); }
       .colon { font-size: 16px; padding: 0 8px; }
       .indicator { position: absolute; top: 50%; left: 0; right: 0; height: 48px; margin-top: -24px; border-top: 2px solid var(--primary-color); border-bottom: 2px solid var(--primary-color); pointer-events: none; }
       .buttons { display: flex; gap: 5px; margin-top: 10px; width: 100%; }
@@ -177,11 +217,15 @@ class TimeSpinnerCard extends LitElement {
     if (!config?.entity && !config?.date_entity && !config?.time_entity) {
       throw new Error("Mindestens eine Entity erforderlich (entity, date_entity oder time_entity)");
     }
-    this.config = { show_label: false, ...config };
+    this.config = { show_label: false, week_forecast: false, ...config };
   }
 
   get showLabel() {
     return this.config.show_label === true;
+  }
+
+  get weekForecast() {
+    return this.config.week_forecast === true;
   }
 
   get minuteStep() {
@@ -376,10 +420,11 @@ class TimeSpinnerCard extends LitElement {
     const dateFormatLabel = this._getDateFormatLabel();
     const timeFormatLabel = 'hh:mm';
     const showLabel = this.showLabel;
+    const forecastClass = this.weekForecast ? 'forecast' : '';
 
     if (hasDates && hasTimes) {
       return html`
-        <button class="time-btn ${showLabel ? 'with-label' : ''}" @click="${() => this._handleOpenOverlay('date')}">
+        <button class="time-btn ${showLabel ? 'with-label' : ''} ${forecastClass}" @click="${() => this._handleOpenOverlay('date')}">
           ${showLabel ? html`<span class="time-btn-label">${dateFormatLabel}</span>` : ''}
           ${dateDisplay}
         </button>
@@ -390,7 +435,7 @@ class TimeSpinnerCard extends LitElement {
       `;
     } else if (hasDates) {
       return html`
-        <button class="time-btn ${showLabel ? 'with-label' : ''}" @click="${() => this._handleOpenOverlay('date')}">
+        <button class="time-btn ${showLabel ? 'with-label' : ''} ${forecastClass}" @click="${() => this._handleOpenOverlay('date')}">
           ${showLabel ? html`<span class="time-btn-label">${dateFormatLabel}</span>` : ''}
           ${dateDisplay}
         </button>
@@ -421,7 +466,57 @@ class TimeSpinnerCard extends LitElement {
       if (match) dateState = match[1];
     }
 
-    return dateState ? this._formatDateFromState(dateState) : "--------";
+    if (!dateState) return "--------";
+
+    // Use week forecast format if enabled
+    if (this.weekForecast) {
+      return this._getWeekForecastDisplay(dateState);
+    }
+
+    return this._formatDateFromState(dateState);
+  }
+
+  _formatMonthName(monthName) {
+    // Abbreviate months with >4 characters, keep shorter ones intact
+    if (monthName.length <= 4) {
+      return monthName;
+    } else {
+      return monthName.slice(0, 3) + '.';
+    }
+  }
+
+  _getWeekForecastDisplay(dateState) {
+    // Parse the date state (YYYY-MM-DD)
+    const dateParts = dateState.split('-');
+    if (dateParts.length !== 3) return dateState;
+
+    const selectedDate = new Date(dateState + 'T00:00:00');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Calculate day difference
+    const diffTime = selectedDate.getTime() - today.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+    const locale = this._getLocale();
+
+    // Return appropriate label based on offset
+    if (diffDays === 0) {
+      return this._getLocalizedString('today', locale.language);
+    } else if (diffDays === 1) {
+      return this._getLocalizedString('tomorrow', locale.language);
+    } else {
+      // Format: "We. 4. März" (exactly 2 chars + period) - Use cached formatters
+      const weekdayFormatter = this._getFormatter(locale.language, { weekday: 'short' });
+      const dayFormatter = this._getFormatter(locale.language, { day: 'numeric' });
+      const monthFormatter = this._getFormatter(locale.language, { month: 'long' });
+
+      const weekday = weekdayFormatter.format(selectedDate).slice(0, 2) + '.';
+      const day = dayFormatter.format(selectedDate);
+      const month = this._formatMonthName(monthFormatter.format(selectedDate));
+
+      return `${weekday} ${day}. ${month}`;
+    }
   }
 
   _getTimeDisplay() {
@@ -521,12 +616,16 @@ class TimeSpinnerCard extends LitElement {
     
     const showDates = this.overlayType === 'date';
     const showTimes = this.overlayType === 'time';
+    const useWeekForecast = this.weekForecast && showDates;
     
     return html`
       <div class="overlay" @click="${this._handleOverlayClick}">
         <div class="overlay-content" @click="${e => e.stopPropagation()}">
           <div class="wrapper">
-            ${showDates ? html`
+            ${showDates && useWeekForecast ? html`
+              <div class="wheel forecast" id="forecast-wheel"></div>
+            ` : ''}
+            ${showDates && !useWeekForecast ? html`
               <div class="wheel" id="years-wheel"></div>
               <div class="colon">-</div>
               <div class="wheel" id="months-wheel"></div>
@@ -544,7 +643,7 @@ class TimeSpinnerCard extends LitElement {
             <div class="indicator"></div>
           </div>
           <div class="buttons">
-            ${showDates ? html`
+            ${showDates && !useWeekForecast ? html`
               <button class="btn-today" @click="${() => this._setToday()}">${todayLabel}</button>
             ` : ''}
             <button @click="${() => this._closeOverlay(false)}">${cancelLabel}</button>
@@ -577,14 +676,20 @@ class TimeSpinnerCard extends LitElement {
 
   _initializeOverlay() {
     this.isInitializing = true;
+    if (this._initDoneTimeout) {
+      clearTimeout(this._initDoneTimeout);
+      this._initDoneTimeout = null;
+    }
     requestAnimationFrame(() => {
       this.hasChanges = false;
       const showDates = this.overlayType === 'date';
       const showTimes = this.overlayType === 'time';
+      const useWeekForecast = this.weekForecast && showDates;
       
-      const yearsEl = showDates ? this.shadowRoot.getElementById("years-wheel") : null;
-      const monthsEl = showDates ? this.shadowRoot.getElementById("months-wheel") : null;
-      const daysEl = showDates ? this.shadowRoot.getElementById("days-wheel") : null;
+      const forecastEl = useWeekForecast ? this.shadowRoot.getElementById("forecast-wheel") : null;
+      const yearsEl = (showDates && !useWeekForecast) ? this.shadowRoot.getElementById("years-wheel") : null;
+      const monthsEl = (showDates && !useWeekForecast) ? this.shadowRoot.getElementById("months-wheel") : null;
+      const daysEl = (showDates && !useWeekForecast) ? this.shadowRoot.getElementById("days-wheel") : null;
       const hoursEl = showTimes ? this.shadowRoot.getElementById("hours-wheel") : null;
       const minutesEl = showTimes ? this.shadowRoot.getElementById("minutes-wheel") : null;
       const periodEl = (showTimes && this._is12HourFormat()) ? this.shadowRoot.getElementById("period-wheel") : null;
@@ -660,7 +765,10 @@ class TimeSpinnerCard extends LitElement {
       const daysInMonth = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
 
       // Build wheels based on what's supported
-      if (showDates) {
+      if (useWeekForecast) {
+        // Build forecast wheel for 7-day preview
+        this._buildForecastWheel(forecastEl);
+      } else if (showDates) {
         const minYear = this.getMinYear();
         const maxYear = this.getMaxYear();
         const yearCount = maxYear - minYear + 1;
@@ -725,8 +833,9 @@ class TimeSpinnerCard extends LitElement {
       }
       
       // Setze isInitializing=false nach allen Snap-Callbacks (80ms timeout + buffer)
-      setTimeout(() => {
+      this._initDoneTimeout = setTimeout(() => {
         this.isInitializing = false;
+        this._initDoneTimeout = null;
       }, 150);
     });
   }
@@ -736,71 +845,51 @@ class TimeSpinnerCard extends LitElement {
   }
 
   _getLocalizedString(key, language = 'en') {
-    const translations = {
-      cancel: {
-        en: 'Cancel',
-        de: 'Abbrechen',
-        fr: 'Annuler',
-        es: 'Cancelar',
-        it: 'Annulla',
-        nl: 'Annuleren',
-        pl: 'Anuluj',
-        pt: 'Cancelar',
-        sv: 'Avbryt',
-        hu: 'Mégse',
-        cs: 'Zrušit',
-        ro: 'Anulare',
-        ru: 'Отмена',
-        uk: 'Скасувати',
-        ja: 'キャンセル',
-        zh: '取消',
-        ko: '취소'
-      },
-      ok: {
-        en: 'Save',
-        de: 'Speichern',
-        fr: 'Enregistrer',
-        es: 'Guardar',
-        it: 'Salva',
-        nl: 'Opslaan',
-        pl: 'Zapisz',
-        pt: 'Guardar',
-        sv: 'Spara',
-        hu: 'Mentés',
-        cs: 'Uložit',
-        ro: 'Salvează',
-        ru: 'Сохранить',
-        uk: 'Зберегти',
-        ja: '保存',
-        zh: '保存',
-        ko: '저장'
-      },
-      today: {
-        en: 'Today',
-        de: 'Heute',
-        fr: "Aujourd'hui",
-        es: 'Hoy',
-        it: 'Oggi',
-        nl: 'Vandaag',
-        pl: 'Dzisiaj',
-        pt: 'Hoje',
-        sv: 'Idag',
-        hu: 'Ma',
-        cs: 'Dnes',
-        ro: 'Azi',
-        ru: 'Сегодня',
-        uk: 'Сьогодні',
-        ja: '今日',
-        zh: '今天',
-        ko: '오늘'
-      }
-    };
-    
-    return translations[key]?.[language] || translations[key]?.en || key;
+    return TRANSLATIONS[key]?.[language] || TRANSLATIONS[key]?.en || key;
+  }
+  
+  // Get or create cached Intl formatter
+  _getFormatter(locale, options) {
+    const cacheKey = `${locale}_${JSON.stringify(options)}`;
+    if (!this._formatterCache.has(cacheKey)) {
+      this._formatterCache.set(cacheKey, new Intl.DateTimeFormat(locale, options));
+    }
+    return this._formatterCache.get(cacheKey);
   }
 
   _closeOverlay(save) {
     if (save) this._save();
+
+    if (this._initDoneTimeout) {
+      clearTimeout(this._initDoneTimeout);
+      this._initDoneTimeout = null;
+    }
+
+    // Cleanup: Abort all scroll event listeners and clear wheel timeouts
+    const wheels = [
+      this._yearsEl,
+      this._monthsEl,
+      this._daysEl,
+      this.shadowRoot?.getElementById("hours-wheel"),
+      this.shadowRoot?.getElementById("minutes-wheel"),
+      this.shadowRoot?.getElementById("period-wheel"),
+      this.shadowRoot?.getElementById("forecast-wheel")
+    ];
+
+    wheels.forEach((wheel) => {
+      if (wheel?._abortController) {
+        wheel._abortController.abort();
+      }
+      if (wheel?._scrollTimeout) {
+        clearTimeout(wheel._scrollTimeout);
+        wheel._scrollTimeout = null;
+      }
+    });
+
+    // Backward compatibility cleanup
+    this._scrollAbortControllers.forEach(controller => controller.abort());
+    this._scrollAbortControllers = [];
+    
     this.overlayOpen = false;
     this.overlayType = null;
   }
@@ -812,7 +901,7 @@ class TimeSpinnerCard extends LitElement {
     this.selectedMonth = now.getMonth() + 1;
     this.selectedDay = now.getDate();
     
-    // Update the UI
+    // Update the UI - Optimized: Single RAF, manual active class management
     requestAnimationFrame(() => {
       const minYear = this.getMinYear();
       const daysEl = this.shadowRoot.getElementById("days-wheel");
@@ -826,43 +915,164 @@ class TimeSpinnerCard extends LitElement {
           this.selectedYear = minYear + v;
         }, false, minYear);
         this.setInitial(yearsEl, yearCount, this.selectedYear - minYear);
-        // Update active highlight
-        requestAnimationFrame(() => {
-          const yearIdx = (this.repeatMid * yearCount) + (this.selectedYear - minYear);
-          yearsEl.items.forEach((e, i) =>
-            e.classList.toggle("active", i === yearIdx)
-          );
-        });
       }
+      
       if (monthsEl) {
         this.buildWheel(monthsEl, 12, v => {
           this.selectedMonth = v + 1;
         }, false, 1);
         this.setInitial(monthsEl, 12, this.selectedMonth - 1);
-        // Update active highlight
-        requestAnimationFrame(() => {
-          const monthIdx = (this.repeatMid * 12) + (this.selectedMonth - 1);
-          monthsEl.items.forEach((e, i) =>
-            e.classList.toggle("active", i === monthIdx)
-          );
-        });
       }
+      
       if (daysEl) {
         const daysInMonth = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
         this.buildWheel(daysEl, daysInMonth, v => this.selectedDay = v + 1, false, 1);
         this.setInitial(daysEl, daysInMonth, this.selectedDay - 1);
-        // Update active highlight
-        requestAnimationFrame(() => {
-          const dayIdx = (this.repeatMid * daysInMonth) + (this.selectedDay - 1);
-          daysEl.items.forEach((e, i) =>
-            e.classList.toggle("active", i === dayIdx)
-          );
-        });
       }
     });
   }
 
+  _buildForecastWheel(container) {
+    if (!container) return;
+
+    // Cleanup old event listener before rebuilding
+    if (container._abortController) {
+      container._abortController.abort();
+    }
+    if (container._scrollTimeout) {
+      clearTimeout(container._scrollTimeout);
+      container._scrollTimeout = null;
+    }
+    
+    container.innerHTML = "";
+    const pad = Math.floor(this.visibleItems / 2);
+    container.items = [];
+    
+    const list = document.createElement("div");
+    list.append(Object.assign(document.createElement("div"), {
+      style: `height:${pad * this.itemHeight}px`
+    }));
+    
+    const locale = this._getLocale();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Generate 9 days: 2 past + today + 6 future
+    const dates = [];
+    for (let i = -2; i <= 6; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      dates.push({ date, offset: i });
+    }
+    
+    // Format dates with localization
+    dates.forEach(({ date, offset }) => {
+      const d = document.createElement("div");
+      d.className = "item";
+      
+      // Mark past dates as disabled
+      if (offset < 0) {
+        d.classList.add("disabled");
+      }
+      
+      // Format date label
+      if (offset === 0) {
+        d.textContent = this._getLocalizedString('today', locale.language);
+      } else if (offset === 1) {
+        d.textContent = this._getLocalizedString('tomorrow', locale.language);
+      } else {
+        // Format: "We. 4. März" (exactly 2 chars + period) - Use cached formatters
+        const weekdayFormatter = this._getFormatter(locale.language, { weekday: 'short' });
+        const dayFormatter = this._getFormatter(locale.language, { day: 'numeric' });
+        const monthFormatter = this._getFormatter(locale.language, { month: 'long' });
+        
+        const weekday = weekdayFormatter.format(date).slice(0, 2) + '.';
+        const day = dayFormatter.format(date);
+        const month = this._formatMonthName(monthFormatter.format(date));
+        
+        d.textContent = `${weekday} ${day}. ${month}`;
+      }
+      
+      list.append(d);
+      container.items.push(d);
+    });
+    
+    list.append(Object.assign(document.createElement("div"), {
+      style: `height:${pad * this.itemHeight}px`
+    }));
+    
+    container.append(list);
+    
+    // Set initial position to "today" (index 2)
+    requestAnimationFrame(() => {
+      container.scrollTop = 2 * this.itemHeight;
+      container.items.forEach((e, i) =>
+        e.classList.toggle("active", i === 2)
+      );
+    });
+    
+    // Store selected date (today)
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+    this.selectedYear = todayDate.getFullYear();
+    this.selectedMonth = todayDate.getMonth() + 1;
+    this.selectedDay = todayDate.getDate();
+    
+    // Handle scrolling with restrictions - Optimized: Track previous active item
+    let prevActiveIdx = 2;
+    const abortController = new AbortController();
+    container._abortController = abortController;
+    
+    container.addEventListener("scroll", () => {
+      if (container._scrollTimeout) {
+        clearTimeout(container._scrollTimeout);
+      }
+      container._scrollTimeout = setTimeout(() => {
+        let idx = Math.round(container.scrollTop / this.itemHeight);
+        
+        // Prevent scrolling to past dates (indices 0-1)
+        if (idx < 2) {
+          idx = 2;
+        }
+        
+        container.scrollTo({ top: idx * this.itemHeight, behavior: "smooth" });
+        
+        // Update selected date
+        const dateOffset = idx - 2;
+        const selectedDate = new Date();
+        selectedDate.setHours(0, 0, 0, 0);
+        selectedDate.setDate(selectedDate.getDate() + dateOffset);
+        
+        if (!this.isInitializing) this.hasChanges = true;
+        this.selectedYear = selectedDate.getFullYear();
+        this.selectedMonth = selectedDate.getMonth() + 1;
+        this.selectedDay = selectedDate.getDate();
+        
+        // Optimized: Only update previous and current active item
+        if (prevActiveIdx !== idx) {
+          if (container.items[prevActiveIdx]) {
+            container.items[prevActiveIdx].classList.remove("active");
+          }
+          if (container.items[idx]) {
+            container.items[idx].classList.add("active");
+          }
+          prevActiveIdx = idx;
+        }
+        container._scrollTimeout = null;
+      }, 80);
+    }, { signal: abortController.signal });
+  }
+
   buildPeriodWheel(container) {
+    // Cleanup old event listener before rebuilding
+    if (container._abortController) {
+      container._abortController.abort();
+    }
+    if (container._scrollTimeout) {
+      clearTimeout(container._scrollTimeout);
+      container._scrollTimeout = null;
+    }
+
     container.innerHTML = "";
     const pad = Math.floor(this.visibleItems / 2);
     container.items = [];
@@ -887,23 +1097,46 @@ class TimeSpinnerCard extends LitElement {
 
     container.append(list);
 
-    let t;
+    let prevActiveIdx = -1;
+    const abortController = new AbortController();
+    container._abortController = abortController;
+    
     container.addEventListener("scroll", () => {
-      clearTimeout(t);
-      t = setTimeout(() => {
+      if (container._scrollTimeout) {
+        clearTimeout(container._scrollTimeout);
+      }
+      container._scrollTimeout = setTimeout(() => {
         const idx = Math.round(container.scrollTop / this.itemHeight);
         container.scrollTo({ top: idx * this.itemHeight, behavior: "smooth" });
         const logical = idx % 2;
         if (!this.isInitializing) this.hasChanges = true;
         this.selectedPeriod = periods[logical];
-        container.items.forEach((e, i) =>
-          e.classList.toggle("active", i === idx)
-        );
+        
+        // Optimized: Only update previous and current active item
+        if (prevActiveIdx !== idx) {
+          if (container.items[prevActiveIdx]) {
+            container.items[prevActiveIdx].classList.remove("active");
+          }
+          if (container.items[idx]) {
+            container.items[idx].classList.add("active");
+          }
+          prevActiveIdx = idx;
+        }
+        container._scrollTimeout = null;
       }, 80);
-    });
+    }, { signal: abortController.signal });
   }
 
   buildWheel(container, count, onChange, isMinutes = false, startValue = 0) {
+    // Cleanup old event listener and timeout before rebuilding
+    if (container._abortController) {
+      container._abortController.abort();
+    }
+    if (container._scrollTimeout) {
+      clearTimeout(container._scrollTimeout);
+      container._scrollTimeout = null;
+    }
+
     container.innerHTML = "";
     const pad = Math.floor(this.visibleItems / 2);
     container.items = [];
@@ -935,46 +1168,65 @@ class TimeSpinnerCard extends LitElement {
 
     container.append(list);
 
-    let t;
+    const abortController = new AbortController();
+    container._abortController = abortController;
+    
     container.addEventListener("scroll", () => {
-      clearTimeout(t);
-      t = setTimeout(() => this.snap(container, count, onChange), 80);
-    });
+      if (container._scrollTimeout) {
+        clearTimeout(container._scrollTimeout);
+      }
+      container._scrollTimeout = setTimeout(() => {
+        this.snap(container, count, onChange);
+        container._scrollTimeout = null;
+      }, 80);
+    }, { signal: abortController.signal });
   }
 
   snap(container, count, onChange) {
     const idx = Math.round(container.scrollTop / this.itemHeight);
-    container.scrollTo({ top: idx * this.itemHeight, behavior: "smooth" });
+    container.scrollTo({ top: idx * this.itemHeight, behavior: this.isInitializing ? "auto" : "smooth" });
 
     const logical = ((idx % count) + count) % count;
     onChange(logical);
     
-    // Always update active highlight for the current wheel
-    container.items.forEach((e, i) =>
-      e.classList.toggle("active", i === idx)
-    );
+    // Optimized: Track and update only changed items
+    if (!container._prevActiveIdx && container._prevActiveIdx !== 0) {
+      container._prevActiveIdx = -1;
+    }
+    
+    if (container._prevActiveIdx !== idx) {
+      if (container.items[container._prevActiveIdx]) {
+        container.items[container._prevActiveIdx].classList.remove("active");
+      }
+      if (container.items[idx]) {
+        container.items[idx].classList.add("active");
+      }
+      container._prevActiveIdx = idx;
+    }
     
     // Update days wheel if year or month wheel was changed
     if ((container === this._yearsEl || container === this._monthsEl) && this._daysEl) {
       const maxDay = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
       if (this.selectedDay > maxDay) this.selectedDay = maxDay;
+
+      // Rebuild day wheel with new month length
       this.buildWheel(this._daysEl, maxDay, v => this.selectedDay = v + 1, false, 1);
+      // setInitial() already sets scroll position, active class, and _prevActiveIdx
       this.setInitial(this._daysEl, maxDay, this.selectedDay - 1);
-      // Update active highlight for the day wheel after rebuild
-      requestAnimationFrame(() => {
-        const dayIdx = (this.repeatMid * maxDay) + (this.selectedDay - 1);
-        this._daysEl.items.forEach((e, i) =>
-          e.classList.toggle("active", i === dayIdx)
-        );
-      });
     }
   }
 
   setInitial(container, count, idx) {
-    requestAnimationFrame(() => {
-      const mid = this.repeatMid * count;
-      container.scrollTop = (mid + idx) * this.itemHeight;
-    });
+    // Optimized: Direct scroll position setting (no RAF needed for initialization)
+    const mid = this.repeatMid * count;
+    const targetIdx = mid + idx;
+    container.scrollTop = targetIdx * this.itemHeight;
+    
+    // Set initial active item and tracking
+    if (container.items && container.items[targetIdx]) {
+      container.items[targetIdx].classList.add("active");
+    }
+    container._prevActiveIdx = targetIdx;
   }
 
   _save() {
@@ -1085,6 +1337,7 @@ class TimeSpinnerCard extends LitElement {
       icon: "mdi:clock",
       icon_color: "",
       show_label: false,
+      week_forecast: false,
       minute_step: 5,
       repeat: 3
     };
@@ -1152,6 +1405,7 @@ class TimeSpinnerCardEditor extends LitElement {
       horizontal: { en: 'Horizontal', de: 'Horizontal' },
       vertical: { en: 'Vertical', de: 'Vertikal' },
       show_label: { en: 'Show label in buttons', de: 'Label in Buttons anzeigen' },
+      week_forecast: { en: 'Week forecast mode (7 days)', de: 'Wochenvorschau-Modus (7 Tage)' },
       min_year: { en: 'Minimum Year (optional - overridden by entity attributes)', de: 'Minimales Jahr (optional - wird aus Entity-Attributen überschrieben)' },
       min_year_helper: { en: 'Default: 1900 or entity min_year attribute', de: 'Standard: 1900 oder Entity min_year Attribut' },
       max_year: { en: 'Maximum Year (optional - overridden by entity attributes)', de: 'Maximales Jahr (optional - wird aus Entity-Attributen überschrieben)' },
@@ -1272,6 +1526,14 @@ class TimeSpinnerCardEditor extends LitElement {
         </div>
 
         <div class="option">
+          <label>${this._t('week_forecast')}</label>
+          <ha-switch
+            .checked=${this.config.week_forecast === true}
+            @change=${this._weekForecastChanged}
+          ></ha-switch>
+        </div>
+
+        <div class="option">
           <label>${this._t('min_year')}</label>
           <ha-textfield
             type="number"
@@ -1357,6 +1619,12 @@ class TimeSpinnerCardEditor extends LitElement {
   _showLabelChanged(ev) {
     if (!this.config || !this.hass) return;
     const newConfig = { ...this.config, show_label: ev.target.checked === true };
+    this._fireConfigChanged(newConfig);
+  }
+
+  _weekForecastChanged(ev) {
+    if (!this.config || !this.hass) return;
+    const newConfig = { ...this.config, week_forecast: ev.target.checked === true };
     this._fireConfigChanged(newConfig);
   }
 
