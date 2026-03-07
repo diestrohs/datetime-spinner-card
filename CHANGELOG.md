@@ -5,6 +5,21 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.1.8] - 2026-03-07
+
+### Korrigiert
+- **Week-Forecast Vorwahl bei Vergangenheitsdatum**
+  - Wenn das gespeicherte Datum in der Vergangenheit liegt, wird im Forecast-Spinner jetzt automatisch **"Heute"** vorgewählt
+  - Beispiel: Datum `Sa. 28. Feb.` bei aktuellem Datum `7. März` → Vorwahl springt korrekt auf **Heute**
+  - Interner State (`selectedYear`, `selectedMonth`, `selectedDay`) wird mit der visuellen Vorwahl synchronisiert
+
+### Verbessert
+- **Scroll-Performance**
+  - Scroll-Listener der Wheels sind jetzt als `passive: true` registriert
+  - Betrifft Forecast-, Period- und Standard-Wheel
+- **Formatter-Performance**
+  - Zwei zusätzliche `Intl.DateTimeFormat`-Aufrufe nutzen jetzt den bestehenden Formatter-Cache (`_getFormatter`)
+
 ## [0.1.7] - 2026-03-07
 
 ### Hinzugefügt

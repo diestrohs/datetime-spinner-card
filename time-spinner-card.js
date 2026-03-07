@@ -344,7 +344,7 @@ class TimeSpinnerCard extends LitElement {
     
     // For 'language' or 'system', detect from locale
     if (timeFormat === 'language' || timeFormat === 'system') {
-      const formatter = new Intl.DateTimeFormat(locale.language, {
+      const formatter = this._getFormatter(locale.language, {
         hour: 'numeric'
       });
       const parts = formatter.formatToParts(new Date(2024, 0, 1, 13));
@@ -359,7 +359,7 @@ class TimeSpinnerCard extends LitElement {
     const dateFormat = locale.date_format;
     
     // Format date according to user's locale preference
-    const formatter = new Intl.DateTimeFormat(locale.language, {
+    const formatter = this._getFormatter(locale.language, {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
@@ -1009,8 +1009,17 @@ class TimeSpinnerCard extends LitElement {
     const dateDiffMs = selectedDate.getTime() - today.getTime();
     const currentDayOffset = Math.round(dateDiffMs / (1000 * 60 * 60 * 24));
     
-    // Calculate scroll index: clamp offset to valid range (0-8, where 2 is today)
-    const initialIdx = Math.max(0, Math.min(8, 2 + currentDayOffset));
+    // Calculate scroll index: clamp offset to valid range (2-8, where 2 is today)
+    // If selected date is in the past, preselect "today"
+    const normalizedDayOffset = Math.max(0, currentDayOffset);
+    const initialIdx = Math.max(2, Math.min(8, 2 + normalizedDayOffset));
+
+    // Keep component state consistent with visual preselection
+    if (currentDayOffset < 0) {
+      this.selectedYear = today.getFullYear();
+      this.selectedMonth = today.getMonth() + 1;
+      this.selectedDay = today.getDate();
+    }
     
     // Set initial position to currently selected date
     requestAnimationFrame(() => {
@@ -1070,7 +1079,7 @@ class TimeSpinnerCard extends LitElement {
         }
         container._scrollTimeout = null;
       }, 80);
-    }, { signal: abortController.signal });
+    }, { signal: abortController.signal, passive: true });
   }
 
   buildPeriodWheel(container) {
@@ -1142,7 +1151,7 @@ class TimeSpinnerCard extends LitElement {
         }
         container._scrollTimeout = null;
       }, 80);
-    }, { signal: abortController.signal });
+    }, { signal: abortController.signal, passive: true });
   }
 
   buildWheel(container, count, onChange, isMinutes = false, startValue = 0) {
@@ -1210,7 +1219,7 @@ class TimeSpinnerCard extends LitElement {
         }
         container._scrollTimeout = null;
       }, 80);
-    }, { signal: abortController.signal });
+    }, { signal: abortController.signal, passive: true });
   }
 
   snap(container, count, onChange) {

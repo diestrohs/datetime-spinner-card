@@ -2,6 +2,19 @@
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
+## Version 0.1.8
+
+### Änderungen in v0.1.8
+
+🐛 **Korrektur im Wochenvorschau-Modus**
+- Bei `week_forecast: true` und Datum in der Vergangenheit wird im Spinner automatisch **Heute** vorgewählt
+- Beispiel: Altes Datum außerhalb der 7-Tage-Vorschau springt korrekt auf **Heute**
+- Interner Datumsstate wird mit der Vorwahl synchronisiert
+
+⚡ **Performance-Optimierungen**
+- Scroll-Listener der Wheels auf `passive: true` gesetzt
+- Weitere `Intl.DateTimeFormat`-Aufrufe auf Formatter-Cache (`_getFormatter`) umgestellt
+
 ## Version 0.1.7
 
 ### Änderungen in v0.1.7
