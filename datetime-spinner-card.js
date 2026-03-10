@@ -28,7 +28,7 @@ const TRANSLATIONS = {
   }
 };
 
-class TimeSpinnerCard extends LitElement {
+class DateTimeSpinnerCard extends LitElement {
 
   static get properties() {
     return {
@@ -1386,12 +1386,12 @@ class TimeSpinnerCard extends LitElement {
   getCardSize() { return 1; }
 
   static getConfigElement() {
-    return document.createElement("time-spinner-card-editor");
+    return document.createElement("datetime-spinner-card-editor");
   }
 
   static getStubConfig() {
     return {
-      type: "custom:time-spinner-card",
+      type: "custom:datetime-spinner-card",
       entity: "",
       name: "Terminzeit",
       icon: "mdi:clock",
@@ -1405,10 +1405,10 @@ class TimeSpinnerCard extends LitElement {
   }
 }
 
-customElements.define("time-spinner-card", TimeSpinnerCard);
+customElements.define("datetime-spinner-card", DateTimeSpinnerCard);
 
 // Visual Editor Component
-class TimeSpinnerCardEditor extends LitElement {
+class DateTimeSpinnerCardEditor extends LitElement {
   
   static get properties() {
     return {
@@ -1738,5 +1738,5 @@ class TimeSpinnerCardEditor extends LitElement {
   }
 }
 
-customElements.define("time-spinner-card-editor", TimeSpinnerCardEditor);
+customElements.define("datetime-spinner-card-editor", DateTimeSpinnerCardEditor);
 

@@ -1,14 +1,14 @@
-# Time Spinner Card
+# DateTime Spinner Card
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.1.8
+## Version 0.1.9
 
 ### Screenshots
 
 | Card Ansicht | Date Spinner | Time Spinner | Week Forecast |
 |---|---|---|---|
-| ![Card](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_card.png) | ![Date](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_date.png) | ![Time](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_time.png) | ![Week Forecast](https://raw.githubusercontent.com/diestrohs/time-spinner-card/main/docs/assets/screenshot_week_forcast.png) |
+| ![Card](https://raw.githubusercontent.com/diestrohs/datetime-spinner-card/main/docs/assets/screenshot_card.png) | ![Date](https://raw.githubusercontent.com/diestrohs/datetime-spinner-card/main/docs/assets/screenshot_date.png) | ![Time](https://raw.githubusercontent.com/diestrohs/datetime-spinner-card/main/docs/assets/screenshot_time.png) | ![Week Forecast](https://raw.githubusercontent.com/diestrohs/datetime-spinner-card/main/docs/assets/screenshot_week_forcast.png) |
 
 ### Features
 
@@ -34,6 +34,14 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 📏 **Kompakte Button-Breite** - Optimiert auf 140px für effiziente Raumausnutzung  
 📳 **Haptisches Feedback (iOS)** - Fühlbares Feedback beim Scrollen in HA iOS App (konfigurierbar)  
 🎯 **Smart Forecast-Vorwahl** - Vergangene Daten wählen im Wochenmodus automatisch „Heute“ vor
+
+### Änderungen in v0.1.9
+
+🔁 **Umbenennung auf DateTime Spinner Card**
+- Card-Type geändert auf `custom:datetime-spinner-card`
+- Ressourcendatei geändert auf `datetime-spinner-card.js`
+- Interne Custom-Elemente auf `datetime-spinner-card` umgestellt
+- Repository auf `diestrohs/datetime-spinner-card` umbenannt
 
 ### Änderungen in v0.1.8
 
@@ -154,26 +162,26 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 ### HACS (empfohlen)
 
 1. Öffnen Sie HACS in Home Assistant
-2. Geben Sie in der Suche `Time Spinner Card` ein
-3. Installieren Sie "Time Spinner Card"
+2. Geben Sie in der Suche `DateTime Spinner Card` ein
+3. Installieren Sie "DateTime Spinner Card"
 
 **Falls die Card noch nicht in HACS verfügbar ist** (z.B. während der Review-Phase):
 
 1. HACS → Menü (⋮) → **Custom repositories**
 2. Repository hinzufügen:
-   - **Repository**: `https://github.com/diestrohs/time-spinner-card`
+  - **Repository**: `https://github.com/diestrohs/datetime-spinner-card`
    - **Typ**: `Lovelace`
 3. Speichern, dann HACS neu laden
-4. Suchen Sie nach "Time Spinner Card" und installieren Sie die Card
+4. Suchen Sie nach "DateTime Spinner Card" und installieren Sie die Card
 
 ### Manuelle Installation
 
-1. Laden Sie `time-spinner-card.js` herunter
+1. Laden Sie `datetime-spinner-card.js` herunter
 2. Kopieren Sie die Datei nach `config/www/time_picker_spinner/`
 3. Fügen Sie die Ressource in Home Assistant hinzu:
    - Gehen Sie zu **Einstellungen** → **Dashboards** → **Ressourcen**
    - Klicken Sie auf **Ressource hinzufügen**
-   - URL: `/local/time_picker_spinner/time-spinner-card.js`
+  - URL: `/local/time_picker_spinner/datetime-spinner-card.js`
    - Ressourcentyp: **JavaScript Module**
 
 ## Verwendung
@@ -181,14 +189,14 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 ### Basis-Konfiguration (Kombinierte Entity)
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: input_datetime.wakeup_time
 ```
 
 ### Separate Datums- und Zeit-Entities
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 date_entity: date.appointment_date
 time_entity: time.appointment_time
 name: Termin
@@ -199,7 +207,7 @@ icon_color: "#2196f3"
 ### Wochenvorschau-Modus (7-Tage-Auswahl)
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 date_entity: date.appointment_date
 name: Termin
 icon: mdi:calendar-check
@@ -216,7 +224,7 @@ Dieser Modus zeigt eine 7-Tage-Vorschau:
 ### Erweiterte Konfiguration mit Min/Max Jahren
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: input_datetime.birthdate
 name: Geburtsdatum
 icon: mdi:cake-variant
@@ -250,7 +258,7 @@ repeat: 3
 Die Card verfügt über einen vollständigen Visual Editor in der Home Assistant UI:
 
 1. Fügen Sie eine neue Card hinzu
-2. Suchen Sie nach "Time Spinner Card"
+2. Suchen Sie nach "DateTime Spinner Card"
 3. Konfigurieren Sie alle Optionen über die grafische Oberfläche
 4. Entity-Picker, Icon-Picker und alle Felder sind direkt verfügbar
 
@@ -259,7 +267,7 @@ Die Card verfügt über einen vollständigen Visual Editor in der Home Assistant
 ### Wecker mit 5-Minuten-Schritten
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: input_datetime.alarm_time
 name: Weckzeit
 icon: mdi:alarm
@@ -271,7 +279,7 @@ show_label: true
 ### Terminplanung mit Datum und Zeit (separate Entities)
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 date_entity: date.appointment_date
 time_entity: time.appointment_time
 name: Termin
@@ -284,7 +292,7 @@ repeat: 5
 ### Geburtsdatum mit Jahres-Beschränkung und Label
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: input_datetime.birthday
 name: Geburtsdatum
 icon: mdi:cake-variant
@@ -297,7 +305,7 @@ show_label: true
 ### EV-Ladeplanung mit 30-Minuten-Schritten (EVCC Scheduler)
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: time.evcc_elroq_repeating_plan_1_time
 name: Ladestart
 icon: mdi:ev-station
@@ -325,7 +333,7 @@ Ohne card_mod wird die Card wie eine standard HA datetime Card dargestellt:
 Mit card_mod können Sie ein Spinner-Grid-Layout erstellen:
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: input_datetime.wakeup_time
 name: Weckzeit
 card_mod:
@@ -350,7 +358,7 @@ card_mod:
 ### Farben und Styling
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: input_datetime.appointment_time
 name: Termine
 icon_color: "#FF6B6B"
@@ -372,7 +380,7 @@ card_mod:
 ### Flex-Layout mit zusätzlichen Elementen
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: time.start_time
 name: Startzeit
 card_mod:

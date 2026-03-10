@@ -5,6 +5,19 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.1.9] - 2026-03-10
+
+### Geändert
+- **Card-Umbenennung**
+  - Card-Name von **Time Spinner Card** auf **DateTime Spinner Card** geändert
+  - Card-Type von `custom:time-spinner-card` auf `custom:datetime-spinner-card` geändert
+  - JavaScript-Datei von `time-spinner-card.js` auf `datetime-spinner-card.js` umbenannt
+  - Custom-Elemente auf `datetime-spinner-card` und `datetime-spinner-card-editor` umgestellt
+
+### Dokumentation
+- README, info, Contributing, HACS-Metadaten und Issue-Templates auf neuen Namen aktualisiert
+- Repository-Links auf das neue Repository `diestrohs/datetime-spinner-card` umgestellt
+
 ## [0.1.8] - 2026-03-07
 
 ### Korrigiert
@@ -371,4 +384,4 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 - Overlay ist modal (blockiert Hintergrund)
 - Benötigt moderne Browser mit ES6+ Support
 
-[0.0.1]: https://github.com/diestrohs/time-spinner-card/releases/tag/v0.0.1
+[0.0.1]: https://github.com/diestrohs/datetime-spinner-card/releases/tag/v0.0.1

@@ -1,4 +1,4 @@
-# Beitragen zu Time Spinner Card
+# Beitragen zu DateTime Spinner Card
 
 Vielen Dank für dein Interesse, zu diesem Projekt beizutragen! 🎉
 
@@ -9,7 +9,7 @@ Vielen Dank für dein Interesse, zu diesem Projekt beizutragen! 🎉
 Wenn du einen Bug findest:
 
 1. Überprüfe, ob der Bug bereits gemeldet wurde
-2. Falls nicht, erstelle ein [neues Issue](https://github.com/diestrohs/time-spinner-card/issues/new?template=bug_report.md)
+2. Falls nicht, erstelle ein [neues Issue](https://github.com/diestrohs/datetime-spinner-card/issues/new?template=bug_report.md)
 3. Fülle das Bug Report Template vollständig aus
 4. Füge relevante Logs und Screenshots hinzu
 
@@ -18,13 +18,13 @@ Wenn du einen Bug findest:
 Hast du eine Idee für ein neues Feature?
 
 1. Überprüfe, ob das Feature bereits vorgeschlagen wurde
-2. Erstelle ein [neues Issue](https://github.com/diestrohs/time-spinner-card/issues/new?template=feature_request.md)
+2. Erstelle ein [neues Issue](https://github.com/diestrohs/datetime-spinner-card/issues/new?template=feature_request.md)
 3. Beschreibe den Use Case und die gewünschte Lösung
 
 ### Pull Requests
 
 1. **Fork** das Repository
-2. **Clone** deinen Fork: `git clone https://github.com/diestrohs/time-spinner-card.git`
+2. **Clone** deinen Fork: `git clone https://github.com/diestrohs/datetime-spinner-card.git`
 3. Erstelle einen **Feature Branch**: `git checkout -b feature/mein-feature`
 4. **Commit** deine Änderungen: `git commit -m 'Add: Mein tolles Feature'`
 5. **Push** zum Branch: `git push origin feature/mein-feature`
@@ -40,7 +40,7 @@ Hast du eine Idee für ein neues Feature?
 
 ### Lokale Entwicklung
 
-1. Kopiere `time-spinner-card.js` nach `config/www/time_picker_spinner/`
+1. Kopiere `datetime-spinner-card.js` nach `config/www/time_picker_spinner/`
 2. Füge die Ressource in Home Assistant hinzu
 3. Füge eine Test-Card zu deinem Dashboard hinzu
 4. Bearbeite die Datei und lade die Seite neu (Hard Refresh: Ctrl+Shift+R)

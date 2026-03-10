@@ -1,6 +1,16 @@
-# Time Spinner Card
+# DateTime Spinner Card
 
 Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
+
+## Version 0.1.9
+
+### Änderungen in v0.1.9
+
+🔁 **Umbenennung auf DateTime Spinner Card**
+- Card-Type auf `custom:datetime-spinner-card` umgestellt
+- Ressourcendatei auf `datetime-spinner-card.js` umbenannt
+- Interne Custom-Elemente auf `datetime-spinner-card` angepasst
+- Repository auf `diestrohs/datetime-spinner-card` umbenannt
 
 ## Version 0.1.8
 
@@ -151,16 +161,16 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 ### HACS (empfohlen)
 
 1. Öffnen Sie HACS in Home Assistant
-2. Geben Sie in der Suche `Time Spinner Card` ein
-3. Installieren Sie "Time Spinner Card"
+2. Geben Sie in der Suche `DateTime Spinner Card` ein
+3. Installieren Sie "DateTime Spinner Card"
 
 ### Manuelle Installation
 
-1. Laden Sie `time-spinner-card.js` herunter
+1. Laden Sie `datetime-spinner-card.js` herunter
 2. Kopieren Sie die Datei nach `config/www/time_picker_spinner/`
 3. Fügen Sie die Ressource in Home Assistant hinzu:
    - **Einstellungen** → **Dashboards** → **Ressourcen**
-   - URL: `/local/time_picker_spinner/time-spinner-card.js`
+  - URL: `/local/time_picker_spinner/datetime-spinner-card.js`
    - Ressourcentyp: **JavaScript Module**
 
 ## Verwendung
@@ -168,14 +178,14 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 ### Basis-Konfiguration (Kombinierte Entity)
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: input_datetime.wakeup_time
 ```
 
 ### Separate Datums- und Zeit-Entities
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 date_entity: date.appointment_date
 time_entity: time.appointment_time
 name: Termin
@@ -186,7 +196,7 @@ icon_color: "#2196f3"
 ### Erweiterte Konfiguration mit Min/Max Jahren
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: input_datetime.birthday
 name: Geburtsdatum
 icon: mdi:cake-variant
@@ -200,7 +210,7 @@ repeat: 3
 ### Wochenvorschau-Modus (7-Tage-Auswahl)
 
 ```yaml
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 date_entity: date.appointment_date
 name: Termin
 icon: mdi:calendar-check
@@ -235,4 +245,4 @@ week_forecast: true
 
 ## Weitere Informationen
 
-Siehe [README.md](https://github.com/diestrohs/time-spinner-card) für vollständige Dokumentation, Beispiele und card_mod Anpassungen.
+Siehe [README.md](https://github.com/diestrohs/datetime-spinner-card) für vollständige Dokumentation, Beispiele und card_mod Anpassungen.

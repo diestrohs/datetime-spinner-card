@@ -18,7 +18,7 @@ assignees: ''
 ## Beispiel-Konfiguration
 ```yaml
 # Wie könnte die Konfiguration aussehen?
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: input_datetime.wakeup_time
 neue_option: wert
 ```

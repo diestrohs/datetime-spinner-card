@@ -27,13 +27,13 @@ assignees: ''
 ## Umgebung
 - **Home Assistant Version**: [z.B. 2024.1.0]
 - **Browser**: [z.B. Chrome 120, Firefox 121]
-- **Time Spinner Card Version**: [z.B. 0.0.1]
+- **DateTime Spinner Card Version**: [z.B. 0.0.1]
 - **Entity Type**: [z.B. input_datetime.* oder time.*]
 
 ## Konfiguration
 ```yaml
 # Deine Card-Konfiguration hier
-type: custom:time-spinner-card
+type: custom:datetime-spinner-card
 entity: ...
 ```
 
