@@ -5,6 +5,16 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.0] - 2026-03-11
+
+### Dokumentation
+- README und info verschlankt: ausführliche Release-Historie entfernt und auf den Changelog verlinkt
+- Installationspfade und lokale Ressourcenpfade auf den umbenannten Ordner `datetime-spinner-card` vereinheitlicht
+- Sprachliche Konsistenz in der Doku verbessert (Begriffe, Überschriften, Ansprache)
+
+### Geändert
+- Versionsangaben in Dokumentation und Metadaten auf `0.2.0` aktualisiert
+
 ## [0.1.9] - 2026-03-10
 
 ### Geändert

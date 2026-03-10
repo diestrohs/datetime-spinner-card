@@ -1,8 +1,8 @@
 # DateTime Spinner Card
 
-Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
+Eine moderne Home Assistant Lovelace Card mit Spinner-Interface im iOS-Stil zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Version 0.1.9
+## Version 0.2.0
 
 ### Screenshots
 
@@ -10,9 +10,9 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 |---|---|---|---|
 | ![Card](https://raw.githubusercontent.com/diestrohs/datetime-spinner-card/main/docs/assets/screenshot_card.png) | ![Date](https://raw.githubusercontent.com/diestrohs/datetime-spinner-card/main/docs/assets/screenshot_date.png) | ![Time](https://raw.githubusercontent.com/diestrohs/datetime-spinner-card/main/docs/assets/screenshot_time.png) | ![Week Forecast](https://raw.githubusercontent.com/diestrohs/datetime-spinner-card/main/docs/assets/screenshot_week_forcast.png) |
 
-### Features
+### Funktionen
 
-📅 **Datums- und Zeitauswahl** - Jahr, Monat, Tag, Stunde und Minute mit iOS-style Spinner  
+📅 **Datums- und Zeitauswahl** - Jahr, Monat, Tag, Stunde und Minute mit Spinner im iOS-Stil  
 🔀 **Flexible Entity-Konfiguration** - `entity`, `date_entity` und `time_entity` beliebig kombinierbar  
 ⚡ **"Heute"-Button** - Schnellauswahl für aktuelles Datum im Date-Picker  
 🎯 **Min/Max Jahr-Kontrolle** - Aus Entity-Attributen auslesen oder in der Konfiguration überschreiben  
@@ -22,8 +22,8 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 ⚙️ **Flexible Minuten-Schrittweite** - 1, 5, 10, 15 oder 30 Minuten  
 🏷️ **Optional Labels in Buttons** - Zeigt Datumsformat (dd.mm.yyyy) und Zeit-Format (hh:mm) in den Buttons  
 🔄 **Konfigurierbare Wiederholungen** - Anpassbare Anzahl der Spinner-Wiederholungen (1-10)  
-🖼️ **Visual Editor** - Komfortable Konfiguration über die Home Assistant UI mit DE/EN Übersetzungen  
-🌙 **Theme-Support** - Passt sich automatisch an Dark/Light Themes an  
+🖼️ **Visueller Editor** - Komfortable Konfiguration über die Home Assistant UI mit DE/EN Übersetzungen  
+🌙 **Theme-Unterstützung** - Passt sich automatisch an dunkle/helle Themes an  
 ⚡ **Lit-basiert** - Moderne Web Components mit Shadow DOM  
 🕐 **Universelle Entity-Unterstützung** - Funktioniert mit `input_datetime.*`, `date.*` und `time.*` Entities  
 🌍 **Vollständige Mehrsprachigkeit** - 16+ Sprachen mit lokalisierten Buttons und Datumsformaten  
@@ -35,127 +35,13 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 📳 **Haptisches Feedback (iOS)** - Fühlbares Feedback beim Scrollen in HA iOS App (konfigurierbar)  
 🎯 **Smart Forecast-Vorwahl** - Vergangene Daten wählen im Wochenmodus automatisch „Heute“ vor
 
-### Änderungen in v0.1.9
+## Aktuelles Release (0.2.0)
 
-🔁 **Umbenennung auf DateTime Spinner Card**
-- Card-Type geändert auf `custom:datetime-spinner-card`
-- Ressourcendatei geändert auf `datetime-spinner-card.js`
-- Interne Custom-Elemente auf `datetime-spinner-card` umgestellt
-- Repository auf `diestrohs/datetime-spinner-card` umbenannt
+- Umbenennung auf `DateTime Spinner Card` inkl. `custom:datetime-spinner-card`
+- Ressourcendatei und interne Custom-Elemente auf `datetime-spinner-card` umgestellt
+- Dokumentation und Repository-Referenzen vereinheitlicht
 
-### Änderungen in v0.1.8
-
-🐛 **Korrektur im Wochenvorschau-Modus**
-- Wenn `week_forecast: true` aktiv ist und das Entity-Datum in der Vergangenheit liegt,
-  wird beim Öffnen des Spinners jetzt automatisch **„Heute“** vorgewählt.
-- Der interne Datumsstate wird dabei auf „Heute“ synchronisiert, damit Anzeige und Auswahl konsistent bleiben.
-
-⚡ **Performance-Optimierungen**
-- Scroll-Listener in Forecast-, Period- und Standard-Wheel auf `passive: true` umgestellt.
-- Zusätzliche Datums-/Zeit-Formatter auf den bestehenden `_getFormatter`-Cache umgestellt.
-
-### Änderungen in v0.1.7
-
-✨ **Neue Features**
-- **Haptisches Feedback für iOS**
-  - Fühlbares Feedback beim Scrollen durch die Spinner-Räder
-  - Funktioniert ausschließlich in der Home Assistant iOS Companion App
-  - Synchronisiert mit jeder Zahlenänderung während des Scrollens (Real-Time Haptic)
-  - Konfigurierbar über `haptic_feedback: true/false` (Standard: aktiviert)
-  - Toggle-Schalter im Visual Editor ("Haptisches Feedback (iOS App)")
-  - Nutzt Home Assistant iOS Native Haptic API (CustomEvent)
-  - Silent Fallback bei nicht unterstützten Plattformen
-
-### Änderungen in v0.1.6
-
-🐛 **Stabilitäts- und Fehlerbereinigungen**
-- **Spinner Stabilitätsfixes**
-  - Behobene Datumssprünge beim Monatswechsel (z.B. 04-16 → 05-14)
-  - Ursache: Day-Wheel-Rebuild ließ alte Event-Listener laufen → doppelte Snap-Events
-  - Lösung: Korrekte Cleanup mit AbortController und Timeout-Management pro Wheel-Container
-
-- **Focus-Jitter Reduktion während Initialisierung**
-  - Glattere Scrollbewegungen beim Öffnen der Spinner
-  - Auto-Scroll während Init statt Smooth-Scroll zur Vermeidung von Fokus-Flackern
-  - Besseres Timeout-Management für saubere Initialisierungspfade
-
-- **Forecast-Wheel optimiert**
-  - Scrollt jetzt zum gespeicherten Datum der Entity statt immer zu "Heute"
-  - Intelligente Offset-Berechnung zwischen Entity-Datum und aktuellem Datum
-  - Korrekte Positionierung im 9-Tage-View (0-8 Bereich)
-
-### Änderungen in v0.1.5
-
-✨ **Neue Features & Verbesserungen**
-- **Intelligente Monatsnamen-Kürzung im Wochenvorschau-Modus**
-  - Monate mit ≤4 Zeichen bleiben unverändert (März, Mai, Juni, Juli)
-  - Längere Monate werden auf 3 Zeichen + Punkt gekürzt (Jan., Feb., Apr., Sep., etc.)
-  - Konsistente Formatierung über alle 16+ unterstützten Sprachen
-  - Anwendbar in Wochenvorschau-Button und Forecast-Wheel
-
-- **Button-Breite Optimierung**
-  - Reduziert von 180px auf 140px für kompaktere Layouts
-  - Bessere Raumausnutzung ohne Text-Cutoff bei Standard-Datumsformat
-  - Perfekte Balance zwischen Kompaktheit und Lesbarkeit im week_forecast Modus
-
-### Änderungen in v0.1.4
-
-✨ **Neue Features**
-- Visual Editor vollständig übersetzt (Deutsch/Englisch) mit automatischer Spracherkennung
-
-💅 **Verbesserungen**
-- Smart Save Button: Primary-Farbe nur bei tatsächlichen Änderungen
-- Button-Alignment optimiert: Save rechtsbündig zum letzten Wheel, Cancel linksbündig
-- Verhindert ungewollte Farbe während des initialen Snappings
-
-### Änderungen in v0.1.3
-
-✨ **Neue Features**
-- `show_label` Config-Option für optionale Label in Buttons ("dd.mm.yyyy", "hh:mm")
-- Tile-ähnliches Layout mit rechts-ausgerichteten Buttons (`margin-left: auto`)
-- Adaptive Button-Höhen: 40px (ohne Label) / 56px (mit Label)
-- Konsistente Card-Höhe durch `min-height: 56px` auf entity-row
-
-🧹 **Code-Bereinigung**
-- Rekursions-Bug in `_formatDateByLocale()` behoben
-- Ungenutzten Methode `_getTimeZone()` entfernt
-- Redundante Methode `_getFormatLabel()` entfernt  
-- Code-Konsistenz und Wartbarkeit verbessert
-
-🎨 **UI/UX Verbesserungen**
-- Card nimmt nur benötigte Höhe ein (`height: auto`)
-- Konsistente Row-Höhe (56px) unabhängig von Label-Visibility
-- Flexbox basiertes Layout für bessere Responsivität
-
-### Änderungen in v0.1.2
-
-⚡ **Performance-Optimierungen**
-- Wiederholte Berechnung von `Math.floor(this.repeat / 2)` optimiert
-- Unbenutzte Funktion `updateDaysWheel()` entfernt
-
-📝 **Dokumentation**
-- Screenshot für Date+Time Spinner entfernt (nicht mehr verfügbar)
-
-### Neue Features in v0.1.1
-
-🐛 **Bugfix: "Heute"-Button Highlighting**
-- Highlighting wird jetzt korrekt angezeigt, wenn der "Heute"-Button geklickt wird
-- Behebt Problem bei Wechsel zwischen Monaten mit unterschiedlichen Tageszahlen (z.B. 31 → 28 Tage)
-
-### Features in v0.1.0
-
-⏰ **12-Stunden-Zeit-Format mit AM/PM-Unterstützung**
-- Automatische Format-Erkennung aus Home Assistant Benutzereinstellungen
-- Lokalisierte Zeit-Anzeige (z.B. "10:00 AM" oder "22:30")
-- Separates AM/PM-Selektions-Rad im Overlay
-- Dynamische Stunden-Bereich (1-12 für 12h, 0-23 für 24h)
-- Automatische Konvertierung zwischen 12h und 24h Format beim Speichern
-- Unterstützung für HA-Einstellungen: '12', '24', 'language', 'system'
-
-✨ **Verbesserungen**
-- AM/PM-Rad begrenzt auf nur 2 Werte ohne Wiederholungen (kompakt)
-- Zeit-Label bleibt konstant 'hh:mm' unabhängig vom Format
-- Nahtlose Integration mit HA Locale-Einstellungen  
+Alle Details zu allen Versionen stehen im [CHANGELOG.md](CHANGELOG.md).
 
 ## Installation
 
@@ -177,11 +63,11 @@ Eine moderne Home Assistant Lovelace Card mit iOS-style Spinner-Interface zur fl
 ### Manuelle Installation
 
 1. Laden Sie `datetime-spinner-card.js` herunter
-2. Kopieren Sie die Datei nach `config/www/time_picker_spinner/`
+2. Kopieren Sie die Datei nach `/config/www/datetime-spinner-card/`
 3. Fügen Sie die Ressource in Home Assistant hinzu:
    - Gehen Sie zu **Einstellungen** → **Dashboards** → **Ressourcen**
    - Klicken Sie auf **Ressource hinzufügen**
-  - URL: `/local/time_picker_spinner/datetime-spinner-card.js`
+  - URL: `/local/datetime-spinner-card/datetime-spinner-card.js`
    - Ressourcentyp: **JavaScript Module**
 
 ## Verwendung
@@ -253,9 +139,9 @@ repeat: 3
 | `min_year` | number | *aus Attribut* | Minimales Jahr im Spinner (Fallback: 1900) |
 | `max_year` | number | *aus Attribut* | Maximales Jahr im Spinner (Fallback: 2099) |
 
-## Visual Editor
+## Visueller Editor
 
-Die Card verfügt über einen vollständigen Visual Editor in der Home Assistant UI:
+Die Card verfügt über einen vollständigen visuellen Editor in der Home Assistant UI:
 
 1. Fügen Sie eine neue Card hinzu
 2. Suchen Sie nach "DateTime Spinner Card"
@@ -427,21 +313,21 @@ card_mod:
 - Benötigt mindestens eine Entity-Konfiguration (`entity` oder `date_entity`/`time_entity`)
 - Minuten-Schrittweite nur in vordefinierten Werten (1, 5, 10, 15, 30)
 
-## Implementierte Features (Stand v0.1.2)
+## Implementierte Funktionen (Stand v0.1.2)
 
 ✅ **Basis-Funktionalität**
-- iOS-style Spinner-Interface für Datum und Zeit
+- Spinner-Interface im iOS-Stil für Datum und Zeit
 - Separate oder kombinierte Entity-Konfiguration
-- Visual Editor in Home Assistant UI
+- Visueller Editor in Home Assistant UI
 
-✅ **Datum-Features**
+✅ **Datumsfunktionen**
 - Jahr, Monat, Tag Auswahl mit Spinner-Wheels
 - "Heute"-Button für Schnellauswahl (16+ Sprachen lokalisiert)
 - Min/Max Jahr aus Entity-Attributen oder Config
 - Automatische Tagesanzahl-Anpassung pro Monat (28-31)
 - Highlighting für aktuell ausgewähltes Datum
 
-✅ **Zeit-Features**
+✅ **Zeitfunktionen**
 - 12-Stunden-Format mit AM/PM-Rad
 - 24-Stunden-Format
 - Automatische Format-Erkennung aus HA Settings
@@ -450,7 +336,7 @@ card_mod:
 ✅ **UI/UX**
 - Button-Layout: "Heute" (links), "Abbrechen" (mitte), "Speichern" (rechts)
 - Flexibles Spacing zwischen Buttons (5px minimum)
-- Theme-Support (Dark/Light Mode)
+- Theme-Unterstützung (dunkler/heller Modus)
 - Mobile-responsive Design
 - Icon-Übernahme von Entity
 - Optional Labels in Buttons (Datumsformat + Zeitformat)
@@ -476,50 +362,6 @@ card_mod:
 
 MIT License
 
-## Changelog
-
-### Version 0.0.9 (2026-02-04)
-
-**Vollständige Mehrsprachigkeit für Buttons**
-- "Save"/"Speichern"-Button lokalisiert für alle 17 Sprachen
-- "Cancel"/"Abbrechen"-Button lokalisiert für alle 17 Sprachen
-- Deutsch: "Speichern" statt "OK"
-- Englisch: "Save" statt "OK"
-- Button-Abstand erhöht auf 4px (verhindert visuelles Zusammenstoßen)
-
-**Lokalisierung und Personalisierung des Datumsformats**
-- Datumsformat respektiert HA-Personalisierungseinstellungen (DMY, MDY, YMD, language, system)
-- Dynamische Formatanzeige basierend auf Benutzerlocale
-- Unterstützt 19 verschiedene Sprach-/Regionseinstellungen mit lokalen Datumsformaten
-- Automatische Anpassung an Benutzer-Zeitzone
-
-Weitere Sprachen mit nativen Übersetzungen: Französisch, Spanisch, Italienisch, Niederländisch, Polnisch, Portugiesisch, Schwedisch, Ungarisch, Tschechisch, Rumänisch, Russisch, Ukrainisch, Japanisch, Chinesisch, Koreanisch
-
-### Version 0.0.8 (2026-02-04)
-
-- Code cleanup und Optimierungen
-- Duplicate Methoden entfernt
-- Code quality improvements
-
-### Version 0.0.7 (2026-02-04)
-
-- Vollständige Datums-Auswahl (yyyy-mm-dd)
-- Flexible Entity-Konfiguration
-- Min/Max Jahr-Kontrolle
-- Support für alle Entity-Types
-- Mobile-Responsive Design
-- Performance-Optimierungen
-
-### Version 0.0.1 (2026-01-28)
-
-🎉 **Erstes Release**
-
-- ✨ Basis-Funktionalität mit Spinner-Interface
-- 🖼️ Vollständiger Visual Editor
-- ⚡ Lit-basierte Implementierung mit Shadow DOM
-- 🌙 Theme-Support
-- 🕐 Unterstützung für `input_datetime.*` und `time.*` Entities
-
 ## Support
 
-Bei Problemen oder Feature-Requests erstellen Sie bitte ein Issue auf GitHub.
+Bei Problemen oder Feature-Anfragen erstellen Sie bitte ein Issue auf GitHub.
