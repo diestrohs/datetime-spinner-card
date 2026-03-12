@@ -7,17 +7,15 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [0.2.1] - 2026-03-12
 
-### Korrigiert
-- **Visueller Editor**
-  - Entity-Felder im visuellen Editor wieder als echte Auswahl-Picker nutzbar
-  - Robuster Fallback zwischen `ha-selector` und `ha-entity-picker` ergänzt
-  - Sprachauflösung für Locale-Varianten wie `de-DE` verbessert
-- **Textkodierung**
-  - Falsch dargestellte Umlaute und beschädigte Übersetzungsstrings im Editor korrigiert
-  - Mehrsprachige Button-Texte wieder korrekt darstellbar
+### Highlights
+- Visueller Editor: Entity-Felder wieder als echte Auswahl-Picker nutzbar
+- Umlaute und beschädigte Übersetzungsstrings im Editor korrigiert
+- Wochenvorschau: symbolisches Datums-Label auf `wd. d. month` gesetzt
 
-### Geändert
-- Symbolisches Datums-Label im Wochenvorschau-Modus auf `wd. d. month` gesetzt
+### Technische Anpassungen
+- Robuster Fallback zwischen `ha-selector` und `ha-entity-picker`
+- Verbesserte Sprachauflösung für Locale-Varianten wie `de-DE`
+- Mehrsprachige Button-Texte wieder korrekt darstellbar
 
 ## [0.2.0] - 2026-03-11
 
