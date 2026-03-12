@@ -27,7 +27,7 @@ assignees: ''
 ## Umgebung
 - **Home Assistant Version**: [z.B. 2024.1.0]
 - **Browser**: [z.B. Chrome 120, Firefox 121]
-- **DateTime Spinner Card Version**: [z.B. 0.2.0]
+- **DateTime Spinner Card Version**: [z.B. 0.2.1]
 - **Entity Type**: [z.B. input_datetime.* oder time.*]
 
 ## Konfiguration

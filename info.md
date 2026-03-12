@@ -2,11 +2,11 @@
 
 Eine moderne Home Assistant Lovelace Card mit Spinner-Interface im iOS-Stil zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Aktuelles Release (0.2.0)
+## Aktuelles Release (0.2.1)
 
-- Umbenennung auf `DateTime Spinner Card` inkl. `custom:datetime-spinner-card`
-- Ressourcendatei und interne Custom-Elemente auf `datetime-spinner-card` umgestellt
-- Dokumentation und Repository-Referenzen vereinheitlicht
+- Entity-Felder im visuellen Editor wieder als Auswahl-Picker nutzbar
+- Umlaute und Übersetzungen im Editor korrigiert
+- Wochenvorschau-Label für Datums-Buttons auf `wd. d. month` gesetzt
 
 Alle Details zu allen Versionen stehen im [CHANGELOG.md](CHANGELOG.md).
 

@@ -4,27 +4,27 @@
 const TRANSLATIONS = {
   cancel: {
     en: 'Cancel', de: 'Abbrechen', fr: 'Annuler', es: 'Cancelar', it: 'Annulla',
-    nl: 'Annuleren', pl: 'Anuluj', pt: 'Cancelar', sv: 'Avbryt', hu: 'MÃ©gse',
-    cs: 'ZruÅ¡it', ro: 'Anulare', ru: 'ÐžÑ‚Ð¼ÐµÐ½Ð°', uk: 'Ð¡ÐºÐ°ÑÑƒÐ²Ð°Ñ‚Ð¸',
-    ja: 'ã‚­ãƒ£ãƒ³ã‚»ãƒ«', zh: 'å–æ¶ˆ', ko: 'ì·¨ì†Œ'
+    nl: 'Annuleren', pl: 'Anuluj', pt: 'Cancelar', sv: 'Avbryt', hu: 'M\u00e9gse',
+    cs: 'Zru\u0161it', ro: 'Anulare', ru: '\u041e\u0442\u043c\u0435\u043d\u0430', uk: '\u0421\u043a\u0430\u0441\u0443\u0432\u0430\u0442\u0438',
+    ja: '\u30ad\u30e3\u30f3\u30bb\u30eb', zh: '\u53d6\u6d88', ko: '\ucde8\uc18c'
   },
   ok: {
     en: 'Save', de: 'Speichern', fr: 'Enregistrer', es: 'Guardar', it: 'Salva',
-    nl: 'Opslaan', pl: 'Zapisz', pt: 'Guardar', sv: 'Spara', hu: 'MentÃ©s',
-    cs: 'UloÅ¾it', ro: 'SalveazÄƒ', ru: 'Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ', uk: 'Ð—Ð±ÐµÑ€ÐµÐ³Ñ‚Ð¸',
-    ja: 'ä¿å­˜', zh: 'ä¿å­˜', ko: 'ì €ìž¥'
+    nl: 'Opslaan', pl: 'Zapisz', pt: 'Guardar', sv: 'Spara', hu: 'Ment\u00e9s',
+    cs: 'Ulo\u017eit', ro: 'Salveaz\u0103', ru: '\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c', uk: '\u0417\u0431\u0435\u0440\u0435\u0433\u0442\u0438',
+    ja: '\u4fdd\u5b58', zh: '\u4fdd\u5b58', ko: '\uc800\uc7a5'
   },
   today: {
     en: 'Today', de: 'Heute', fr: "Aujourd'hui", es: 'Hoy', it: 'Oggi',
     nl: 'Vandaag', pl: 'Dzisiaj', pt: 'Hoje', sv: 'Idag', hu: 'Ma',
-    cs: 'Dnes', ro: 'Azi', ru: 'Ð¡ÐµÐ³Ð¾Ð´Ð½Ñ', uk: 'Ð¡ÑŒÐ¾Ð³Ð¾Ð´Ð½Ñ–',
-    ja: 'ä»Šæ—¥', zh: 'ä»Šå¤©', ko: 'ì˜¤ëŠ˜'
+    cs: 'Dnes', ro: 'Azi', ru: '\u0421\u0435\u0433\u043e\u0434\u043d\u044f', uk: '\u0421\u044c\u043e\u0433\u043e\u0434\u043d\u0456',
+    ja: '\u4eca\u65e5', zh: '\u4eca\u5929', ko: '\uc624\ub298'
   },
   tomorrow: {
-    en: 'Tomorrow', de: 'Morgen', fr: 'Demain', es: 'MaÃ±ana', it: 'Domani',
-    nl: 'Morgen', pl: 'Jutro', pt: 'AmanhÃ£', sv: 'Imorgon', hu: 'Holnap',
-    cs: 'ZÃ­tra', ro: 'MÃ¢ine', ru: 'Ð—Ð°Ð²Ñ‚Ñ€Ð°', uk: 'Ð—Ð°Ð²Ñ‚Ñ€Ð°',
-    ja: 'æ˜Žæ—¥', zh: 'æ˜Žå¤©', ko: 'ë‚´ì¼'
+    en: 'Tomorrow', de: 'Morgen', fr: 'Demain', es: 'Ma\u00f1ana', it: 'Domani',
+    nl: 'Morgen', pl: 'Jutro', pt: 'Amanh\u00e3', sv: 'Imorgon', hu: 'Holnap',
+    cs: 'Z\u00edtra', ro: 'M\u00e2ine', ru: '\u0417\u0430\u0432\u0442\u0440\u0430', uk: '\u0417\u0430\u0432\u0442\u0440\u0430',
+    ja: '\u660e\u65e5', zh: '\u660e\u5929', ko: '\ub0b4\uc77c'
   }
 };
 
@@ -559,6 +559,10 @@ class DateTimeSpinnerCard extends LitElement {
   }
 
   _getDateFormatLabel() {
+    if (this.weekForecast) {
+      return 'wd. d. month';
+    }
+
     const locale = this._getLocale();
     const dateFormat = locale.date_format;
     
@@ -1435,6 +1439,7 @@ class DateTimeSpinnerCardEditor extends LitElement {
         color: var(--primary-text-color);
       }
       ha-entity-picker,
+      ha-selector,
       ha-textfield,
       ha-icon-picker {
         width: 100%;
@@ -1452,30 +1457,54 @@ class DateTimeSpinnerCardEditor extends LitElement {
 
   _t(key) {
     const translations = {
-      entity: { en: 'Entity (optional - for combined time or individual date/time)', de: 'Entity (optional - fÃ¼r kombinierte Zeit oder einzelne date/time)' },
-      date_entity: { en: 'Date Entity (optional - separate date entity)', de: 'Date Entity (optional - separate Datum Entity)' },
-      time_entity: { en: 'Time Entity (optional - separate time entity)', de: 'Time Entity (optional - separate Zeit Entity)' },
+      entity: { en: 'Entity (optional - for combined time or individual date/time)', de: 'Entity (optional - f\u00fcr kombinierte Datum-/Zeit-Entity)' },
+      date_entity: { en: 'Date Entity (optional - separate date entity)', de: 'Datums-Entity (optional - separate Datums-Entity)' },
+      time_entity: { en: 'Time Entity (optional - separate time entity)', de: 'Zeit-Entity (optional - separate Zeit-Entity)' },
       name: { en: 'Name', de: 'Name' },
       icon: { en: 'Icon', de: 'Icon' },
       icon_color: { en: 'Icon Color (e.g. #44739e or red)', de: 'Icon Farbe (z.B. #44739e oder red)' },
       minute_step: { en: 'Minute Step', de: 'Minuten-Schrittweite' },
-      minute_step_helper: { en: 'Valid values: 1, 5, 10, 15, 30', de: 'GÃ¼ltige Werte: 1, 5, 10, 15, 30' },
+      minute_step_helper: { en: 'Valid values: 1, 5, 10, 15, 30', de: 'G\u00fcltige Werte: 1, 5, 10, 15, 30' },
       repeat: { en: 'Repetitions in Spinner', de: 'Wiederholungen im Spinner' },
-      repeat_helper: { en: 'Valid values: 1-10 (Default: 3)', de: 'GÃ¼ltige Werte: 1-10 (Standard: 3)' },
+      repeat_helper: { en: 'Valid values: 1-10 (Default: 3)', de: 'G\u00fcltige Werte: 1-10 (Standard: 3)' },
       layout: { en: 'Layout', de: 'Layout' },
       horizontal: { en: 'Horizontal', de: 'Horizontal' },
       vertical: { en: 'Vertical', de: 'Vertikal' },
       show_label: { en: 'Show label in buttons', de: 'Label in Buttons anzeigen' },
       week_forecast: { en: 'Week forecast mode (7 days)', de: 'Wochenvorschau-Modus (7 Tage)' },
       haptic_feedback: { en: 'Haptic feedback (iOS App)', de: 'Haptisches Feedback (iOS App)' },
-      min_year: { en: 'Minimum Year (optional - overridden by entity attributes)', de: 'Minimales Jahr (optional - wird aus Entity-Attributen Ã¼berschrieben)' },
+      min_year: { en: 'Minimum Year (optional - overridden by entity attributes)', de: 'Minimales Jahr (optional - wird aus Entity-Attributen \u00fcberschrieben)' },
       min_year_helper: { en: 'Default: 1900 or entity min_year attribute', de: 'Standard: 1900 oder Entity min_year Attribut' },
-      max_year: { en: 'Maximum Year (optional - overridden by entity attributes)', de: 'Maximales Jahr (optional - wird aus Entity-Attributen Ã¼berschrieben)' },
+      max_year: { en: 'Maximum Year (optional - overridden by entity attributes)', de: 'Maximales Jahr (optional - wird aus Entity-Attributen \u00fcberschrieben)' },
       max_year_helper: { en: 'Default: 2099 or entity max_year attribute', de: 'Standard: 2099 oder Entity max_year Attribut' }
     };
     
-    const lang = this._getLanguage();
-    return translations[key]?.[lang] || translations[key]?.['en'] || key;
+    const lang = (this._getLanguage() || 'en').toLowerCase();
+    const baseLang = lang.split('-')[0];
+    return translations[key]?.[lang] || translations[key]?.[baseLang] || translations[key]?.['en'] || key;
+  }
+
+  _renderEntitySelector(value, domains, handler) {
+    if (customElements.get("ha-selector")) {
+      return html`
+        <ha-selector
+          .hass=${this.hass}
+          .selector=${{ entity: { include_domains: domains } }}
+          .value=${value || ""}
+          @value-changed=${handler}
+        ></ha-selector>
+      `;
+    }
+
+    return html`
+      <ha-entity-picker
+        .hass=${this.hass}
+        .value=${value || ""}
+        .includeDomains=${domains}
+        @value-changed=${handler}
+        allow-custom-entity
+      ></ha-entity-picker>
+    `;
   }
 
   render() {
@@ -1487,35 +1516,17 @@ class DateTimeSpinnerCardEditor extends LitElement {
       <div class="card-config">
         <div class="option">
           <label>${this._t('entity')}</label>
-          <ha-entity-picker
-            .hass=${this.hass}
-            .value=${this.config.entity}
-            .includeDomains=${["input_datetime", "time", "date"]}
-            @value-changed=${this._entityChanged}
-            allow-custom-entity
-          ></ha-entity-picker>
+          ${this._renderEntitySelector(this.config.entity, ["input_datetime", "time", "date"], this._entityChanged)}
         </div>
 
         <div class="option">
           <label>${this._t('date_entity')}</label>
-          <ha-entity-picker
-            .hass=${this.hass}
-            .value=${this.config.date_entity || ""}
-            .includeDomains=${["date", "input_datetime"]}
-            @value-changed=${this._dateEntityChanged}
-            allow-custom-entity
-          ></ha-entity-picker>
+          ${this._renderEntitySelector(this.config.date_entity, ["date", "input_datetime"], this._dateEntityChanged)}
         </div>
 
         <div class="option">
           <label>${this._t('time_entity')}</label>
-          <ha-entity-picker
-            .hass=${this.hass}
-            .value=${this.config.time_entity || ""}
-            .includeDomains=${["time", "input_datetime"]}
-            @value-changed=${this._timeEntityChanged}
-            allow-custom-entity
-          ></ha-entity-picker>
+          ${this._renderEntitySelector(this.config.time_entity, ["time", "input_datetime"], this._timeEntityChanged)}
         </div>
 
         <div class="option">
