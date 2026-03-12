@@ -44,7 +44,7 @@ Alle Details zu allen Versionen stehen im [CHANGELOG.md](CHANGELOG.md).
 2. Kopieren Sie die Datei nach `/config/www/datetime-spinner-card/`
 3. Fügen Sie die Ressource in Home Assistant hinzu:
    - **Einstellungen** → **Dashboards** → **Ressourcen**
-  - URL: `/local/datetime-spinner-card/datetime-spinner-card.js`
+   - URL: `/local/datetime-spinner-card/datetime-spinner-card.js`
    - Ressourcentyp: **JavaScript Module**
 
 ## Verwendung

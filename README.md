@@ -56,7 +56,7 @@ Alle Details zu allen Versionen stehen im [CHANGELOG.md](CHANGELOG.md).
 1. HACS → Menü (⋮) → **Custom repositories**
 2. Repository hinzufügen:
   - **Repository**: `https://github.com/diestrohs/datetime-spinner-card`
-   - **Typ**: `Lovelace`
+  - **Typ**: `Lovelace`
 3. Speichern, dann HACS neu laden
 4. Suchen Sie nach "DateTime Spinner Card" und installieren Sie die Card
 
