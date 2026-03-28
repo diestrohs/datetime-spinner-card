@@ -183,6 +183,9 @@ class DateTimeSpinnerCard extends LitElement {
       .time-btn:active {
         border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
       }
+      .time-btn.spinner-open {
+        border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
+      }
       .time-btn + .time-btn {
         margin-left: 5px;
         min-width: 70px;
@@ -421,28 +424,30 @@ class DateTimeSpinnerCard extends LitElement {
     const timeFormatLabel = 'hh:mm';
     const showLabel = this.showLabel;
     const forecastClass = this.weekForecast ? 'forecast' : '';
+    const dateSpinnerOpen = this.overlayOpen && this.overlayType === 'date';
+    const timeSpinnerOpen = this.overlayOpen && this.overlayType === 'time';
 
     if (hasDates && hasTimes) {
       return html`
-        <button class="time-btn ${showLabel ? 'with-label' : ''} ${forecastClass}" @click="${() => this._handleOpenOverlay('date')}">
+        <button class="time-btn ${showLabel ? 'with-label' : ''} ${forecastClass} ${dateSpinnerOpen ? 'spinner-open' : ''}" @click="${() => this._handleOpenOverlay('date')}">
           ${showLabel ? html`<span class="time-btn-label">${dateFormatLabel}</span>` : ''}
           ${dateDisplay}
         </button>
-        <button class="time-btn ${showLabel ? 'with-label' : ''}" @click="${() => this._handleOpenOverlay('time')}">
+        <button class="time-btn ${showLabel ? 'with-label' : ''} ${timeSpinnerOpen ? 'spinner-open' : ''}" @click="${() => this._handleOpenOverlay('time')}">
           ${showLabel ? html`<span class="time-btn-label">${timeFormatLabel}</span>` : ''}
           ${timeDisplay}
         </button>
       `;
     } else if (hasDates) {
       return html`
-        <button class="time-btn ${showLabel ? 'with-label' : ''} ${forecastClass}" @click="${() => this._handleOpenOverlay('date')}">
+        <button class="time-btn ${showLabel ? 'with-label' : ''} ${forecastClass} ${dateSpinnerOpen ? 'spinner-open' : ''}" @click="${() => this._handleOpenOverlay('date')}">
           ${showLabel ? html`<span class="time-btn-label">${dateFormatLabel}</span>` : ''}
           ${dateDisplay}
         </button>
       `;
     } else if (hasTimes) {
       return html`
-        <button class="time-btn ${showLabel ? 'with-label' : ''}" @click="${() => this._handleOpenOverlay('time')}">
+        <button class="time-btn ${showLabel ? 'with-label' : ''} ${timeSpinnerOpen ? 'spinner-open' : ''}" @click="${() => this._handleOpenOverlay('time')}">
           ${showLabel ? html`<span class="time-btn-label">${timeFormatLabel}</span>` : ''}
           ${timeDisplay}
         </button>

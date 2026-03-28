@@ -5,6 +5,15 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.2] - 2026-03-28
+
+### Highlights
+- Date- und Time-Button zeigen jetzt eine Primary-farbene untere Border, solange der entsprechende Spinner offen ist
+
+### Technische Anpassungen
+- Neue CSS-Klasse `.spinner-open` f\u00fcr den aktiven Button-Zustand eingef\u00fchrt
+- Dynamische Klassenbindung in `_renderButtons()` basierend auf `overlayOpen` und `overlayType`
+
 ## [0.2.1] - 2026-03-12
 
 ### Highlights

@@ -2,11 +2,11 @@
 
 Eine moderne Home Assistant Lovelace Card mit Spinner-Interface im iOS-Stil zur flexiblen Datums- und Zeitauswahl für `input_datetime`, `date` und `time` Entities.
 
-## Aktuelles Release (0.2.1)
+## Aktuelles Release (0.2.2)
 
-- Entity-Felder im visuellen Editor wieder als Auswahl-Picker nutzbar
-- Umlaute und Übersetzungen im Editor korrigiert
-- Wochenvorschau-Label für Datums-Buttons auf `wd. d. month` gesetzt
+- Aktiver Date-/Time-Button erhält jetzt eine Primary-farbene untere Border, solange der Spinner offen ist
+- Umsetzung über dynamische `spinner-open` Klasse in Abhängigkeit von `overlayOpen` und `overlayType`
+- Vorherige Verbesserungen aus `0.2.1` bleiben vollständig enthalten
 
 Alle Details zu allen Versionen stehen im [CHANGELOG.md](CHANGELOG.md).
 
